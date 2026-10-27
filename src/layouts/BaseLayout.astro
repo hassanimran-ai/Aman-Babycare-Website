@@ -1,0 +1,93 @@
+---
+import '@fontsource/ibm-plex-sans-arabic/arabic-400.css';
+import '@fontsource/ibm-plex-sans-arabic/arabic-500.css';
+import '@fontsource/ibm-plex-sans-arabic/arabic-700.css';
+import '@fontsource/fraunces/latin-600.css';
+import '@fontsource/inter/latin-400.css';
+import '@fontsource/inter/latin-600.css';
+import '../styles/global.css';
+
+import plexArabic400 from '@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-400-normal.woff2?url';
+import { getImage } from 'astro:assets';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import logo from '../assets/logo.jpg';
+import { site, type Locale } from '../config/site';
+
+interface Props {
+  lang: Locale;
+  title: string; // ≤60 chars
+  description: string; // ≤155 chars
+  /** Locale-agnostic path, e.g. '' for home or 'packages' — same slug in both languages. */
+  path: string;
+  /** False for pages without a language pair (404): skips canonical + hreflang. */
+  alternates?: boolean;
+}
+
+const { lang, title, description, path, alternates = true } = Astro.props;
+const dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+const urlFor = (locale: Locale) => new URL(getRelativeLocaleUrl(locale, path), Astro.site).href;
+const canonical = urlFor(lang);
+const ogImage = await getImage({ src: logo, width: 1024, format: 'jpg' });
+const ogImageUrl = new URL(ogImage.src, Astro.site).href;
+
+const localBusiness = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: site.name[lang],
+  alternateName: site.name[lang === 'ar' ? 'en' : 'ar'],
+  url: urlFor(lang),
+  image: ogImageUrl,
+  areaServed: { '@type': 'City', name: site.city[lang] },
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: site.city.en,
+    addressCountry: site.countryCode,
+  },
+};
+---
+
+<!doctype html>
+<html lang={lang} dir={dir}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {!site.isLive && <meta name="robots" content="noindex, nofollow" />}
+
+    {
+      alternates && (
+        <>
+          <link rel="canonical" href={canonical} />
+          <link rel="alternate" hreflang="ar" href={urlFor('ar')} />
+          <link rel="alternate" hreflang="en" href={urlFor('en')} />
+          <link rel="alternate" hreflang="x-default" href={urlFor('ar')} />
+        </>
+      )
+    }
+
+    <link rel="preload" href={plexArabic400} as="font" type="font/woff2" crossorigin />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name[lang]} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:locale" content={lang === 'ar' ? 'ar_SA' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
+    <slot name="head" />
+  </head>
+  <body class="min-h-dvh bg-cream-100 text-ink-900 antialiased">
+    <slot />
+  </body>
+</html>

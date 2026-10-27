@@ -1,0 +1,41 @@
+@import "tailwindcss";
+@config "../../tailwind.config.mjs";
+
+@layer base {
+  html {
+    background-color: --theme(--color-cream-100);
+    color: --theme(--color-ink-900);
+  }
+
+  html[lang="ar"] body {
+    font-family: --theme(--font-arabic);
+    line-height: 1.8;
+  }
+
+  html[lang="en"] body {
+    font-family: --theme(--font-sans);
+    line-height: 1.7;
+  }
+
+  html[lang="en"] :is(h1, h2, h3) {
+    font-family: --theme(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  /* Arabic headings: no letter-spacing, ever. */
+  html[lang="ar"] :is(h1, h2, h3) {
+    font-family: --theme(--font-arabic);
+    letter-spacing: normal;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
