@@ -4,7 +4,7 @@ import Breadcrumbs from '../Breadcrumbs.astro';
 import ServiceCard from '../ServiceCard.astro';
 import CtaBand from '../CtaBand.astro';
 import type { Locale } from '../../config/site';
-import { services } from '../../data/services';
+import { coreServices, moreServices } from '../../data/services';
 import { href, ui } from '../../i18n/ui';
 import { breadcrumbSchema } from '../../lib/schema';
 
@@ -20,17 +20,19 @@ const crumbs = [
 const t = {
   ar: {
     title: 'خدمات أمان المنزلية في الرياض | أمان',
-    description: 'رعاية الأطفال، تنظيف المنازل، مرافقة كبار السن، رعاية القطط والكلاب، التوصيل، والمشتريات في الرياض. احجز عبر واتساب.',
+    description: 'رعاية الأطفال، مرافقة كبار السن، تنظيف المنازل، رعاية القطط والكلاب، التوصيل، والمشتريات في الرياض. احجز عبر واتساب.',
     h1: 'كل ما يحتاجه بيتكم، مع فريق واحد',
     lead: 'ست خدمات منزلية يمكن حجزها منفردة أو جمعها في زيارة واحدة مع مقدّمة رعاية واحدة.',
+    moreHelp: 'ومساعدة أكثر في البيت',
     ctaTitle: 'لم تجدوا ما تبحثون عنه؟',
     ctaText: 'اسألونا على واتساب؛ كثير من الطلبات المنزلية يمكننا ترتيبها.',
   },
   en: {
     title: 'Home Services in Riyadh | Aman',
-    description: 'Babysitting, home cleaning, elderly companionship, cat and dog sitting, rides and errands in Riyadh. Book on WhatsApp.',
+    description: 'Babysitting, elderly companionship, home cleaning, cat and dog sitting, rides and errands in Riyadh. Book on WhatsApp.',
     h1: 'Everything your home needs, from one team',
     lead: 'Six home services you can book on their own, or combine in a single visit with one caregiver.',
+    moreHelp: 'More help at home',
     ctaTitle: "Can't find what you need?",
     ctaText: 'Ask us on WhatsApp; we can arrange many other jobs around the home.',
   },
@@ -42,8 +44,12 @@ const t = {
   <section class="container-x pb-16 pt-8 md:pb-24">
     <h1 class="max-w-[20ch] text-4xl text-green-800 sm:text-5xl">{t.h1}</h1>
     <p class="mt-6 max-w-xl text-lg text-ink-600">{t.lead}</p>
-    <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {services.map((s) => <li><ServiceCard lang={lang} service={s} headingLevel="h2" /></li>)}
+    <ul class="mt-12 grid gap-6 md:grid-cols-3">
+      {coreServices.map((s) => <li><ServiceCard lang={lang} service={s} headingLevel="h2" /></li>)}
+    </ul>
+    <h2 class="mt-16 text-2xl text-green-800">{t.moreHelp}</h2>
+    <ul class="mt-6 grid gap-4 lg:grid-cols-3">
+      {moreServices.map((s) => <li><ServiceCard lang={lang} service={s} size="compact" /></li>)}
     </ul>
   </section>
   <CtaBand

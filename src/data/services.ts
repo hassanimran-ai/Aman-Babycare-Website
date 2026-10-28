@@ -5,6 +5,7 @@ import type { IconName } from '../components/icons';
 
 export interface ServiceContent {
   slug: string;
+  tier: 'core' | 'more'; // core: the three headline services, shown first and larger
   icon: IconName;
   name: L;
   card: L; // one line for cards
@@ -21,156 +22,8 @@ export interface ServiceContent {
 
 export const services: ServiceContent[] = [
   {
-    slug: 'pet-sitting',
-    icon: 'paw',
-    name: { ar: 'رعاية الكلاب والقطط', en: 'Dog & Cat Sitting' },
-    card: { ar: 'طعام ولعب ونظافة لحيوانك الأليف في بيته', en: 'Meals, play and a clean litter box, in their own home' },
-    meta: {
-      title: { ar: 'رعاية القطط والكلاب في المنزل بالرياض | أمان', en: 'Cat & Dog Sitting at Home in Riyadh | Aman' },
-      description: {
-        ar: 'مسافرون أو مشغولون؟ نزور قطتك أو كلبك في البيت للإطعام واللعب والتنظيف ونرسل لكم صوراً. احجز عبر واتساب في الرياض.',
-        en: 'Travelling or busy? We visit your cat or dog at home to feed, play and clean up, and send you photos. Book on WhatsApp in Riyadh.',
-      },
-    },
-    h1: { ar: 'قطتك وكلبك في بيتهم، وأنتم مطمئنون', en: 'Your cat or dog stays home, and you stay at ease' },
-    intro: {
-      ar: 'السفر أو أيام العمل الطويلة لا تعني أن يقضي حيوانك الأليف يومه وحيداً. نزوره في بيته، نحافظ على روتينه، ونطمئنكم عليه بالصور.',
-      en: "A trip or a long working day doesn't have to mean a lonely day for your pet. We visit them at home, keep their routine, and keep you posted with photos.",
-    },
-    visit: [
-      { title: { ar: 'نتعرف على روتينه', en: 'We learn the routine' }, text: { ar: 'مواعيد الأكل، الألعاب المفضلة، وما يزعجه.', en: 'Meal times, favourite toys, and anything that unsettles them.' } },
-      { title: { ar: 'إطعام وماء نظيف', en: 'Food and fresh water' }, text: { ar: 'بالكميات التي تحددونها، في مواعيدها.', en: 'In the amounts you set, at the usual times.' } },
-      { title: { ar: 'لعب وصحبة', en: 'Play and company' }, text: { ar: 'وقت للعب والمداعبة، ونزهة للكلاب إن رغبتم.', en: 'Time to play and cuddle, and a walk for dogs if you wish.' } },
-      { title: { ar: 'تنظيف وصورة', en: 'Clean-up and a photo' }, text: { ar: 'تنظيف صندوق الرمل والأواني، ثم صورة لكم على واتساب.', en: 'Litter box and bowls cleaned, then a photo to you on WhatsApp.' } },
-    ],
-    included: [
-      { ar: 'إطعام وتغيير الماء', en: 'Feeding and fresh water' },
-      { ar: 'تنظيف صندوق الرمل والأواني', en: 'Litter box and bowl cleaning' },
-      { ar: 'لعب ومداعبة', en: 'Play and attention' },
-      { ar: 'نزهة قصيرة للكلاب', en: 'A short walk for dogs' },
-      { ar: 'صور وتحديثات على واتساب', en: 'Photos and updates on WhatsApp' },
-    ],
-    prepare: [
-      { ar: 'الطعام والرمل يكفيان مدة غيابكم', en: 'Enough food and litter for your time away' },
-      { ar: 'رقم الطبيب البيطري المعتاد', en: "Your usual vet's number" },
-      { ar: 'طريقة الدخول إلى البيت', en: 'How we get into the home' },
-    ],
-    related: ['home-cleaning', 'errands', 'babysitting'],
-    faq: [
-      {
-        q: { ar: 'كم زيارة في اليوم؟', en: 'How many visits a day?' },
-        a: { ar: 'تحددونها أنتم حسب احتياج حيوانكم؛ زيارة أو أكثر يومياً.', en: "You choose, based on your pet's needs: one visit a day or more." },
-      },
-      {
-        q: { ar: 'هل تعطون الدواء؟', en: 'Can you give medication?' },
-        a: { ar: 'نعطي الأدوية الفموية البسيطة حسب تعليماتكم المكتوبة. أي حالة صحية تحتاج طبيباً بيطرياً.', en: 'We give simple oral medicine following your written instructions. Anything clinical needs a vet.' } },
-      {
-        q: { ar: 'هل يمكن جمعها مع خدمة أخرى؟', en: 'Can I combine this with another service?' },
-        a: { ar: 'نعم، كثيرون يضيفون تنظيف البيت أو استلام البريد والمشتريات أثناء السفر.', en: 'Yes. Many families add home cleaning or collecting post and shopping while they travel.' } },
-    ],
-    whatsapp: { ar: 'السلام عليكم، أرغب بحجز رعاية للقطط/الكلاب.', en: 'Hello, I would like to book cat/dog sitting.' },
-  },
-  {
-    slug: 'home-cleaning',
-    icon: 'sparkle',
-    name: { ar: 'تنظيف المنازل', en: 'Home Cleaning' },
-    card: { ar: 'بيت مرتب ونظيف دون أن تشغلوا بالكم', en: 'A clean, calm home without the effort' },
-    meta: {
-      title: { ar: 'تنظيف المنازل في الرياض | أمان', en: 'Home Cleaning in Riyadh | Aman' },
-      description: {
-        ar: 'تنظيف منزلي دوري أو قبل الضيوف والمناسبات في الرياض. فريق خضع للتحقق من الخلفية. احجز عبر واتساب.',
-        en: 'Regular home cleaning or a refresh before guests and occasions in Riyadh. Background-checked staff. Book on WhatsApp.',
-      },
-    },
-    h1: { ar: 'بيت نظيف يستقبلكم ويستقبل ضيوفكم', en: 'A clean home, ready for you and your guests' },
-    intro: {
-      ar: 'من الترتيب الأسبوعي إلى التجهيز قبل العزائم والأعياد، نهتم بالتفاصيل التي تجعل البيت مريحاً، وتتفرغون أنتم لأهلكم.',
-      en: 'From the weekly tidy to getting ready for gatherings and Eid, we take care of the details that make a home feel restful, so you can be with your family.',
-    },
-    visit: [
-      { title: { ar: 'نتفق على الأولويات', en: 'We agree priorities' }, text: { ar: 'الغرف، المجلس، المطبخ، وما يحتاج عناية خاصة.', en: 'Rooms, majlis, kitchen, and anything that needs special care.' } },
-      { title: { ar: 'من الأعلى إلى الأسفل', en: 'Top to bottom' }, text: { ar: 'غبار الأسطح، ثم الأرضيات، غرفة بعد غرفة.', en: 'Dusting surfaces first, then floors, room by room.' } },
-      { title: { ar: 'المطبخ ودورات المياه', en: 'Kitchen and bathrooms' }, text: { ar: 'تعقيم الأسطح والأحواض وترتيب الأدوات.', en: 'Surfaces and sinks sanitised, everything put back in place.' } },
-      { title: { ar: 'جولة أخيرة معكم', en: 'A final walk-through' }, text: { ar: 'نتأكد أن كل شيء كما تحبون قبل المغادرة.', en: "We check everything is as you like it before we leave." } },
-    ],
-    included: [
-      { ar: 'تنظيف الغرف والمجالس', en: 'Bedrooms, living areas and majlis' },
-      { ar: 'المطبخ والأسطح والأحواض', en: 'Kitchen, counters and sinks' },
-      { ar: 'دورات المياه', en: 'Bathrooms' },
-      { ar: 'كنس ومسح الأرضيات', en: 'Vacuuming and mopping' },
-      { ar: 'ترتيب وتنظيم خفيف', en: 'Light tidying and organising' },
-    ],
-    prepare: [
-      { ar: 'أدوات ومواد التنظيف المفضلة لديكم إن وُجدت', en: 'Your preferred cleaning products, if any' },
-      { ar: 'الغرف أو القطع التي لا تُلمس', en: 'Rooms or items that should not be touched' },
-      { ar: 'الوقت المناسب للزيارة', en: 'A convenient visit time' },
-    ],
-    related: ['errands', 'babysitting', 'pet-sitting'],
-    faq: [
-      {
-        q: { ar: 'هل تحضرون مواد التنظيف؟', en: 'Do you bring cleaning products?' },
-        a: { ar: 'أخبرونا عند الحجز؛ يمكننا استخدام موادكم أو الاتفاق على غير ذلك.', en: 'Tell us when you book. We can use your products or agree on another option.' },
-      },
-      {
-        q: { ar: 'هل يمكن التنظيف قبل المناسبات؟', en: 'Can you clean before an occasion?' },
-        a: { ar: 'نعم، احجزوا مبكراً قبل رمضان والأعياد لأن المواعيد تمتلئ.', en: 'Yes. Book early before Ramadan and Eid, when slots fill up.' } },
-      {
-        q: { ar: 'هل يمكن أن تنظف وتجالس الأطفال في نفس الزيارة؟', en: 'Can one visit cover cleaning and babysitting?' },
-        a: { ar: 'يمكن جمع الخدمتين لمقدّمة رعاية واحدة حسب حجم البيت وعمر الأطفال؛ نتفق على التفاصيل معكم.', en: "One caregiver can combine both, depending on the size of the home and the children's ages. We'll agree the details with you." } },
-    ],
-    whatsapp: { ar: 'السلام عليكم، أرغب بحجز تنظيف للمنزل.', en: 'Hello, I would like to book home cleaning.' },
-  },
-  {
-    slug: 'pick-up-drop-off',
-    icon: 'car',
-    name: { ar: 'التوصيل والاستقبال', en: 'Pick-up & Drop-off' },
-    card: { ar: 'مشاوير المدرسة والنادي والمواعيد، بأمان', en: 'School runs, clubs and appointments, safely done' },
-    meta: {
-      title: { ar: 'توصيل الأطفال والعائلة في الرياض | أمان', en: 'School & Family Pick-up and Drop-off in Riyadh | Aman' },
-      description: {
-        ar: 'توصيل واستقبال الأطفال من المدرسة والنادي، ومرافقة الوالدين للمواعيد في الرياض. فريق خضع للتحقق. احجز عبر واتساب.',
-        en: 'School and club pick-ups for children, and rides to appointments for parents in Riyadh. Background-checked staff. Book on WhatsApp.',
-      },
-    },
-    h1: { ar: 'مشاوير العائلة في أيدٍ أمينة', en: "Your family's rides, in trusted hands" },
-    intro: {
-      ar: 'زحمة الرياض ومواعيد الدوام لا تتوافق دائماً مع جرس المدرسة. نوصل أطفالكم ونستقبلهم، ونرافق والديكم إلى مواعيدهم، ونطمئنكم عند كل وصول.',
-      en: "Riyadh traffic and office hours don't always match the school bell. We take and collect your children, accompany your parents to appointments, and message you at every arrival.",
-    },
-    visit: [
-      { title: { ar: 'نسجّل المشوار', en: 'We plan the route' }, text: { ar: 'العنوان والمواعيد ومن يستلم الطفل.', en: 'Addresses, times and who hands over the child.' } },
-      { title: { ar: 'استلام في الموعد', en: 'On-time pick-up' }, text: { ar: 'من البيت أو المدرسة أو النادي.', en: 'From home, school or club.' } },
-      { title: { ar: 'رسالة عند الانطلاق', en: 'A message as we leave' }, text: { ar: 'تعرفون متى خرجنا ومتى نصل.', en: "You know when we've left and when we'll arrive." } },
-      { title: { ar: 'تسليم وتأكيد', en: 'Hand-over and confirmation' }, text: { ar: 'نسلّم للشخص المتفق عليه ونؤكد لكم.', en: 'We hand over to the agreed person and confirm with you.' } },
-    ],
-    included: [
-      { ar: 'توصيل يومي للمدرسة', en: 'Daily school runs' },
-      { ar: 'الأندية والأنشطة بعد المدرسة', en: 'Clubs and after-school activities' },
-      { ar: 'مرافقة الوالدين للمواعيد', en: 'Accompanying parents to appointments' },
-      { ar: 'رسائل عند الانطلاق والوصول', en: 'Messages on departure and arrival' },
-    ],
-    prepare: [
-      { ar: 'أسماء المسموح لهم بالاستلام', en: 'Names of who may collect your child' },
-      { ar: 'مقعد الطفل المناسب لعمره', en: 'A car seat suited to your child' },
-      { ar: 'جدول المدرسة والأنشطة', en: 'School and activity timetable' },
-    ],
-    related: ['babysitting', 'elderly-companionship', 'errands'],
-    faq: [
-      {
-        q: { ar: 'هل يمكن جدولة مشاوير يومية؟', en: 'Can rides be scheduled daily?' },
-        a: { ar: 'نعم، يمكن ترتيب جدول أسبوعي أو شهري للمدرسة والأنشطة.', en: 'Yes, we can set up a weekly or monthly schedule for school and activities.' },
-      },
-      {
-        q: { ar: 'كيف أعرف أن طفلي وصل؟', en: 'How do I know my child has arrived?' },
-        a: { ar: 'نرسل لكم رسالة على واتساب عند الاستلام وعند التسليم.', en: 'We message you on WhatsApp at pick-up and at hand-over.' } },
-      {
-        q: { ar: 'هل يمكن أن تبقى مقدمة الرعاية مع الطفل بعد التوصيل؟', en: 'Can the caregiver stay with my child after the ride?' },
-        a: { ar: 'نعم، يمكن جمع التوصيل مع رعاية الأطفال في البيت حتى عودتكم.', en: 'Yes. Combine the ride with babysitting at home until you are back.' } },
-    ],
-    whatsapp: { ar: 'السلام عليكم، أرغب بحجز خدمة التوصيل والاستقبال.', en: 'Hello, I would like to book pick-up and drop-off.' },
-  },
-  {
     slug: 'babysitting',
+    tier: 'core',
     icon: 'child',
     name: { ar: 'رعاية الأطفال', en: 'Babysitting' },
     card: { ar: 'وقت آمن وممتع لأطفالكم في البيت', en: 'Safe, happy time for your children at home' },
@@ -221,6 +74,7 @@ export const services: ServiceContent[] = [
   },
   {
     slug: 'elderly-companionship',
+    tier: 'core',
     icon: 'elder',
     name: { ar: 'مرافقة كبار السن', en: 'Elderly Companionship' },
     card: { ar: 'صحبة طيبة ومساعدة يومية لوالديكم', en: 'Warm company and everyday help for your parents' },
@@ -270,7 +124,59 @@ export const services: ServiceContent[] = [
     whatsapp: { ar: 'السلام عليكم، أرغب بحجز مرافقة لكبار السن.', en: 'Hello, I would like to book elderly companionship.' },
   },
   {
+    slug: 'home-cleaning',
+    tier: 'core',
+    icon: 'sparkle',
+    name: { ar: 'تنظيف المنازل', en: 'Home Cleaning' },
+    card: { ar: 'بيت مرتب ونظيف دون أن تشغلوا بالكم', en: 'A clean, calm home without the effort' },
+    meta: {
+      title: { ar: 'تنظيف المنازل في الرياض | أمان', en: 'Home Cleaning in Riyadh | Aman' },
+      description: {
+        ar: 'تنظيف منزلي دوري أو قبل الضيوف والمناسبات في الرياض. فريق خضع للتحقق من الخلفية. احجز عبر واتساب.',
+        en: 'Regular home cleaning or a refresh before guests and occasions in Riyadh. Background-checked staff. Book on WhatsApp.',
+      },
+    },
+    h1: { ar: 'بيت نظيف يستقبلكم ويستقبل ضيوفكم', en: 'A clean home, ready for you and your guests' },
+    intro: {
+      ar: 'من الترتيب الأسبوعي إلى التجهيز قبل العزائم والأعياد، نهتم بالتفاصيل التي تجعل البيت مريحاً، وتتفرغون أنتم لأهلكم.',
+      en: 'From the weekly tidy to getting ready for gatherings and Eid, we take care of the details that make a home feel restful, so you can be with your family.',
+    },
+    visit: [
+      { title: { ar: 'نتفق على الأولويات', en: 'We agree priorities' }, text: { ar: 'الغرف، المجلس، المطبخ، وما يحتاج عناية خاصة.', en: 'Rooms, majlis, kitchen, and anything that needs special care.' } },
+      { title: { ar: 'من الأعلى إلى الأسفل', en: 'Top to bottom' }, text: { ar: 'غبار الأسطح، ثم الأرضيات، غرفة بعد غرفة.', en: 'Dusting surfaces first, then floors, room by room.' } },
+      { title: { ar: 'المطبخ ودورات المياه', en: 'Kitchen and bathrooms' }, text: { ar: 'تعقيم الأسطح والأحواض وترتيب الأدوات.', en: 'Surfaces and sinks sanitised, everything put back in place.' } },
+      { title: { ar: 'جولة أخيرة معكم', en: 'A final walk-through' }, text: { ar: 'نتأكد أن كل شيء كما تحبون قبل المغادرة.', en: "We check everything is as you like it before we leave." } },
+    ],
+    included: [
+      { ar: 'تنظيف الغرف والمجالس', en: 'Bedrooms, living areas and majlis' },
+      { ar: 'المطبخ والأسطح والأحواض', en: 'Kitchen, counters and sinks' },
+      { ar: 'دورات المياه', en: 'Bathrooms' },
+      { ar: 'كنس ومسح الأرضيات', en: 'Vacuuming and mopping' },
+      { ar: 'ترتيب وتنظيم خفيف', en: 'Light tidying and organising' },
+    ],
+    prepare: [
+      { ar: 'أدوات ومواد التنظيف المفضلة لديكم إن وُجدت', en: 'Your preferred cleaning products, if any' },
+      { ar: 'الغرف أو القطع التي لا تُلمس', en: 'Rooms or items that should not be touched' },
+      { ar: 'الوقت المناسب للزيارة', en: 'A convenient visit time' },
+    ],
+    related: ['errands', 'babysitting', 'pet-sitting'],
+    faq: [
+      {
+        q: { ar: 'هل تحضرون مواد التنظيف؟', en: 'Do you bring cleaning products?' },
+        a: { ar: 'أخبرونا عند الحجز؛ يمكننا استخدام موادكم أو الاتفاق على غير ذلك.', en: 'Tell us when you book. We can use your products or agree on another option.' },
+      },
+      {
+        q: { ar: 'هل يمكن التنظيف قبل المناسبات؟', en: 'Can you clean before an occasion?' },
+        a: { ar: 'نعم، احجزوا مبكراً قبل رمضان والأعياد لأن المواعيد تمتلئ.', en: 'Yes. Book early before Ramadan and Eid, when slots fill up.' } },
+      {
+        q: { ar: 'هل يمكن أن تنظف وتجالس الأطفال في نفس الزيارة؟', en: 'Can one visit cover cleaning and babysitting?' },
+        a: { ar: 'يمكن جمع الخدمتين لمقدّمة رعاية واحدة حسب حجم البيت وعمر الأطفال؛ نتفق على التفاصيل معكم.', en: "One caregiver can combine both, depending on the size of the home and the children's ages. We'll agree the details with you." } },
+    ],
+    whatsapp: { ar: 'السلام عليكم، أرغب بحجز تنظيف للمنزل.', en: 'Hello, I would like to book home cleaning.' },
+  },
+  {
     slug: 'errands',
+    tier: 'more',
     icon: 'bag',
     name: { ar: 'المشتريات والمساعدة الشخصية', en: 'Errands & Personal Assistance' },
     card: { ar: 'مقاضي البيت والمشاوير الصغيرة عنكم', en: 'Groceries and small errands, off your list' },
@@ -318,6 +224,109 @@ export const services: ServiceContent[] = [
     ],
     whatsapp: { ar: 'السلام عليكم، أرغب بحجز خدمة المشتريات والمساعدة الشخصية.', en: 'Hello, I would like to book errands and personal assistance.' },
   },
+  {
+    slug: 'pick-up-drop-off',
+    tier: 'more',
+    icon: 'car',
+    name: { ar: 'التوصيل والاستقبال', en: 'Pick-up & Drop-off' },
+    card: { ar: 'مشاوير المدرسة والنادي والمواعيد، بأمان', en: 'School runs, clubs and appointments, safely done' },
+    meta: {
+      title: { ar: 'توصيل الأطفال والعائلة في الرياض | أمان', en: 'School & Family Pick-up and Drop-off in Riyadh | Aman' },
+      description: {
+        ar: 'توصيل واستقبال الأطفال من المدرسة والنادي، ومرافقة الوالدين للمواعيد في الرياض. فريق خضع للتحقق. احجز عبر واتساب.',
+        en: 'School and club pick-ups for children, and rides to appointments for parents in Riyadh. Background-checked staff. Book on WhatsApp.',
+      },
+    },
+    h1: { ar: 'مشاوير العائلة في أيدٍ أمينة', en: "Your family's rides, in trusted hands" },
+    intro: {
+      ar: 'زحمة الرياض ومواعيد الدوام لا تتوافق دائماً مع جرس المدرسة. نوصل أطفالكم ونستقبلهم، ونرافق والديكم إلى مواعيدهم، ونطمئنكم عند كل وصول.',
+      en: "Riyadh traffic and office hours don't always match the school bell. We take and collect your children, accompany your parents to appointments, and message you at every arrival.",
+    },
+    visit: [
+      { title: { ar: 'نسجّل المشوار', en: 'We plan the route' }, text: { ar: 'العنوان والمواعيد ومن يستلم الطفل.', en: 'Addresses, times and who hands over the child.' } },
+      { title: { ar: 'استلام في الموعد', en: 'On-time pick-up' }, text: { ar: 'من البيت أو المدرسة أو النادي.', en: 'From home, school or club.' } },
+      { title: { ar: 'رسالة عند الانطلاق', en: 'A message as we leave' }, text: { ar: 'تعرفون متى خرجنا ومتى نصل.', en: "You know when we've left and when we'll arrive." } },
+      { title: { ar: 'تسليم وتأكيد', en: 'Hand-over and confirmation' }, text: { ar: 'نسلّم للشخص المتفق عليه ونؤكد لكم.', en: 'We hand over to the agreed person and confirm with you.' } },
+    ],
+    included: [
+      { ar: 'توصيل يومي للمدرسة', en: 'Daily school runs' },
+      { ar: 'الأندية والأنشطة بعد المدرسة', en: 'Clubs and after-school activities' },
+      { ar: 'مرافقة الوالدين للمواعيد', en: 'Accompanying parents to appointments' },
+      { ar: 'رسائل عند الانطلاق والوصول', en: 'Messages on departure and arrival' },
+    ],
+    prepare: [
+      { ar: 'أسماء المسموح لهم بالاستلام', en: 'Names of who may collect your child' },
+      { ar: 'مقعد الطفل المناسب لعمره', en: 'A car seat suited to your child' },
+      { ar: 'جدول المدرسة والأنشطة', en: 'School and activity timetable' },
+    ],
+    related: ['babysitting', 'elderly-companionship', 'errands'],
+    faq: [
+      {
+        q: { ar: 'هل يمكن جدولة مشاوير يومية؟', en: 'Can rides be scheduled daily?' },
+        a: { ar: 'نعم، يمكن ترتيب جدول أسبوعي أو شهري للمدرسة والأنشطة.', en: 'Yes, we can set up a weekly or monthly schedule for school and activities.' },
+      },
+      {
+        q: { ar: 'كيف أعرف أن طفلي وصل؟', en: 'How do I know my child has arrived?' },
+        a: { ar: 'نرسل لكم رسالة على واتساب عند الاستلام وعند التسليم.', en: 'We message you on WhatsApp at pick-up and at hand-over.' } },
+      {
+        q: { ar: 'هل يمكن أن تبقى مقدمة الرعاية مع الطفل بعد التوصيل؟', en: 'Can the caregiver stay with my child after the ride?' },
+        a: { ar: 'نعم، يمكن جمع التوصيل مع رعاية الأطفال في البيت حتى عودتكم.', en: 'Yes. Combine the ride with babysitting at home until you are back.' } },
+    ],
+    whatsapp: { ar: 'السلام عليكم، أرغب بحجز خدمة التوصيل والاستقبال.', en: 'Hello, I would like to book pick-up and drop-off.' },
+  },
+  {
+    slug: 'pet-sitting',
+    tier: 'more',
+    icon: 'paw',
+    name: { ar: 'رعاية الكلاب والقطط', en: 'Dog & Cat Sitting' },
+    card: { ar: 'طعام ولعب ونظافة لحيوانك الأليف في بيته', en: 'Meals, play and a clean litter box, in their own home' },
+    meta: {
+      title: { ar: 'رعاية القطط والكلاب في المنزل بالرياض | أمان', en: 'Cat & Dog Sitting at Home in Riyadh | Aman' },
+      description: {
+        ar: 'مسافرون أو مشغولون؟ نزور قطتك أو كلبك في البيت للإطعام واللعب والتنظيف ونرسل لكم صوراً. احجز عبر واتساب في الرياض.',
+        en: 'Travelling or busy? We visit your cat or dog at home to feed, play and clean up, and send you photos. Book on WhatsApp in Riyadh.',
+      },
+    },
+    h1: { ar: 'قطتك وكلبك في بيتهم، وأنتم مطمئنون', en: 'Your cat or dog stays home, and you stay at ease' },
+    intro: {
+      ar: 'السفر أو أيام العمل الطويلة لا تعني أن يقضي حيوانك الأليف يومه وحيداً. نزوره في بيته، نحافظ على روتينه، ونطمئنكم عليه بالصور.',
+      en: "A trip or a long working day doesn't have to mean a lonely day for your pet. We visit them at home, keep their routine, and keep you posted with photos.",
+    },
+    visit: [
+      { title: { ar: 'نتعرف على روتينه', en: 'We learn the routine' }, text: { ar: 'مواعيد الأكل، الألعاب المفضلة، وما يزعجه.', en: 'Meal times, favourite toys, and anything that unsettles them.' } },
+      { title: { ar: 'إطعام وماء نظيف', en: 'Food and fresh water' }, text: { ar: 'بالكميات التي تحددونها، في مواعيدها.', en: 'In the amounts you set, at the usual times.' } },
+      { title: { ar: 'لعب وصحبة', en: 'Play and company' }, text: { ar: 'وقت للعب والمداعبة، ونزهة للكلاب إن رغبتم.', en: 'Time to play and cuddle, and a walk for dogs if you wish.' } },
+      { title: { ar: 'تنظيف وصورة', en: 'Clean-up and a photo' }, text: { ar: 'تنظيف صندوق الرمل والأواني، ثم صورة لكم على واتساب.', en: 'Litter box and bowls cleaned, then a photo to you on WhatsApp.' } },
+    ],
+    included: [
+      { ar: 'إطعام وتغيير الماء', en: 'Feeding and fresh water' },
+      { ar: 'تنظيف صندوق الرمل والأواني', en: 'Litter box and bowl cleaning' },
+      { ar: 'لعب ومداعبة', en: 'Play and attention' },
+      { ar: 'نزهة قصيرة للكلاب', en: 'A short walk for dogs' },
+      { ar: 'صور وتحديثات على واتساب', en: 'Photos and updates on WhatsApp' },
+    ],
+    prepare: [
+      { ar: 'الطعام والرمل يكفيان مدة غيابكم', en: 'Enough food and litter for your time away' },
+      { ar: 'رقم الطبيب البيطري المعتاد', en: "Your usual vet's number" },
+      { ar: 'طريقة الدخول إلى البيت', en: 'How we get into the home' },
+    ],
+    related: ['home-cleaning', 'errands', 'babysitting'],
+    faq: [
+      {
+        q: { ar: 'كم زيارة في اليوم؟', en: 'How many visits a day?' },
+        a: { ar: 'تحددونها أنتم حسب احتياج حيوانكم؛ زيارة أو أكثر يومياً.', en: "You choose, based on your pet's needs: one visit a day or more." },
+      },
+      {
+        q: { ar: 'هل تعطون الدواء؟', en: 'Can you give medication?' },
+        a: { ar: 'نعطي الأدوية الفموية البسيطة حسب تعليماتكم المكتوبة. أي حالة صحية تحتاج طبيباً بيطرياً.', en: 'We give simple oral medicine following your written instructions. Anything clinical needs a vet.' } },
+      {
+        q: { ar: 'هل يمكن جمعها مع خدمة أخرى؟', en: 'Can I combine this with another service?' },
+        a: { ar: 'نعم، كثيرون يضيفون تنظيف البيت أو استلام البريد والمشتريات أثناء السفر.', en: 'Yes. Many families add home cleaning or collecting post and shopping while they travel.' } },
+    ],
+    whatsapp: { ar: 'السلام عليكم، أرغب بحجز رعاية للقطط/الكلاب.', en: 'Hello, I would like to book cat/dog sitting.' },
+  },
 ];
 
 export const serviceBySlug = (slug: string) => services.find((s) => s.slug === slug)!;
+export const coreServices = services.filter((s) => s.tier === 'core');
+export const moreServices = services.filter((s) => s.tier === 'more');

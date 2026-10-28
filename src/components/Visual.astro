@@ -14,7 +14,7 @@ interface Props {
   /** 'logo' shows the logo mark in the panel instead of an icon. */
   art?: 'icon' | 'logo';
   tone?: 'cream' | 'pink' | 'green';
-  shape?: 'arch' | 'rounded';
+  shape?: 'arch' | 'rounded' | 'square';
   eager?: boolean;
   sizes?: string;
   class?: string;
@@ -41,7 +41,11 @@ const panel = {
   pink: 'bg-pink-100 text-gold-600',
   green: 'bg-green-700 text-gold-300',
 }[tone];
-const shapeCls = shape === 'arch' ? 'arch aspect-[4/5]' : 'rounded-[2rem] aspect-[16/10]';
+const shapeCls = {
+  arch: 'arch aspect-[4/5]',
+  rounded: 'rounded-[2rem] aspect-[16/10] overflow-hidden',
+  square: 'rounded-2xl aspect-square overflow-hidden',
+}[shape];
 ---
 
 <div class:list={['relative isolate', shapeCls, cls]}>

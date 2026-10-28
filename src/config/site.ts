@@ -50,14 +50,15 @@ export interface Service {
   name: Record<Locale, string>;
 }
 
-// Main services: each gets its own page. Order follows the mock-up's "Other services" block.
+// Main services: each gets its own page. Client-approved order: the three core services first
+// (Babysitting, Elderly Companionship, Home Cleaning), then "more help at home".
 export const mainServices: Service[] = [
-  { slug: 'pet-sitting', name: { en: 'Dog & Cat Sitting', ar: 'رعاية الكلاب والقطط' } },
-  { slug: 'home-cleaning', name: { en: 'Home Cleaning', ar: 'تنظيف المنازل' } },
-  { slug: 'pick-up-drop-off', name: { en: 'Pick-up & Drop-off', ar: 'التوصيل والاستقبال' } },
   { slug: 'babysitting', name: { en: 'Babysitting', ar: 'رعاية الأطفال' } },
   { slug: 'elderly-companionship', name: { en: 'Elderly Companionship', ar: 'مرافقة كبار السن' } },
+  { slug: 'home-cleaning', name: { en: 'Home Cleaning', ar: 'تنظيف المنازل' } },
   { slug: 'errands', name: { en: 'Errands & Personal Assistance', ar: 'المشتريات والمساعدة الشخصية' } },
+  { slug: 'pick-up-drop-off', name: { en: 'Pick-up & Drop-off', ar: 'التوصيل والاستقبال' } },
+  { slug: 'pet-sitting', name: { en: 'Dog & Cat Sitting', ar: 'رعاية الكلاب والقطط' } },
 ];
 
 // PHASE 2: Newborn & mother care, all on one combined page. Not linked anywhere yet.
