@@ -1,0 +1,19 @@
+# Imagery
+
+## Checklist for every photo
+- Modest: women in hijab or covered; no bare shoulders, no tight clothing.
+- The setting reads as a Gulf/Saudi home or neutral (no snow, no Western holiday decor, no alcohol, no musical instruments).
+- Bright, warm, natural light. No heavy filters. No overlays on card photos (only behind hero text if needed).
+- Children look calm and happy, never distressed.
+- No visible third-party logos or watermarks.
+
+## Sources
+Free-for-commercial-use stock only (Unsplash, Pexels). Record every file in `src/assets/photos/CREDITS.md` with source URL, author and licence.
+If no fitting photo exists, use a branded illustration panel. Never fill a gap with an off-culture photo.
+
+## Technical
+- Files in `src/assets/photos/`, served through Astro `<Picture>` (AVIF + WebP) with width/height.
+- Hero image: `loading="eager"` + `fetchpriority="high"`; everything else lazy.
+
+## Alt text
+In the page's language, describing what is shown ("A mother in a hijab holding her sleeping baby"). Decorative images get `alt=""`.

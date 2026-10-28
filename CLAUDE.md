@@ -8,7 +8,8 @@ Deadline: Saturday Oct 31, 2026, 6 PM. MVP first; mark later work with `// PHASE
 ## Always Do First
 - Read `src/config/site.ts` (all business facts) and this file before any change.
 - Do not start any design work until the `frontend-design` skill is installed and activated. Invoke it before writing UI code.
-- Check `brand_assets/` for logo, colors, and images. Use real assets over placeholders.
+- Check `brand_assets/` for logo, colors, and images. Use real assets over placeholders. Style references live in `brand_assets/references/`.
+- Read the matching rules file in `docs/build/` (index: `docs/build/README.md`) before working on that area: design system, brand/logo, culture & copy, imagery, services, service pages, packages, offers, header, engagement, visual QA, contact details.
 
 ## Stack (do not change)
 - Astro (static output) + Tailwind CSS (installed via npm, never the CDN script) + TypeScript.
@@ -21,13 +22,14 @@ Deadline: Saturday Oct 31, 2026, 6 PM. MVP first; mark later work with `// PHASE
 ## Business Facts (never invent)
 - Every fact comes from `src/config/site.ts`. Unknown values stay as placeholders like `[WHATSAPP_NUMBER]`, `[CR_NUMBER]`, `[ADDRESS]`, `[PRICE]`.
 - Do NOT write: licensed, certified, nurse, nursing, medical, hospital-grade, MOH, 24/7, "500+ families", or any number/credential not in `site.ts`.
+- Prices and offers come only from `src/data/packages.ts` and `src/data/offers.ts`. Current prices are client-approved DRAFTS (from a reference site); they must be confirmed before `isLive` is set to true.
 - Allowed trust claim: staff are background-checked.
 - Do NOT create reviews, testimonials, ratings, or star icons. Use an honest "Be among our first families" block instead.
 - No Review or AggregateRating schema.
 
 ## Services (one caregiver can combine several; sold as bundles)
 Main: Babysitting, Home Cleaning, Elderly Companionship, Dog & Cat Sitting, Pick-up & Drop-off, Errands & Personal Assistance.
-Newborn & mother care (one combined page): Newborn Care at Home, Feeding Support, Baby Bathing & Hygiene, Sleep & Comfort, Mother & Baby Support. Personalized Care Plans live on the Packages page.
+Newborn & mother care (one combined page): Newborn Care at Home, Feeding Support, Baby Bathing & Hygiene, Sleep & Comfort, Mother & Baby Support. Parked as PHASE 2 for now (client instruction); do not link to it. Personalized Care Plans live on the Packages page.
 
 ## SEO Rules (every page)
 - One unique `<title>` (≤60 chars) and meta description (≤155 chars), in the page's language.
@@ -49,7 +51,7 @@ Newborn & mother care (one combined page): Newborn Care at Home, Feeding Support
 
 ## Culture & Imagery
 - Modest imagery: women in hijab, Saudi/Gulf home interiors, no immodest clothing, no alcohol, no music or party imagery.
-- Seasonal content (Ramadan, Eid) is welcome. Do not add other religious occasions unless instructed.
+- Seasonal content (Ramadan, Eid al-Fitr, Eid al-Adha) is welcome. Do not add other religious occasions unless instructed. National occasions (Saudi Founding Day, Saudi National Day) and commercial ones (White Friday, back to school) are approved for offers.
 - Warm, respectful, family-first tone.
 
 ## Conversion
@@ -60,8 +62,8 @@ Newborn & mother care (one combined page): Newborn Care at Home, Feeding Support
 - Analytics scripts (GA4, Meta, Snapchat) load only after cookie consent and only if their IDs are set.
 
 ## Design Guardrails
-- Colors: only the brand tokens in `tailwind.config` (green, pink, cream + neutrals). Never default Tailwind blue/indigo.
-- Shadows: soft, layered, green- or pink-tinted, low opacity. No flat `shadow-md`.
+- Colors: only the brand tokens in `tailwind.config` (green primary, muted gold accent, cream base, soft pink tint + neutrals), matching the logo. Premium and minimalist: no gradients, no shiny gold. Never default Tailwind blue/indigo.
+- Shadows: soft, layered, green-tinted, low opacity. No flat `shadow-md`.
 - Type: headings tracking `-0.02em` (English only; never add letter-spacing to Arabic), body line-height 1.7 (1.8 for Arabic).
 - Spacing: use a consistent scale (e.g. 4/8/12/16/24/32/48/64/96). No random values.
 - Depth: base → elevated card → floating (sticky button, menu).
@@ -76,8 +78,8 @@ Newborn & mother care (one combined page): Newborn Care at Home, Feeding Support
 ## Verify Before Saying Done
 1. `npm run build` passes with no errors or warnings.
 2. Run the dev server (`npm run dev`, http://localhost:4321) in the background; do not start a second instance.
-3. Screenshot with `node scripts/screenshot.mjs <url> <label>` (Playwright; create the script if missing). Check mobile (375px) and desktop (1440px), in Arabic and English.
-4. Read each screenshot and fix spacing, alignment, RTL mirroring, overflow, and contrast issues. At least 2 rounds.
+3. Screenshot with `node scripts/screenshot.mjs <url> <label>` (Playwright; create the script if missing). Check mobile (375px), tablet (768px) and desktop (1440px), in Arabic and English. Screenshots are saved in `screenshots/` at the project root (gitignored); the client may ask to clear that folder at any time.
+4. Read each screenshot and fix spacing, alignment, RTL mirroring, overflow, and contrast issues. Repeat the screenshot → review → fix loop until nothing is left to fix (minimum 2 rounds).
 5. Run Lighthouse on mobile for the changed pages; target 95+ in Performance, Accessibility, Best Practices, and SEO.
 6. Report what changed, what is still a placeholder, and any `REVIEW-AR` items.
 
