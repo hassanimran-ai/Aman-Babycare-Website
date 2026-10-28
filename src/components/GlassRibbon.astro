@@ -1,0 +1,157 @@
+---
+// One rounded ribbon of equal segments with a sliding "glass" pill on the current one.
+// variant 'nav': links (main navigation). variant 'tabs': ARIA tabs that show one panel at a time.
+// The pill only moves with transform (see .ribbon-* in global.css); without JS, nav still works
+// and every tab panel stays visible.
+import Icon from './Icon.astro';
+import type { IconName } from './icons';
+
+export interface RibbonItem {
+  label: string;
+  href?: string; // nav
+  panel?: string; // tabs: id of the panel this tab shows
+  section?: string; // nav: id of an on-page section that makes this item current while in view
+  icon?: IconName;
+  accent?: boolean; // gold highlight (Offers)
+}
+
+interface Props {
+  items: RibbonItem[];
+  active: number; // -1: no item is current
+  label: string;
+  variant?: 'nav' | 'tabs';
+  class?: string;
+}
+
+const { items, active, label, variant = 'nav', class: cls = '' } = Astro.props;
+const isNav = variant === 'nav';
+const Wrap = isNav ? 'nav' : 'div';
+---
+
+<Wrap
+  aria-label={label}
+  class:list={['ribbon', cls]}
+  data-ribbon={variant}
+  data-default={active}
+  style={`--n:${items.length};--i:${Math.max(active, 0)}`}
+  data-empty={active < 0 ? '' : undefined}
+>
+  <span class="ribbon-pill" aria-hidden="true"><span></span></span>
+  <ul class="ribbon-track" role={isNav ? undefined : 'tablist'} aria-label={isNav ? undefined : label}>
+    {
+      items.map((item, i) => (
+        <li class="flex" role={isNav ? undefined : 'presentation'}>
+          {isNav ? (
+            <a
+              href={item.href}
+              class:list={['ribbon-item', item.accent && 'ribbon-accent']}
+              aria-current={i === active ? 'page' : undefined}
+              data-current={i === active ? '' : undefined}
+              data-section={item.section}
+            >
+              {item.icon && <Icon name={item.icon} class="size-5 lg:size-4" />}
+              <span>{item.label}</span>
+            </a>
+          ) : (
+            <button
+              type="button"
+              role="tab"
+              id={`tab-${item.panel}`}
+              class="ribbon-item"
+              aria-selected={i === active ? 'true' : 'false'}
+              aria-controls={item.panel}
+              tabindex={i === active ? 0 : -1}
+            >
+              {item.label}
+            </button>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</Wrap>
+
+<script>
+  const rtl = document.documentElement.dir === 'rtl';
+
+  function move(ribbon: HTMLElement, i: number) {
+    if (ribbon.style.getPropertyValue('--i') === String(i) && !ribbon.hasAttribute('data-empty')) return;
+    ribbon.removeAttribute('data-empty');
+    ribbon.style.setProperty('--i', String(i));
+    // Restart the short "squish" on the glass while it travels.
+    const glass = ribbon.querySelector<HTMLElement>('.ribbon-pill > span')!;
+    glass.classList.remove('is-moving');
+    void glass.offsetWidth;
+    glass.classList.add('is-moving');
+  }
+
+  for (const ribbon of document.querySelectorAll<HTMLElement>('[data-ribbon="nav"]')) {
+    const links = [...ribbon.querySelectorAll<HTMLAnchorElement>('.ribbon-item')];
+    const fallback = Number(ribbon.dataset.default);
+    // Same-page anchors (#offers, #faq): slide right away; other pages use the view transition.
+    links.forEach((a, i) => {
+      a.addEventListener('click', () => {
+        if (a.pathname === location.pathname && a.hash) move(ribbon, i);
+      });
+    });
+    // Follow the section in view, back to the page's own item when none is.
+    const watched = links
+      .map((a, i) => ({ i, el: a.dataset.section ? document.getElementById(a.dataset.section) : null }))
+      .filter((w): w is { i: number; el: HTMLElement } => !!w.el);
+    if (watched.length) {
+      const visible = new Set<number>();
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            const w = watched.find((x) => x.el === e.target)!;
+            e.isIntersecting ? visible.add(w.i) : visible.delete(w.i);
+          }
+          const i = visible.size ? Math.max(...visible) : fallback;
+          links.forEach((a, j) => a.toggleAttribute('data-current', j === i));
+          if (i >= 0) move(ribbon, i);
+        },
+        { rootMargin: '-40% 0px -50% 0px' },
+      );
+      watched.forEach((w) => io.observe(w.el));
+    }
+  }
+
+  for (const ribbon of document.querySelectorAll<HTMLElement>('[data-ribbon="tabs"]')) {
+    const tabs = [...ribbon.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = tabs.map((t) => document.getElementById(t.getAttribute('aria-controls')!)!);
+
+    const select = (i: number, focus = false) => {
+      tabs.forEach((t, j) => {
+        t.setAttribute('aria-selected', String(j === i));
+        t.tabIndex = j === i ? 0 : -1;
+        panels[j].hidden = j !== i;
+      });
+      move(ribbon, i);
+      if (focus) tabs[i].focus();
+    };
+
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => {
+        select(i);
+        history.replaceState(null, '', `#${panels[i].id}`);
+      });
+      t.addEventListener('keydown', (e) => {
+        const step = { ArrowRight: rtl ? -1 : 1, ArrowLeft: rtl ? 1 : -1 }[e.key];
+        if (step) select((i + step + tabs.length) % tabs.length, true);
+        else if (e.key === 'Home') select(0, true);
+        else if (e.key === 'End') select(tabs.length - 1, true);
+        else return;
+        e.preventDefault();
+      });
+    });
+
+    // Panels become tab panels only once JS runs; links like /packages/#monthly-babysitting still land right.
+    panels.forEach((p, j) => {
+      p.setAttribute('role', 'tabpanel');
+      p.setAttribute('aria-labelledby', tabs[j].id);
+      p.tabIndex = 0;
+    });
+    const fromHash = panels.findIndex((p) => `#${p.id}` === location.hash);
+    select(fromHash >= 0 ? fromHash : Number(ribbon.dataset.default));
+  }
+</script>

@@ -122,3 +122,127 @@
 @utility rise {
   animation: rise 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
+
+/* Glass ribbon (src/components/GlassRibbon.astro). The pill moves by transform only. */
+@layer components {
+  .ribbon {
+    --dir: 1;
+    position: relative;
+    border-radius: 9999px;
+    background-color: --theme(--color-cream-200);
+    box-shadow: inset 0 1px 2px rgb(7 84 64 / 0.08);
+    padding: 0.25rem;
+  }
+  [dir="rtl"] .ribbon {
+    --dir: -1;
+  }
+  .ribbon-track {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+  }
+  .ribbon-pill {
+    position: absolute;
+    inset-block: 0.25rem;
+    inset-inline-start: 0.25rem;
+    width: calc((100% - 0.5rem) / var(--n));
+    transform: translateX(calc(var(--i) * 100% * var(--dir)));
+    transition:
+      transform 520ms cubic-bezier(0.3, 1.35, 0.5, 1),
+      opacity 200ms ease-out;
+  }
+  [data-empty] > .ribbon-pill {
+    opacity: 0;
+  }
+  [data-ribbon="nav"] > .ribbon-pill {
+    view-transition-name: nav-pill;
+  }
+  /* The glass itself: translucent cream, blur, a bright top edge and a soft green shadow. */
+  .ribbon-pill > span {
+    display: block;
+    height: 100%;
+    border-radius: 9999px;
+    background-color: rgb(255 253 249 / 0.78);
+    backdrop-filter: blur(12px) saturate(1.4);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.95),
+      inset 0 0 0 1px rgb(7 84 64 / 0.07),
+      0 1px 2px rgb(7 84 64 / 0.08),
+      0 8px 20px -6px rgb(7 84 64 / 0.22);
+  }
+  .ribbon-pill > .is-moving {
+    animation: squish 520ms cubic-bezier(0.3, 0.7, 0.4, 1);
+  }
+  .ribbon-item {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    border-radius: 9999px;
+    padding-inline: 0.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25;
+    color: --theme(--color-ink-600);
+    transition: transform 200ms ease-out;
+    &:hover {
+      color: --theme(--color-green-700);
+    }
+    &:active {
+      transform: scale(0.96);
+    }
+    &[data-current],
+    &[aria-selected="true"] {
+      color: --theme(--color-green-800);
+      font-weight: 600;
+    }
+  }
+  /* Nav: icon over label on phones and tablets, side by side on desktop. */
+  [data-ribbon="nav"] .ribbon-item {
+    flex-direction: column;
+    gap: 0.125rem;
+    min-height: 3.25rem;
+    font-size: 0.75rem;
+    @media (width >= 64rem) {
+      flex-direction: row;
+      gap: 0.5rem;
+      min-height: 2.5rem;
+      padding-inline: 1rem;
+      font-size: 0.875rem;
+    }
+  }
+  .ribbon-item.ribbon-accent,
+  .ribbon-item.ribbon-accent[data-current] {
+    color: --theme(--color-gold-700);
+    font-weight: 600;
+  }
+}
+
+@keyframes squish {
+  35% {
+    transform: scale(1.08, 0.9);
+  }
+}
+
+/* Cross-page navigation: the nav pill glides to its new place; the rest cross-fades. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-group(nav-pill) {
+  animation-duration: 520ms;
+  animation-timing-function: cubic-bezier(0.3, 1.35, 0.5, 1);
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
