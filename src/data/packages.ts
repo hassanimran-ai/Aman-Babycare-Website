@@ -17,10 +17,12 @@ export interface Package {
   draft: boolean;
 }
 
-export const groups: { id: PackageGroup; name: L; intro: L }[] = [
+// tab: short label for the Packages page ribbon. REVIEW-AR
+export const groups: { id: PackageGroup; name: L; tab: L; intro: L }[] = [
   {
     id: 'on-demand',
     name: { ar: 'عند الحاجة', en: 'On demand' },
+    tab: { ar: 'عند الحاجة', en: 'On demand' },
     intro: {
       ar: 'ساعات أو أيام محددة، حين تحتاجون يداً إضافية في البيت.',
       en: 'A few hours or a few days, whenever you need an extra pair of hands.',
@@ -29,6 +31,7 @@ export const groups: { id: PackageGroup; name: L; intro: L }[] = [
   {
     id: 'monthly',
     name: { ar: 'رعاية الأطفال الشهرية', en: 'Monthly babysitting' },
+    tab: { ar: 'خطط الأطفال', en: 'Babysitting plans' },
     intro: {
       ar: 'نفس مقدّمة الرعاية كل أسبوع، ليعتاد عليها أطفالكم وتطمئنوا.',
       en: 'The same caregiver every week, so your children settle in and you can relax.',
@@ -37,6 +40,7 @@ export const groups: { id: PackageGroup; name: L; intro: L }[] = [
   {
     id: 'elderly',
     name: { ar: 'مرافقة كبار السن الشهرية', en: 'Monthly elderly companionship' },
+    tab: { ar: 'خطط كبار السن', en: 'Elderly plans' },
     intro: {
       ar: 'صحبة يومية ثابتة لوالديكم، بإيقاع يناسبهم.',
       en: 'Steady daily company for your parents, at a pace that suits them.',

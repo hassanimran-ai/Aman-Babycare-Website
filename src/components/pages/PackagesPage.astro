@@ -5,6 +5,7 @@ import Breadcrumbs from '../Breadcrumbs.astro';
 import Icon from '../Icon.astro';
 import PackageCard from '../PackageCard.astro';
 import BundleBuilder from '../BundleBuilder.astro';
+import GlassRibbon, { type RibbonItem } from '../GlassRibbon.astro';
 import CtaBand from '../CtaBand.astro';
 import { personalizedCarePlans, whatsappUrl, type Locale } from '../../config/site';
 import { groups, packagesIn, welcomeOffer } from '../../data/packages';
@@ -53,7 +54,11 @@ const t = {
     ctaText: "Tell us about your day, and we'll suggest the best fit.",
   },
 }[lang];
-const planMsg = lang === 'ar' ? 'السلام عليكم، أرغب بخطة رعاية مخصصة.' : "Hello, I'd like a personalised care plan.";
+const tabs: RibbonItem[] = [
+  ...groups.map((g) => ({ label: g.tab[lang], panel: g.id })),
+  { label: lang === 'ar' ? 'كوّنوا باقتكم' : 'Build your own', panel: 'builder' },
+];
+const planMsg =lang === 'ar' ? 'السلام عليكم، أرغب بخطة رعاية مخصصة.' : "Hello, I'd like a personalised care plan.";
 ---
 
 <BaseLayout lang={lang} title={t.title} description={t.description} path="packages" schema={[breadcrumbSchema(crumbs, Astro.site)]}>
@@ -67,29 +72,16 @@ const planMsg = lang === 'ar' ? 'السلام عليكم، أرغب بخطة ر�
     </p>
   </section>
 
-  <!-- Group tabs: plain anchor links, so no JS needed -->
-  <nav class="sticky top-[4.5rem] z-20 bg-cream-100/90 backdrop-blur-md" aria-label={ui.nav.packages[lang]}>
-    <ul class="container-x flex gap-2 overflow-x-auto py-3">
-      {
-        groups.map((g) => (
-          <li class="shrink-0">
-            <a href={`#${g.id}`} class="flex min-h-11 items-center rounded-full bg-cream-50 px-5 text-sm font-medium text-green-800 ring-1 ring-green-700/10 hover:bg-green-50 active:scale-[0.98]">
-              {g.name[lang]}
-            </a>
-          </li>
-        ))
-      }
-      <li class="shrink-0">
-        <a href="#builder" class="flex min-h-11 items-center rounded-full bg-cream-50 px-5 text-sm font-medium text-green-800 ring-1 ring-green-700/10 hover:bg-green-50 active:scale-[0.98]">
-          {lang === 'ar' ? 'كوّنوا باقتكم' : 'Build a bundle'}
-        </a>
-      </li>
-    </ul>
-  </nav>
+  <!-- One glass ribbon of tabs; without JS every panel shows, one after another. -->
+  <div class="sticky top-[4.5rem] z-20 bg-cream-100/90 py-3 backdrop-blur-md">
+    <div class="container-x">
+      <GlassRibbon variant="tabs" items={tabs} active={0} label={ui.nav.packages[lang]} class="mx-auto max-w-3xl" />
+    </div>
+  </div>
 
   {
-    groups.map((g, gi) => (
-      <section id={g.id} class:list={['scroll-mt-40 py-12 md:py-16', gi % 2 === 1 && 'bg-cream-200/60']}>
+    groups.map((g) => (
+      <section id={g.id} class="tab-panel scroll-mt-40 py-12 md:py-16">
         <div class="container-x">
           <h2 class="text-3xl text-green-800">{g.name[lang]}</h2>
           <p class="mt-2 text-ink-600">{g.intro[lang]}</p>
@@ -100,6 +92,9 @@ const planMsg = lang === 'ar' ? 'السلام عليكم، أرغب بخطة ر�
       </section>
     ))
   }
+  <section id="builder" class="tab-panel container-x scroll-mt-40 py-12 md:py-16">
+    <BundleBuilder lang={lang} id="bundle-builder" />
+  </section>
 
   <section class="container-x grid gap-6 py-12 md:grid-cols-3 md:py-16">
     <article class="flex flex-col rounded-[2rem] bg-pink-100 p-8">
@@ -136,10 +131,6 @@ const planMsg = lang === 'ar' ? 'السلام عليكم، أرغب بخطة ر�
         ))}
       </ul>
     </article>
-  </section>
-
-  <section class="container-x py-12 md:py-16">
-    <BundleBuilder lang={lang} />
   </section>
 
   <section class="bg-cream-200/60 py-12 md:py-16">

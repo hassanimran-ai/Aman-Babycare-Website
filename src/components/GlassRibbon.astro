@@ -145,7 +145,7 @@ const Wrap = isNav ? 'nav' : 'div';
       });
     });
 
-    // Panels become tab panels only once JS runs; links like /packages/#monthly-babysitting still land right.
+    // Panels become tab panels only once JS runs; links like /packages/#builder still land right.
     panels.forEach((p, j) => {
       p.setAttribute('role', 'tabpanel');
       p.setAttribute('aria-labelledby', tabs[j].id);
