@@ -23,12 +23,14 @@ const sub = {
 };
 
 // Offers sits in the middle so it draws the eye (client request).
+// On the home page the glass follows the matching home sections as you scroll.
+const onHome = path === '';
 const links: RibbonItem[] = [
   { label: ui.nav.home[lang], href: home, icon: 'home' },
-  { label: ui.nav.services[lang], href: href(lang, 'services'), icon: 'hands' },
-  { label: ui.nav.offers[lang], href: `${home}#offers`, icon: 'gift', accent: true, section: 'offers' },
-  { label: ui.nav.packages[lang], href: href(lang, 'packages'), icon: 'calendar' },
-  { label: ui.nav.faqShort[lang], href: `${home}#faq`, icon: 'chat', section: 'faq' },
+  { label: ui.nav.services[lang], href: href(lang, 'services'), icon: 'hands', section: onHome ? 'services' : undefined },
+  { label: ui.nav.offers[lang], href: `${home}#offers`, icon: 'gift', accent: true, section: onHome ? 'offers' : undefined },
+  { label: ui.nav.packages[lang], href: href(lang, 'packages'), icon: 'calendar', section: onHome ? 'packages' : undefined },
+  { label: ui.nav.faqShort[lang], href: `${home}#faq`, icon: 'chat', section: onHome ? 'faq' : undefined },
 ];
 const active = path === '' ? 0 : path.startsWith('services') ? 1 : path === 'packages' ? 3 : -1;
 ---

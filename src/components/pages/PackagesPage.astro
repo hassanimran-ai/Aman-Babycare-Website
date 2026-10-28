@@ -54,11 +54,12 @@ const t = {
     ctaText: "Tell us about your day, and we'll suggest the best fit.",
   },
 }[lang];
-const tabs: RibbonItem[] = [
-  ...groups.map((g) => ({ label: g.tab[lang], panel: g.id })),
-  { label: lang === 'ar' ? 'كوّنوا باقتكم' : 'Build your own', panel: 'builder' },
+// In-page bar: the glass follows the section you're reading.
+const sections: RibbonItem[] = [
+  ...groups.map((g) => ({ label: g.tab[lang], href: `#${g.id}`, section: g.id })),
+  { label: lang === 'ar' ? 'كوّنوا باقتكم' : 'Build your own', href: '#builder', section: 'builder' },
 ];
-const planMsg =lang === 'ar' ? 'السلام عليكم، أرغب بخطة رعاية مخصصة.' : "Hello, I'd like a personalised care plan.";
+const planMsg = lang === 'ar' ? 'السلام عليكم، أرغب بخطة رعاية مخصصة.' : "Hello, I'd like a personalised care plan.";
 ---
 
 <BaseLayout lang={lang} title={t.title} description={t.description} path="packages" schema={[breadcrumbSchema(crumbs, Astro.site)]}>
@@ -72,16 +73,16 @@ const planMsg =lang === 'ar' ? 'السلام عليكم، أرغب بخطة رع
     </p>
   </section>
 
-  <!-- One glass ribbon of tabs; without JS every panel shows, one after another. -->
+  <!-- Glass ribbon of in-page links; the pill follows the scroll. -->
   <div class="sticky top-[4.5rem] z-20 bg-cream-100/90 py-3 backdrop-blur-md">
     <div class="container-x">
-      <GlassRibbon variant="tabs" items={tabs} active={0} label={ui.nav.packages[lang]} class="mx-auto max-w-3xl" />
+      <GlassRibbon items={sections} active={0} current="location" label={ui.nav.packages[lang]} class="mx-auto max-w-3xl" />
     </div>
   </div>
 
   {
-    groups.map((g) => (
-      <section id={g.id} class="tab-panel scroll-mt-40 py-12 md:py-16">
+    groups.map((g, gi) => (
+      <section id={g.id} class:list={['scroll-mt-40 py-12 md:py-16', gi % 2 === 1 && 'bg-cream-200/60']}>
         <div class="container-x">
           <h2 class="text-3xl text-green-800">{g.name[lang]}</h2>
           <p class="mt-2 text-ink-600">{g.intro[lang]}</p>
@@ -92,7 +93,7 @@ const planMsg =lang === 'ar' ? 'السلام عليكم، أرغب بخطة رع
       </section>
     ))
   }
-  <section id="builder" class="tab-panel container-x scroll-mt-40 py-12 md:py-16">
+  <section id="builder" class="container-x scroll-mt-40 py-12 md:py-16">
     <BundleBuilder lang={lang} id="bundle-builder" />
   </section>
 

@@ -1,157 +1,183 @@
 ---
 // One rounded ribbon of equal segments with a sliding "glass" pill on the current one.
-// variant 'nav': links (main navigation). variant 'tabs': ARIA tabs that show one panel at a time.
-// The pill only moves with transform (see .ribbon-* in global.css); without JS, nav still works
-// and every tab panel stays visible.
+// Items link to pages or to sections on this page. Items with a `section` follow the scroll:
+// the pill moves to the last section whose top has passed 40% of the viewport.
+// The pill only moves with transform (see .ribbon-* in global.css). Without JS, links still work.
 import Icon from './Icon.astro';
 import type { IconName } from './icons';
 
 export interface RibbonItem {
   label: string;
-  href?: string; // nav
-  panel?: string; // tabs: id of the panel this tab shows
-  section?: string; // nav: id of an on-page section that makes this item current while in view
+  href: string;
+  section?: string; // id of an on-page section that makes this item current while scrolled to
   icon?: IconName;
   accent?: boolean; // gold highlight (Offers)
 }
 
 interface Props {
   items: RibbonItem[];
-  active: number; // -1: no item is current
+  active: number; // current item when no tracked section has been reached; -1 for none
   label: string;
-  variant?: 'nav' | 'tabs';
+  /** 'page': this item is the current page (main nav). 'location': in-page sections. */
+  current?: 'page' | 'location';
   class?: string;
 }
 
-const { items, active, label, variant = 'nav', class: cls = '' } = Astro.props;
-const isNav = variant === 'nav';
-const Wrap = isNav ? 'nav' : 'div';
+const { items, active, label, current = 'page', class: cls = '' } = Astro.props;
+const id = `ribbon-${Math.random().toString(36).slice(2, 8)}`;
 ---
 
-<Wrap
+<nav
+  id={id}
   aria-label={label}
   class:list={['ribbon', cls]}
-  data-ribbon={variant}
+  data-ribbon
   data-default={active}
+  data-current-kind={current}
   style={`--n:${items.length};--i:${Math.max(active, 0)}`}
   data-empty={active < 0 ? '' : undefined}
 >
   <span class="ribbon-pill" aria-hidden="true"><span></span></span>
-  <ul class="ribbon-track" role={isNav ? undefined : 'tablist'} aria-label={isNav ? undefined : label}>
+  <ul class="ribbon-track">
     {
       items.map((item, i) => (
-        <li class="flex" role={isNav ? undefined : 'presentation'}>
-          {isNav ? (
-            <a
-              href={item.href}
-              class:list={['ribbon-item', item.accent && 'ribbon-accent']}
-              aria-current={i === active ? 'page' : undefined}
-              data-current={i === active ? '' : undefined}
-              data-section={item.section}
-            >
-              {item.icon && <Icon name={item.icon} class="size-5 lg:size-4" />}
-              <span>{item.label}</span>
-            </a>
-          ) : (
-            <button
-              type="button"
-              role="tab"
-              id={`tab-${item.panel}`}
-              class="ribbon-item"
-              aria-selected={i === active ? 'true' : 'false'}
-              aria-controls={item.panel}
-              tabindex={i === active ? 0 : -1}
-            >
-              {item.label}
-            </button>
-          )}
+        <li class="flex">
+          <a
+            href={item.href}
+            class:list={['ribbon-item', item.accent && 'ribbon-accent']}
+            aria-current={i === active ? current : undefined}
+            data-current={i === active ? '' : undefined}
+            data-section={item.section}
+          >
+            {item.icon && <Icon name={item.icon} class="size-5 lg:size-4" />}
+            <span>{item.label}</span>
+          </a>
         </li>
       ))
     }
   </ul>
-</Wrap>
+</nav>
+
+<!-- Before first paint: arriving on /#faq puts the pill on FAQ straight away, without a slide. -->
+<script is:inline define:vars={{ id }}>
+  (function () {
+    var r = document.getElementById(id);
+    var hit = location.hash && r.querySelector('[data-section="' + location.hash.slice(1) + '"]');
+    if (!hit) return;
+    r.setAttribute('data-instant', '');
+    r.removeAttribute('data-empty');
+    r.style.setProperty('--i', String([].indexOf.call(r.querySelectorAll('.ribbon-item'), hit)));
+  })();
+</script>
 
 <script>
-  const rtl = document.documentElement.dir === 'rtl';
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 
-  function move(ribbon: HTMLElement, i: number) {
-    if (ribbon.style.getPropertyValue('--i') === String(i) && !ribbon.hasAttribute('data-empty')) return;
-    ribbon.removeAttribute('data-empty');
-    ribbon.style.setProperty('--i', String(i));
-    // Restart the short "squish" on the glass while it travels.
-    const glass = ribbon.querySelector<HTMLElement>('.ribbon-pill > span')!;
-    glass.classList.remove('is-moving');
-    void glass.offsetWidth;
-    glass.classList.add('is-moving');
-  }
-
-  for (const ribbon of document.querySelectorAll<HTMLElement>('[data-ribbon="nav"]')) {
+  for (const ribbon of document.querySelectorAll<HTMLElement>('[data-ribbon]')) {
     const links = [...ribbon.querySelectorAll<HTMLAnchorElement>('.ribbon-item')];
+    const glass = ribbon.querySelector<HTMLElement>('.ribbon-pill > span')!;
     const fallback = Number(ribbon.dataset.default);
-    // Same-page anchors (#offers, #faq): slide right away; other pages use the view transition.
-    links.forEach((a, i) => {
-      a.addEventListener('click', () => {
-        if (a.pathname === location.pathname && a.hash) move(ribbon, i);
+    const kind = ribbon.dataset.currentKind!;
+    let now = -2;
+
+    const set = (i: number) => {
+      if (i === now) return;
+      const travelled = now !== -2;
+      now = i;
+      links.forEach((a, j) => {
+        a.toggleAttribute('data-current', j === i);
+        if (kind === 'location') j === i ? a.setAttribute('aria-current', 'location') : a.removeAttribute('aria-current');
       });
-    });
-    // Follow the section in view, back to the page's own item when none is.
+      if (i < 0) return ribbon.setAttribute('data-empty', '');
+      ribbon.removeAttribute('data-empty');
+      ribbon.style.setProperty('--i', String(i));
+      if (!travelled) return;
+      // Restart the short "squish" on the glass while it travels.
+      glass.classList.remove('is-moving');
+      void glass.offsetWidth;
+      glass.classList.add('is-moving');
+    };
+
+    // Scroll-follow: the last tracked section whose top has passed 40% of the viewport.
     const watched = links
       .map((a, i) => ({ i, el: a.dataset.section ? document.getElementById(a.dataset.section) : null }))
       .filter((w): w is { i: number; el: HTMLElement } => !!w.el);
-    if (watched.length) {
-      const visible = new Set<number>();
-      const io = new IntersectionObserver(
-        (entries) => {
-          for (const e of entries) {
-            const w = watched.find((x) => x.el === e.target)!;
-            e.isIntersecting ? visible.add(w.i) : visible.delete(w.i);
-          }
-          const i = visible.size ? Math.max(...visible) : fallback;
-          links.forEach((a, j) => a.toggleAttribute('data-current', j === i));
-          if (i >= 0) move(ribbon, i);
-        },
-        { rootMargin: '-40% 0px -50% 0px' },
-      );
-      watched.forEach((w) => io.observe(w.el));
-    }
-  }
-
-  for (const ribbon of document.querySelectorAll<HTMLElement>('[data-ribbon="tabs"]')) {
-    const tabs = [...ribbon.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
-    const panels = tabs.map((t) => document.getElementById(t.getAttribute('aria-controls')!)!);
-
-    const select = (i: number, focus = false) => {
-      tabs.forEach((t, j) => {
-        t.setAttribute('aria-selected', String(j === i));
-        t.tabIndex = j === i ? 0 : -1;
-        panels[j].hidden = j !== i;
-      });
-      move(ribbon, i);
-      if (focus) tabs[i].focus();
+    const fromScroll = () => {
+      const line = innerHeight * 0.4;
+      let best = fallback;
+      let bestTop = -Infinity;
+      for (const w of watched) {
+        const top = w.el.getBoundingClientRect().top;
+        if (top <= line && top > bestTop) [best, bestTop] = [w.i, top];
+      }
+      return best;
     };
 
-    tabs.forEach((t, i) => {
-      t.addEventListener('click', () => {
-        select(i);
-        history.replaceState(null, '', `#${panels[i].id}`);
-      });
-      t.addEventListener('keydown', (e) => {
-        const step = { ArrowRight: rtl ? -1 : 1, ArrowLeft: rtl ? 1 : -1 }[e.key];
-        if (step) select((i + step + tabs.length) % tabs.length, true);
-        else if (e.key === 'Home') select(0, true);
-        else if (e.key === 'End') select(tabs.length - 1, true);
-        else return;
-        e.preventDefault();
-      });
-    });
+    // While a tapped link scrolls the page, the pill stays on the tapped item.
+    let locked = false;
+    let unlock = 0;
+    const lock = (ms: number) => {
+      locked = true;
+      clearTimeout(unlock);
+      unlock = window.setTimeout(() => {
+        locked = false;
+        set(fromScroll());
+      }, ms);
+    };
 
-    // Panels become tab panels only once JS runs; links like /packages/#builder still land right.
-    panels.forEach((p, j) => {
-      p.setAttribute('role', 'tabpanel');
-      p.setAttribute('aria-labelledby', tabs[j].id);
-      p.tabIndex = 0;
+    let frame = 0;
+    if (watched.length) {
+      addEventListener(
+        'scroll',
+        () => {
+          if (locked) return lock(150); // keep holding until the scroll settles
+          cancelAnimationFrame(frame);
+          frame = requestAnimationFrame(() => set(fromScroll()));
+        },
+        { passive: true },
+      );
+    }
+    if (ribbon.hasAttribute('data-instant')) {
+      // Arrived on /#section: keep the pre-placed pill until the browser's jump to the section settles.
+      set(Number(ribbon.style.getPropertyValue('--i')));
+      lock(500);
+    } else {
+      set(watched.length ? fromScroll() : fallback);
+    }
+    // The pre-paint script may have placed the pill without a transition; allow slides from now on.
+    requestAnimationFrame(() => requestAnimationFrame(() => ribbon.removeAttribute('data-instant')));
+
+    links.forEach((a, i) => {
+      a.addEventListener('click', (e) => {
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        if (a.pathname === location.pathname) {
+          set(i);
+          lock(400);
+          if (!a.hash) {
+            // "Home" while already home: back to the top.
+            e.preventDefault();
+            scrollTo({ top: 0, behavior: reduce.matches ? 'auto' : 'smooth' });
+          }
+          return;
+        }
+        // Another page: let the glass slide first, then go.
+        if (reduce.matches) return;
+        e.preventDefault();
+        set(i);
+        setTimeout(() => location.assign(a.href), 260);
+      });
+      // Warm the next page as soon as the finger or pointer goes down.
+      a.addEventListener(
+        'pointerdown',
+        () => {
+          if (a.pathname === location.pathname) return;
+          const l = document.createElement('link');
+          l.rel = 'prefetch';
+          l.href = a.href;
+          document.head.append(l);
+        },
+        { once: true },
+      );
     });
-    const fromHash = panels.findIndex((p) => `#${p.id}` === location.hash);
-    select(fromHash >= 0 ? fromHash : Number(ribbon.dataset.default));
   }
 </script>

@@ -149,14 +149,15 @@
     width: calc((100% - 0.5rem) / var(--n));
     transform: translateX(calc(var(--i) * 100% * var(--dir)));
     transition:
-      transform 520ms cubic-bezier(0.3, 1.35, 0.5, 1),
+      transform 380ms cubic-bezier(0.3, 1.25, 0.5, 1),
       opacity 200ms ease-out;
   }
   [data-empty] > .ribbon-pill {
     opacity: 0;
   }
-  [data-ribbon="nav"] > .ribbon-pill {
-    view-transition-name: nav-pill;
+  /* Placed before first paint (arriving on /#faq): no slide. */
+  [data-instant] > .ribbon-pill {
+    transition: none;
   }
   /* The glass itself: translucent cream, blur, a bright top edge and a soft green shadow. */
   .ribbon-pill > span {
@@ -172,7 +173,7 @@
       0 8px 20px -6px rgb(7 84 64 / 0.22);
   }
   .ribbon-pill > .is-moving {
-    animation: squish 520ms cubic-bezier(0.3, 0.7, 0.4, 1);
+    animation: squish 380ms cubic-bezier(0.3, 0.7, 0.4, 1);
   }
   .ribbon-item {
     display: flex;
@@ -194,14 +195,13 @@
     &:active {
       transform: scale(0.96);
     }
-    &[data-current],
-    &[aria-selected="true"] {
+    &[data-current] {
       color: --theme(--color-green-800);
       font-weight: 600;
     }
   }
-  /* Nav: icon over label on phones and tablets, side by side on desktop. */
-  [data-ribbon="nav"] .ribbon-item {
+  /* Items with an icon (main nav): icon over label on phones and tablets, side by side on desktop. */
+  .ribbon-item:has(> svg) {
     flex-direction: column;
     gap: 0.125rem;
     min-height: 3.25rem;
@@ -225,31 +225,6 @@
   35% {
     transform: scale(1.08, 0.9);
   }
-}
-
-/* Cross-page navigation: the nav pill glides to its new place; the rest cross-fades. */
-@view-transition {
-  navigation: auto;
-}
-::view-transition-group(nav-pill) {
-  animation-duration: 520ms;
-  animation-timing-function: cubic-bezier(0.3, 1.35, 0.5, 1);
-}
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 200ms;
-}
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
-    animation: none !important;
-  }
-}
-
-/* Packages tab panels: the newly shown panel settles in. */
-[role="tabpanel"]:not([hidden]) {
-  animation: rise 450ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
 /* ---------- Motion (docs/build/engagement.md). Transform and opacity only; all of it is off under reduced motion. ---------- */
