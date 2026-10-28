@@ -8,8 +8,8 @@ const { PUBLIC_SITE_URL } = loadEnv(process.env.NODE_ENV ?? 'production', proces
 
 // https://astro.build/config
 export default defineConfig({
-  // Placeholder until the production domain is known; set PUBLIC_SITE_URL in .env.
-  site: PUBLIC_SITE_URL || 'http://localhost:4321',
+  // Cloudflare preview address until the real domain is known; PUBLIC_SITE_URL overrides it.
+  site: PUBLIC_SITE_URL || 'https://aman-babycare-website.friends-enterprises5486.workers.dev',
   output: 'static',
   trailingSlash: 'always',
   // Keeps visual-QA screenshots clean.
