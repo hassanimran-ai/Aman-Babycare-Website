@@ -10,7 +10,11 @@ import '../styles/global.css';
 import plexArabic400 from '@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-arabic-arabic-400-normal.woff2?url';
 import { getImage } from 'astro:assets';
 import { getRelativeLocaleUrl } from 'astro:i18n';
-import logo from '../assets/logo.jpg';
+import ogSource from '../assets/og-image.png';
+import AnnouncementBar from '../components/AnnouncementBar.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import StickyWhatsApp from '../components/StickyWhatsApp.astro';
 import { site, type Locale } from '../config/site';
 
 interface Props {
@@ -21,14 +25,20 @@ interface Props {
   path: string;
   /** False for pages without a language pair (404): skips canonical + hreflang. */
   alternates?: boolean;
+  /** Extra JSON-LD objects (Service, FAQPage, BreadcrumbList). */
+  schema?: object[];
+  /** Prefilled WhatsApp message for this page's buttons. */
+  waMessage?: string;
 }
 
-const { lang, title, description, path, alternates = true } = Astro.props;
+const { lang, title, description, path, alternates = true, schema = [] } = Astro.props;
+const waMessage =
+  Astro.props.waMessage ?? (lang === 'ar' ? 'السلام عليكم، أرغب بالاستفسار عن خدمات أمان.' : "Hello, I'd like to ask about Aman's services.");
 const dir = lang === 'ar' ? 'rtl' : 'ltr';
 
 const urlFor = (locale: Locale) => new URL(getRelativeLocaleUrl(locale, path), Astro.site).href;
 const canonical = urlFor(lang);
-const ogImage = await getImage({ src: logo, width: 1024, format: 'jpg' });
+const ogImage = await getImage({ src: ogSource, width: 1200, height: 630, format: 'png' });
 const ogImageUrl = new URL(ogImage.src, Astro.site).href;
 
 const localBusiness = {
@@ -36,6 +46,7 @@ const localBusiness = {
   '@type': 'LocalBusiness',
   name: site.name[lang],
   alternateName: site.name[lang === 'ar' ? 'en' : 'ar'],
+  slogan: site.tagline[lang],
   url: urlFor(lang),
   image: ogImageUrl,
   areaServed: { '@type': 'City', name: site.city[lang] },
@@ -54,6 +65,7 @@ const localBusiness = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="theme-color" content="#FBF7F0" />
     {!site.isLive && <meta name="robots" content="noindex, nofollow" />}
 
     {
@@ -68,8 +80,8 @@ const localBusiness = {
     }
 
     <link rel="preload" href={plexArabic400} as="font" type="font/woff2" crossorigin />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <meta property="og:type" content="website" />
@@ -78,16 +90,30 @@ const localBusiness = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:locale" content={lang === 'ar' ? 'ar_SA' : 'en_US'} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
 
-    <script type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
+    {[localBusiness, ...schema].map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
     <slot name="head" />
   </head>
-  <body class="min-h-dvh bg-cream-100 text-ink-900 antialiased">
-    <slot />
+  <body class="flex min-h-dvh flex-col bg-cream-100 text-ink-900 antialiased">
+    <a
+      href="#main"
+      class="sr-only z-50 rounded-full bg-green-700 px-4 py-2 text-cream-50 focus:not-sr-only focus:fixed focus:start-4 focus:top-4"
+    >
+      {lang === 'ar' ? 'انتقل إلى المحتوى' : 'Skip to content'}
+    </a>
+    <AnnouncementBar lang={lang} />
+    <Header lang={lang} path={path} waMessage={waMessage} />
+    <main id="main" class="flex-1">
+      <slot />
+    </main>
+    <Footer lang={lang} waMessage={waMessage} />
+    <StickyWhatsApp lang={lang} message={waMessage} />
   </body>
 </html>

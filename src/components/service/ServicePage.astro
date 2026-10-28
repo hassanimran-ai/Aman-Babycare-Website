@@ -1,0 +1,241 @@
+---
+// Service detail page: docs/build/service-pages.md
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../Icon.astro';
+import Visual from '../Visual.astro';
+import HeartLine from '../HeartLine.astro';
+import Breadcrumbs from '../Breadcrumbs.astro';
+import CtaBand from '../CtaBand.astro';
+import FAQ from '../FAQ.astro';
+import PackageCard from '../PackageCard.astro';
+import ServiceCard from '../ServiceCard.astro';
+import { whatsappUrl, type Locale } from '../../config/site';
+import { serviceBySlug } from '../../data/services';
+import { packagesFor } from '../../data/packages';
+import { offers, featuredOffer } from '../../data/offers';
+import { href, ui } from '../../i18n/ui';
+import { breadcrumbSchema, faqSchema, serviceSchema } from '../../lib/schema';
+
+interface Props {
+  lang: Locale;
+  slug: string;
+}
+const { lang, slug } = Astro.props;
+const s = serviceBySlug(slug);
+const path = `services/${slug}`;
+const crumbs = [
+  { name: ui.nav.home[lang], url: href(lang, '') },
+  { name: ui.nav.services[lang], url: href(lang, 'services') },
+  { name: s.name[lang], url: href(lang, path) },
+];
+const pkgs = packagesFor(slug);
+const related = s.related.map(serviceBySlug);
+// The featured offer if it includes this service, otherwise the next offer that does.
+const offer = featuredOffer.services.includes(slug) ? featuredOffer : offers.find((o) => o.services.includes(slug));
+
+const t = {
+  ar: {
+    visit: 'كيف تسير الزيارة',
+    included: 'ما تشمله الخدمة',
+    prepare: 'جهّزوا لنا',
+    pkgs: 'باقات هذه الخدمة',
+    noPkgs: 'السعر حسب احتياجكم',
+    noPkgsText: 'أخبرونا بما تحتاجونه على واتساب، ونرسل لكم السعر خلال المحادثة.',
+    allPkgs: 'كل الباقات',
+    pairs: 'تُجمع جيداً مع',
+    pairsText: 'مقدّمة رعاية واحدة يمكنها أن تجمع هذه الخدمات في زيارة واحدة.',
+    builder: 'كوّنوا باقتكم',
+    offer: 'عرض موسمي يشمل هذه الخدمة',
+    faq: 'أسئلة عن الخدمة',
+    ctaTitle: 'نرتب الزيارة الأولى؟',
+    ctaText: 'أرسلوا لنا الموعد المناسب، ونؤكد لكم كل التفاصيل.',
+    closeTitle: 'كل شيء جاهز من جهتنا',
+    closeText: 'رسالة واحدة على واتساب، ونبدأ.',
+  },
+  en: {
+    visit: 'How a visit goes',
+    included: "What's included",
+    prepare: 'Have these ready',
+    pkgs: 'Packages for this service',
+    noPkgs: 'Priced to your needs',
+    noPkgsText: "Tell us what you need on WhatsApp, and we'll send you a price in the chat.",
+    allPkgs: 'All packages',
+    pairs: 'Pairs well with',
+    pairsText: 'One caregiver can combine these services in a single visit.',
+    builder: 'Build your bundle',
+    offer: 'A seasonal offer that includes this service',
+    faq: 'Questions about this service',
+    ctaTitle: 'Shall we arrange a first visit?',
+    ctaText: "Send us a time that suits you, and we'll confirm every detail.",
+    closeTitle: "Everything's ready on our side",
+    closeText: 'One WhatsApp message, and we begin.',
+  },
+}[lang];
+
+const schema = [
+  serviceSchema(lang, s.name[lang], s.meta.description[lang], new URL(href(lang, path), Astro.site).href),
+  breadcrumbSchema(crumbs, Astro.site),
+  faqSchema(lang, s.faq),
+];
+---
+
+<BaseLayout lang={lang} title={s.meta.title[lang]} description={s.meta.description[lang]} path={path} schema={schema} waMessage={s.whatsapp[lang]}>
+  <Breadcrumbs lang={lang} items={crumbs} />
+
+  <!-- Hero -->
+  <section class="container-x grid items-center gap-12 pb-16 pt-8 lg:grid-cols-[1.2fr_1fr] lg:gap-16 lg:pb-24">
+    <div class="rise">
+      <span class="flex size-14 items-center justify-center rounded-full bg-cream-50 text-green-700 shadow-soft">
+        <Icon name={s.icon} class="size-7" />
+      </span>
+      <p class="mt-6 font-medium text-gold-700">{s.name[lang]}</p>
+      <h1 class="mt-2 max-w-[18ch] text-4xl text-green-800 sm:text-5xl">{s.h1[lang]}</h1>
+      <p class="mt-6 max-w-xl text-lg text-ink-600">{s.intro[lang]}</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href={whatsappUrl(s.whatsapp[lang])} rel="noopener" class="btn btn-primary min-h-14 px-8 text-base">
+          <Icon name="whatsapp" class="size-6 text-gold-200" />
+          {ui.bookWhatsApp[lang]}
+        </a>
+        <a href="#packages" class="btn btn-ghost min-h-14 px-8 text-base">{ui.seePackages[lang]}</a>
+      </div>
+    </div>
+    <div class="relative mx-auto w-full max-w-[15rem] rise [animation-delay:150ms] sm:max-w-sm">
+      <HeartLine class="absolute -top-6 end-0 z-10 hidden w-40 text-gold-500 sm:block" />
+      <Visual photo={slug} alt={s.name[lang]} icon={s.icon} eager class="shadow-card" sizes="(min-width: 1024px) 384px, 90vw" />
+    </div>
+  </section>
+
+  <!-- A visit with Aman -->
+  <section class="bg-green-800 py-16 text-cream-100 md:py-24">
+    <div class="container-x">
+      <h2 class="text-3xl text-cream-50 md:text-4xl">{t.visit}</h2>
+      <ol class="mt-12 grid gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+        {
+          s.visit.map((step, i) => (
+            <li class="relative border-t border-gold-300/30 pt-6">
+              <span class="absolute -top-3 start-0 bg-green-800 pe-3 text-sm font-semibold text-gold-300">{i + 1}</span>
+              <h3 class="text-xl text-cream-50">{step.title[lang]}</h3>
+              <p class="mt-2 text-cream-200">{step.text[lang]}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- Included / prepare -->
+  <section class="container-x grid gap-6 py-16 md:grid-cols-[1.4fr_1fr] md:py-24">
+    <div class="rounded-[2rem] bg-cream-50 p-8 shadow-soft ring-1 ring-green-700/5">
+      <h2 class="text-2xl text-green-800">{t.included}</h2>
+      <ul class="mt-6 grid gap-4 sm:grid-cols-2">
+        {
+          s.included.map((item) => (
+            <li class="flex items-start gap-3 text-ink-700">
+              <Icon name="check" class="mt-1 size-5 text-gold-600" stroke={2} />
+              {item[lang]}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="rounded-[2rem] bg-cream-200/70 p-8">
+      <h2 class="text-2xl text-green-800">{t.prepare}</h2>
+      <ul class="mt-6 grid gap-4">
+        {
+          s.prepare.map((item) => (
+            <li class="flex items-start gap-3 text-ink-700">
+              <span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-gold-500" aria-hidden="true" />
+              {item[lang]}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} title={t.ctaTitle} text={t.ctaText} message={s.whatsapp[lang]} />
+
+  <!-- Packages -->
+  <section id="packages" class="scroll-mt-28 py-16 md:py-24">
+    <div class="container-x">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <h2 class="text-3xl text-green-800 md:text-4xl">{pkgs.length ? t.pkgs : t.noPkgs}</h2>
+        <a href={href(lang, 'packages')} class="btn btn-ghost">
+          {t.allPkgs}
+          <Icon name="arrow" class="size-4" flip />
+        </a>
+      </div>
+      {
+        pkgs.length ? (
+          <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {pkgs.slice(0, 4).map((p) => <PackageCard lang={lang} pkg={p} />)}
+          </div>
+        ) : (
+          <div class="mt-8 flex flex-col items-start gap-6 rounded-[2rem] bg-cream-50 p-8 shadow-soft ring-1 ring-green-700/5 md:flex-row md:items-center md:justify-between">
+            <p class="max-w-xl text-lg text-ink-600">{t.noPkgsText}</p>
+            <a href={whatsappUrl(s.whatsapp[lang])} rel="noopener" class="btn btn-primary shrink-0">
+              <Icon name="whatsapp" class="size-5" />
+              {ui.askPrice[lang]}
+            </a>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Pairs well with -->
+  <section class="bg-cream-200/60 py-16 md:py-24">
+    <div class="container-x">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <div class="max-w-2xl">
+          <h2 class="text-3xl text-green-800 md:text-4xl">{t.pairs}</h2>
+          <p class="mt-3 text-ink-600">{t.pairsText}</p>
+        </div>
+        <a href={`${href(lang, 'packages')}#builder`} class="btn btn-primary">
+          <Icon name="plus" class="size-5" />
+          {t.builder}
+        </a>
+      </div>
+      <ul class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {related.map((r) => <li><ServiceCard lang={lang} service={r} /></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Seasonal offer -->
+  {
+    offer && (
+      <section class="container-x py-16 md:py-24">
+        <div class="grid gap-6 rounded-[2rem] bg-pink-100 p-8 md:grid-cols-[auto_1fr_auto] md:items-center md:p-10">
+          <span class="flex size-16 items-center justify-center rounded-full bg-cream-50 text-gold-700">
+            <Icon name={offer.icon} class="size-8" />
+          </span>
+          <div>
+            <p class="text-sm font-semibold text-gold-800">{t.offer}</p>
+            <h2 class="mt-1 text-2xl text-green-800">
+              {offer.event[lang]}: {offer.title[lang]}
+            </h2>
+            <p class="mt-1 text-ink-600">
+              {offer.when[lang]}
+              {offer.hijri && ` (${ui.expected[lang]})`}
+            </p>
+          </div>
+          <a href={`${href(lang, '')}#offers`} class="btn btn-ghost">
+            {ui.viewOffer[lang]}
+          </a>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- FAQ -->
+  <section class="bg-cream-200/60 py-16 md:py-24">
+    <div class="container-x grid gap-10 lg:grid-cols-[1fr_2fr]">
+      <h2 class="text-3xl text-green-800 md:text-4xl">{t.faq}</h2>
+      <FAQ lang={lang} items={s.faq} />
+    </div>
+  </section>
+
+  <CtaBand lang={lang} tone="dark" title={t.closeTitle} text={t.closeText} message={s.whatsapp[lang]} />
+  <div class="h-24 md:h-28" aria-hidden="true"></div>
+</BaseLayout>

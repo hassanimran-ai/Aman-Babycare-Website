@@ -1,0 +1,76 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import Skyline from './Skyline.astro';
+import logoFull from '../assets/logo-full.png';
+import { site, whatsappUrl, isPlaceholder, type Locale } from '../config/site';
+import { services } from '../data/services';
+import { href, ui } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+  waMessage: string;
+}
+const { lang, waMessage } = Astro.props;
+const home = href(lang, '');
+const year = new Date().getFullYear();
+const contacts = [
+  !isPlaceholder(site.phoneDisplay) && { label: site.phoneDisplay, url: `tel:${site.phoneDisplay.replace(/\s/g, '')}` },
+  !isPlaceholder(site.email) && { label: site.email, url: `mailto:${site.email}` },
+].filter(Boolean) as { label: string; url: string }[];
+---
+
+<footer class="relative mt-auto bg-green-900 text-cream-200">
+  <Skyline class="absolute inset-x-0 -top-px h-16 w-full -translate-y-full text-green-900/15 md:h-24" />
+  <div class="container-x grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1.2fr_1fr_0.8fr_1.2fr]">
+    <div class="max-w-xs">
+      <a href={home} class="inline-block rounded-3xl bg-cream-100 p-4" aria-label={site.name[lang]}>
+        <Image src={logoFull} alt="" width={140} height={191} class="h-auto w-28" />
+      </a>
+      <p class="mt-6 text-sm leading-relaxed">{ui.serving[lang]}.</p>
+    </div>
+
+    <nav aria-label={ui.footerServices[lang]}>
+      <h2 class="text-sm font-semibold text-gold-300">{ui.footerServices[lang]}</h2>
+      <ul class="mt-4 grid gap-1 text-sm">
+        {
+          services.map((s) => (
+            <li>
+              <a href={href(lang, `services/${s.slug}`)} class="inline-flex min-h-11 items-center hover:text-cream-50 hover:underline">
+                {s.name[lang]}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <nav aria-label={ui.footerExplore[lang]}>
+      <h2 class="text-sm font-semibold text-gold-300">{ui.footerExplore[lang]}</h2>
+      <ul class="mt-4 grid gap-1 text-sm">
+        <li><a href={home} class="inline-flex min-h-11 items-center hover:text-cream-50 hover:underline">{ui.nav.home[lang]}</a></li>
+        <li><a href={href(lang, 'services')} class="inline-flex min-h-11 items-center hover:text-cream-50 hover:underline">{ui.nav.services[lang]}</a></li>
+        <li><a href={href(lang, 'packages')} class="inline-flex min-h-11 items-center hover:text-cream-50 hover:underline">{ui.nav.packages[lang]}</a></li>
+        <li><a href={`${home}#offers`} class="inline-flex min-h-11 items-center hover:text-cream-50 hover:underline">{ui.nav.offers[lang]}</a></li>
+        <li><a href={`${home}#faq`} class="inline-flex min-h-11 items-center hover:text-cream-50 hover:underline">{ui.nav.faq[lang]}</a></li>
+      </ul>
+    </nav>
+
+    <div>
+      <h2 class="text-sm font-semibold text-gold-300">{ui.footerContact[lang]}</h2>
+      <a href={whatsappUrl(waMessage)} rel="noopener" class="btn btn-light mt-4 whitespace-nowrap">
+        <Icon name="whatsapp" class="size-5" />
+        {ui.chatWhatsApp[lang]}
+      </a>
+      <p class="mt-4 text-sm" dir="ltr" style="text-align: start">{site.whatsappNumber}</p>
+      {contacts.map((c) => <a href={c.url} class="mt-1 block text-sm hover:text-cream-50">{c.label}</a>)}
+      <p class="mt-1 text-sm">{site.city[lang]}{lang === 'ar' ? '، ' : ', '}{site.country[lang]}</p>
+    </div>
+  </div>
+  <div class="border-t border-cream-50/10">
+    <div class="container-x flex flex-col gap-2 py-6 pb-24 text-xs text-cream-200/80 sm:flex-row sm:justify-between lg:pb-6">
+      <p>© {year} {site.name[lang]}. {ui.rights[lang]}.</p>
+      <p>{site.tagline[lang]}</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,416 @@
+---
+// Home page body, shared by / and /en/. Copy is per language below.
+// REVIEW-AR: Arabic copy is a first draft.
+import Icon from '../Icon.astro';
+import Visual from '../Visual.astro';
+import HeartLine from '../HeartLine.astro';
+import Countdown from '../Countdown.astro';
+import ServiceCard from '../ServiceCard.astro';
+import PackageCard from '../PackageCard.astro';
+import BundleBuilder from '../BundleBuilder.astro';
+import CtaBand from '../CtaBand.astro';
+import FAQ from '../FAQ.astro';
+import { whatsappUrl, type Locale } from '../../config/site';
+import { services, serviceBySlug } from '../../data/services';
+import { featuredOffer as featured, upcomingOffers } from '../../data/offers';
+import { packages, welcomeOffer } from '../../data/packages';
+import { href, ui } from '../../i18n/ui';
+import { homeFaq } from '../../data/home';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+
+const c = {
+  ar: {
+    h1: 'يدٌ أمينة في بيتك، لكل من تحب',
+    lead: 'رعاية الأطفال، تنظيف المنزل، صحبة الوالدين، ورعاية القطط والكلاب في الرياض. مقدّمة رعاية واحدة يمكنها أن تجمع لكم أكثر من خدمة في زيارة واحدة.',
+    trust: ['فريق خضع للتحقق من الخلفية', 'مقدّمة رعاية واحدة لعدة خدمات', 'الحجز مباشرة عبر واتساب'],
+    heroAlt: 'شعار أمان: أم تحتضن طفلها داخل قلب',
+    offersTitle: 'عروض المواسم',
+    offersText: 'لكل مناسبة في السنة باقة تناسبها. هذا عرض الموسم الحالي، وما ينتظركم بعده.',
+    claim: 'احجز العرض عبر واتساب',
+    includes: 'يشمل',
+    welcomeTitle: 'أول زيارة لكم؟',
+    servicesTitle: 'خدماتنا',
+    servicesText: 'اختاروا خدمة واحدة أو اجمعوا أكثر من خدمة مع مقدّمة رعاية واحدة.',
+    moreTitle: 'والمزيد',
+    moreText: 'تحتاجون شيئاً آخر في البيت؟ اسألونا، وغالباً نجد له حلاً.',
+    moreCta: 'اسألنا عبر واتساب',
+    cta1Title: 'جاهزون حين تحتاجوننا',
+    cta1Text: 'أرسلوا لنا ما تحتاجونه، ونرتب لكم الموعد ومقدّمة الرعاية المناسبة.',
+    comboTitle: 'زيارة واحدة، مهام كثيرة',
+    comboText: 'بدلاً من التنسيق مع أكثر من شخص، مقدّمة رعاية واحدة تجمع ما يحتاجه بيتكم.',
+    combos: [
+      { a: 'babysitting', b: 'home-cleaning', text: 'الأطفال يلعبون، والبيت يترتب' },
+      { a: 'elderly-companionship', b: 'pick-up-drop-off', text: 'صحبة في البيت، ومرافقة إلى المواعيد' },
+      { a: 'pet-sitting', b: 'errands', text: 'مسافرون؟ الحيوانات والمقاضي في رعايتنا' },
+    ],
+    pkgTitle: 'باقات واضحة',
+    pkgText: 'بالساعة أو بالأسبوع أو بالشهر. الخطط الأطول أقل سعراً للساعة.',
+    pkgAll: 'كل الباقات',
+    stepsTitle: 'كيف نبدأ؟',
+    steps: [
+      { t: 'راسلونا على واتساب', d: 'أخبرونا بالخدمة والموعد وعدد الأطفال أو احتياجات البيت.' },
+      { t: 'نرشح مقدّمة الرعاية', d: 'نختار من فريقنا من يناسب عائلتكم، ونؤكد التفاصيل والسعر.' },
+      { t: 'تصلكم في الموعد', d: 'تتعرف على بيتكم وروتينكم، وتبدأ الرعاية.' },
+    ],
+    cta2Title: 'خذوا يوماً لأنفسكم',
+    cta2Text: 'موعد، عمل، أو مجرد راحة. نحن هنا.',
+    trustTitle: 'تطمئنون قبل أن نصل',
+    trustText: 'كل فرد في فريقنا يخضع للتحقق من الخلفية قبل أن يدخل أي بيت. ونسأل عن قواعد بيتكم قبل أول زيارة، ونلتزم بها.',
+    trustAlt: 'مقدّمة رعاية في بيت عائلة سعودية',
+    trustPoints: ['التحقق من الخلفية لكل فرد في الفريق', 'نلتزم بقواعد بيتكم وخصوصيتكم', 'تحديثات على واتساب أثناء الزيارة'],
+    firstTitle: 'كونوا من أوائل عائلاتنا',
+    firstText: 'أمان في بداية رحلتها. لا نعرض تقييمات لم نكسبها بعد؛ نفضّل أن نكسب ثقتكم زيارة بعد زيارة.',
+    firstCta: 'احجزوا أول زيارة',
+    faqTitle: 'أسئلة شائعة',
+    closeTitle: 'راحتكم أولويتنا',
+    closeText: 'رسالة واحدة على واتساب، والباقي علينا.',
+  },
+  en: {
+    h1: 'A trusted pair of hands at home, for everyone you love',
+    lead: 'Babysitting, home cleaning, company for your parents, and cat and dog sitting in Riyadh. One caregiver can combine several services in a single visit.',
+    trust: ['Background-checked staff', 'One caregiver, several services', 'Book directly on WhatsApp'],
+    heroAlt: 'Aman logo: a mother holding her baby inside a heart',
+    offersTitle: 'Seasonal offers',
+    offersText: "Every occasion of the year has a bundle to match. Here's this season's offer, and what's coming next.",
+    claim: 'Book this offer on WhatsApp',
+    includes: 'Includes',
+    welcomeTitle: 'Your first visit?',
+    servicesTitle: 'Our services',
+    servicesText: 'Choose one service, or combine several with a single caregiver.',
+    moreTitle: 'And more',
+    moreText: "Need something else done at home? Ask us; we'll usually find a way.",
+    moreCta: 'Ask us on WhatsApp',
+    cta1Title: "Ready when you need us",
+    cta1Text: "Tell us what you need, and we'll arrange the time and the right caregiver.",
+    comboTitle: 'One visit, many jobs done',
+    comboText: 'Instead of coordinating several people, one caregiver brings together what your home needs.',
+    combos: [
+      { a: 'babysitting', b: 'home-cleaning', text: 'The children play, the house gets tidy' },
+      { a: 'elderly-companionship', b: 'pick-up-drop-off', text: 'Company at home, and a ride to appointments' },
+      { a: 'pet-sitting', b: 'errands', text: 'Travelling? Pets and shopping, handled' },
+    ],
+    pkgTitle: 'Clear packages',
+    pkgText: 'By the hour, the week or the month. Longer plans cost less per hour.',
+    pkgAll: 'All packages',
+    stepsTitle: 'How it works',
+    steps: [
+      { t: 'Message us on WhatsApp', d: 'Tell us the service, the time, and about your children or home.' },
+      { t: 'We match a caregiver', d: 'We choose the right person from our team and confirm the details and price.' },
+      { t: 'They arrive on time', d: 'They learn your home and routine, and care begins.' },
+    ],
+    cta2Title: 'Take a day for yourself',
+    cta2Text: "An appointment, work, or simply rest. We're here.",
+    trustTitle: 'Peace of mind before we arrive',
+    trustText: 'Everyone on our team is background-checked before they enter any home. We ask about your house rules before the first visit, and we keep them.',
+    trustAlt: 'A caregiver in a Saudi family home',
+    trustPoints: ['Background checks for every team member', 'Your house rules and privacy, respected', 'WhatsApp updates during the visit'],
+    firstTitle: 'Be among our first families',
+    firstText: "Aman is just beginning. We won't show reviews we haven't earned yet; we'd rather earn your trust one visit at a time.",
+    firstCta: 'Book your first visit',
+    faqTitle: 'Common questions',
+    closeTitle: 'Your comfort, our priority',
+    closeText: 'One WhatsApp message, and we take it from there.',
+  },
+}[lang];
+
+const offerMessage = (event: string) =>
+  lang === 'ar' ? `السلام عليكم، أرغب بالاستفادة من عرض ${event}.` : `Hello, I'd like to book the ${event} offer.`;
+const teaser = ['hourly-babysitting', 'monthly-6', 'stay-in'].map((id) => packages.find((p) => p.id === id)!);
+const welcomeMsg = lang === 'ar' ? `السلام عليكم، أرغب بـ${welcomeOffer.name.ar}.` : `Hello, I'd like the ${welcomeOffer.name.en}.`;
+---
+
+<!-- Hero -->
+<section class="relative overflow-hidden">
+  <div class="container-x grid items-center gap-12 pb-16 pt-10 md:pt-16 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:pb-24">
+    <div class="rise">
+      <h1 class="max-w-[16ch] text-4xl text-green-800 sm:text-5xl lg:text-6xl">{c.h1}</h1>
+      <p class="mt-6 max-w-xl text-lg text-ink-600">{c.lead}</p>
+      <div class="mt-8 grid gap-3 sm:flex sm:flex-wrap">
+        <a href={whatsappUrl(lang === 'ar' ? 'السلام عليكم، أرغب بحجز خدمة من أمان.' : "Hello, I'd like to book a service with Aman.")} rel="noopener" class="btn btn-primary min-h-14 px-8 text-base">
+          <Icon name="whatsapp" class="size-6 text-gold-200" />
+          {ui.bookWhatsApp[lang]}
+        </a>
+        <a href={href(lang, 'packages')} class="btn btn-ghost min-h-14 px-8 text-base">{ui.seePackages[lang]}</a>
+      </div>
+      <ul class="mt-10 grid gap-4 border-t border-gold-500/25 pt-8 sm:grid-cols-3">
+        {
+          c.trust.map((t, i) => (
+            <li class="flex items-center gap-3 text-sm font-medium text-ink-700 sm:flex-col sm:items-start">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-cream-50 text-green-700 shadow-soft">
+                <Icon name={(['shield', 'hands', 'whatsapp'] as const)[i]} class="size-5" />
+              </span>
+              {t}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="relative mx-auto w-full max-w-[17rem] rise [animation-delay:150ms] sm:max-w-sm lg:max-w-md">
+      <HeartLine class="absolute -top-6 end-0 z-10 hidden w-48 text-gold-500 sm:block" />
+      <Visual photo="hero" alt={c.heroAlt} art="logo" tone="cream" eager sizes="(min-width: 1024px) 448px, 90vw" class="shadow-card" />
+      <!-- Featured offer, floating -->
+      <a
+        href="#offers"
+        class="absolute -bottom-6 -start-6 w-60 rounded-3xl sm:w-64 bg-cream-50 p-5 shadow-float ring-1 ring-gold-500/20 transition-transform duration-300 hover:-translate-y-1 sm:-start-8"
+      >
+        <span class="flex items-center gap-2 text-xs font-semibold text-gold-700">
+          <Icon name={featured.icon} class="size-4" />
+          {featured.event[lang]}
+        </span>
+        <span class="mt-2 block font-semibold leading-snug text-green-800">{featured.title[lang]}</span>
+        {featured.endsAt && (
+          <span class="mt-2 block text-xs text-ink-500">
+            <Countdown lang={lang} endsAt={featured.endsAt} />
+          </span>
+        )}
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Seasonal offers -->
+<section id="offers" class="scroll-mt-28 bg-cream-200/60 py-16 md:py-24">
+  <div class="container-x">
+    <div class="max-w-2xl">
+      <h2 class="text-3xl text-green-800 md:text-4xl">{c.offersTitle}</h2>
+      <p class="mt-3 text-ink-600">{c.offersText}</p>
+    </div>
+
+    <div class="mt-10 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+      <article class="relative overflow-hidden rounded-[2rem] bg-green-800 p-8 text-cream-100 md:p-10">
+        <Icon name={featured.icon} class="absolute -end-10 -top-10 size-64 text-gold-300/10" stroke={0.5} />
+        <p class="flex items-center gap-2 text-sm font-semibold text-gold-300">
+          <Icon name={featured.icon} class="size-5" />
+          {featured.event[lang]}
+          <span class="text-cream-200/70">{featured.when[lang]}</span>
+        </p>
+        <h3 class="mt-4 max-w-md text-2xl text-cream-50 md:text-3xl">{featured.title[lang]}</h3>
+        <p class="mt-3 max-w-lg text-cream-200">{featured.text[lang]}</p>
+        <p class="mt-6 text-sm text-cream-200">
+          {c.includes}:
+          {featured.services.map((s) => (
+            <a href={href(lang, `services/${s}`)} class="ms-2 inline-flex min-h-8 items-center rounded-full px-3 ring-1 ring-cream-50/20 hover:bg-cream-50/10">
+              {serviceBySlug(s).name[lang]}
+            </a>
+          ))}
+        </p>
+        <div class="mt-8 flex flex-wrap items-end justify-between gap-6">
+          {featured.endsAt && <Countdown lang={lang} endsAt={featured.endsAt} variant="blocks" />}
+          <a href={whatsappUrl(offerMessage(featured.event[lang]))} rel="noopener" class="btn btn-light">
+            <Icon name="whatsapp" class="size-5" />
+            {c.claim}
+          </a>
+        </div>
+      </article>
+
+      <article class="flex flex-col rounded-[2rem] bg-pink-100 p-8">
+        <Icon name="gift" class="size-8 text-gold-700" />
+        <h3 class="mt-4 text-xl text-green-800">{c.welcomeTitle}</h3>
+        <p class="mt-1 font-semibold text-ink-700">{welcomeOffer.name[lang]}</p>
+        <p class="mt-3 text-ink-600">{welcomeOffer.detail[lang]}</p>
+        <div class="mt-auto pt-6">
+          <a href={whatsappUrl(welcomeMsg)} rel="noopener" class="btn btn-primary">
+            <Icon name="whatsapp" class="size-5" />
+            {ui.bookWhatsApp[lang]}
+          </a>
+        </div>
+      </article>
+    </div>
+
+    <h3 class="mt-14 text-lg text-green-800">{ui.comingNext[lang]}</h3>
+    <ul class="-mx-4 mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 lg:grid-cols-6">
+      {
+        upcomingOffers.map((o) => (
+          <li class="w-60 shrink-0 snap-start rounded-3xl bg-cream-50 p-5 ring-1 ring-green-700/5 md:w-auto">
+            <Icon name={o.icon} class="size-6 text-gold-600" />
+            <p class="mt-3 font-semibold text-green-800">{o.event[lang]}</p>
+            <p class="text-xs text-ink-500">
+              {o.when[lang]}
+              {o.hijri && ` (${ui.expected[lang]})`}
+            </p>
+            <p class="mt-3 text-sm text-ink-600">{o.title[lang]}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<!-- Services -->
+<section id="services" class="py-16 md:py-24">
+  <div class="container-x">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <div class="max-w-2xl">
+        <h2 class="text-3xl text-green-800 md:text-4xl">{c.servicesTitle}</h2>
+        <p class="mt-3 text-ink-600">{c.servicesText}</p>
+      </div>
+    </div>
+    <ul class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {services.map((s) => <li><ServiceCard lang={lang} service={s} /></li>)}
+      <li class="sm:col-span-2 lg:col-span-3">
+        <div class="flex flex-col items-start gap-4 rounded-3xl border border-dashed border-gold-500/40 p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex items-center gap-4">
+            <span class="flex size-12 items-center justify-center rounded-full bg-gold-50 text-gold-700">
+              <Icon name="more" class="size-6" stroke={2.4} />
+            </span>
+            <div>
+              <h3 class="text-xl text-green-800">{c.moreTitle}</h3>
+              <p class="text-ink-600">{c.moreText}</p>
+            </div>
+          </div>
+          <a href={whatsappUrl(lang === 'ar' ? 'السلام عليكم، لدي استفسار عن خدمة أخرى.' : 'Hello, I have a question about another service.')} rel="noopener" class="btn btn-ghost shrink-0">
+            {c.moreCta}
+          </a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<CtaBand
+  lang={lang}
+  title={c.cta1Title}
+  text={c.cta1Text}
+  message={lang === 'ar' ? 'السلام عليكم، أحتاج مساعدة في البيت.' : 'Hello, I need some help at home.'}
+  secondary={{ label: ui.seePackages[lang], url: href(lang, 'packages') }}
+/>
+
+<!-- One caregiver, many hands -->
+<section class="py-16 md:py-24">
+  <div class="container-x">
+    <div class="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:items-end">
+      <div>
+        <h2 class="text-3xl text-green-800 md:text-4xl">{c.comboTitle}</h2>
+        <p class="mt-3 max-w-md text-ink-600">{c.comboText}</p>
+      </div>
+      <ul class="grid gap-3">
+        {
+          c.combos.map((combo) => (
+            <li class="flex items-center gap-4 rounded-2xl bg-cream-50 p-4 ring-1 ring-green-700/5">
+              <span class="flex -space-x-2 rtl:space-x-reverse">
+                <span class="flex size-10 items-center justify-center rounded-full bg-green-700 text-cream-50 ring-2 ring-cream-50">
+                  <Icon name={serviceBySlug(combo.a).icon} class="size-5" />
+                </span>
+                <span class="flex size-10 items-center justify-center rounded-full bg-gold-500 text-green-950 ring-2 ring-cream-50">
+                  <Icon name={serviceBySlug(combo.b).icon} class="size-5" />
+                </span>
+              </span>
+              <span>
+                <span class="block text-sm text-ink-500">
+                  {serviceBySlug(combo.a).name[lang]} + {serviceBySlug(combo.b).name[lang]}
+                </span>
+                <span class="block font-medium text-green-800">{combo.text}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="mt-12">
+      <BundleBuilder lang={lang} />
+    </div>
+  </div>
+</section>
+
+<!-- Packages teaser -->
+<section class="bg-cream-200/60 py-16 md:py-24">
+  <div class="container-x">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <div class="max-w-2xl">
+        <h2 class="text-3xl text-green-800 md:text-4xl">{c.pkgTitle}</h2>
+        <p class="mt-3 text-ink-600">{c.pkgText}</p>
+      </div>
+      <a href={href(lang, 'packages')} class="btn btn-ghost">
+        {c.pkgAll}
+        <Icon name="arrow" class="size-4" flip />
+      </a>
+    </div>
+    <div class="mt-10 grid gap-6 md:grid-cols-3">
+      {teaser.map((p) => <PackageCard lang={lang} pkg={p} />)}
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="py-16 md:py-24">
+  <div class="container-x">
+    <h2 class="text-3xl text-green-800 md:text-4xl">{c.stepsTitle}</h2>
+    <ol class="mt-10 grid gap-8 md:grid-cols-3">
+      {
+        c.steps.map((s, i) => (
+          <li class="relative">
+            <span class="flex size-12 items-center justify-center rounded-full border border-gold-500 font-display text-xl text-gold-700">
+              {i + 1}
+            </span>
+            {i < 2 && <span class="absolute start-16 top-6 hidden h-px w-[calc(100%-4rem)] bg-gold-500/30 md:block" aria-hidden="true" />}
+            <h3 class="mt-5 text-xl text-green-800">{s.t}</h3>
+            <p class="mt-2 text-ink-600">{s.d}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<CtaBand
+  lang={lang}
+  tone="dark"
+  title={c.cta2Title}
+  text={c.cta2Text}
+  message={lang === 'ar' ? 'السلام عليكم، أرغب بحجز زيارة.' : "Hello, I'd like to book a visit."}
+/>
+
+<!-- Trust + first families -->
+<section class="py-16 md:py-24">
+  <div class="container-x grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+    <Visual photo="trust" alt={c.trustAlt} icon="shield" tone="pink" class="mx-auto w-full max-w-sm" />
+    <div>
+      <h2 class="text-3xl text-green-800 md:text-4xl">{c.trustTitle}</h2>
+      <p class="mt-4 text-ink-600">{c.trustText}</p>
+      <ul class="mt-6 grid gap-3">
+        {
+          c.trustPoints.map((t) => (
+            <li class="flex items-center gap-3 text-ink-700">
+              <Icon name="check" class="size-5 text-gold-600" stroke={2} />
+              {t}
+            </li>
+          ))
+        }
+      </ul>
+      <div class="mt-10 rounded-3xl bg-cream-50 p-6 shadow-card ring-1 ring-gold-500/15">
+        <h3 class="text-xl text-green-800">{c.firstTitle}</h3>
+        <p class="mt-2 text-ink-600">{c.firstText}</p>
+        <a href={whatsappUrl(lang === 'ar' ? 'السلام عليكم، أرغب بحجز أول زيارة.' : "Hello, I'd like to book our first visit.")} rel="noopener" class="btn btn-primary mt-5">
+          <Icon name="whatsapp" class="size-5" />
+          {c.firstCta}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="scroll-mt-28 bg-cream-200/60 py-16 md:py-24">
+  <div class="container-x grid gap-10 lg:grid-cols-[1fr_2fr]">
+    <h2 class="text-3xl text-green-800 md:text-4xl">{c.faqTitle}</h2>
+    <FAQ lang={lang} items={homeFaq} />
+  </div>
+</section>
+
+<!-- Closing -->
+<section class="pb-32 pt-20 text-center md:pb-40">
+  <div class="container-x">
+    <HeartLine class="mx-auto w-40 text-gold-500" />
+    <h2 class="mt-6 text-4xl text-green-800 md:text-5xl">{c.closeTitle}</h2>
+    <p class="mx-auto mt-4 max-w-md text-lg text-ink-600">{c.closeText}</p>
+    <a href={whatsappUrl(lang === 'ar' ? 'السلام عليكم، أرغب بالتواصل مع أمان.' : "Hello, I'd like to talk to Aman.")} rel="noopener" class="btn btn-primary mt-8 min-h-14 px-8 text-base">
+      <Icon name="whatsapp" class="size-6 text-gold-200" />
+      {ui.bookWhatsApp[lang]}
+    </a>
+  </div>
+</section>

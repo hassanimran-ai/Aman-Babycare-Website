@@ -1,0 +1,46 @@
+---
+// A short call-to-action band, placed after every 2–3 sections. Each use passes its own copy.
+import Icon from './Icon.astro';
+import HeartLine from './HeartLine.astro';
+import { whatsappUrl, type Locale } from '../config/site';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+  title: string;
+  text: string;
+  message: string;
+  tone?: 'light' | 'dark';
+  secondary?: { label: string; url: string };
+}
+const { lang, title, text, message, tone = 'light', secondary } = Astro.props;
+const dark = tone === 'dark';
+---
+
+<section class="container-x py-4 md:py-8">
+  <div
+    class:list={[
+      'relative overflow-hidden rounded-[2rem] px-6 py-12 md:flex md:items-center md:justify-between md:gap-12 md:px-12',
+      dark ? 'bg-green-800 text-cream-100' : 'bg-cream-50 shadow-card ring-1 ring-gold-500/15',
+    ]}
+  >
+    <div class="max-w-xl">
+      <HeartLine class:list={['mb-4 w-28', dark ? 'text-gold-300' : 'text-gold-500']} />
+      <h2 class:list={['text-2xl md:text-3xl', dark ? 'text-cream-50' : 'text-green-800']}>{title}</h2>
+      <p class:list={['mt-3', dark ? 'text-cream-200' : 'text-ink-600']}>{text}</p>
+    </div>
+    <div class="mt-8 flex flex-wrap gap-3 md:mt-0 md:shrink-0">
+      <a href={whatsappUrl(message)} rel="noopener" class:list={['btn', dark ? 'btn-light' : 'btn-primary']}>
+        <Icon name="whatsapp" class="size-5" />
+        {ui.bookWhatsApp[lang]}
+      </a>
+      {
+        secondary && (
+          <a href={secondary.url} class:list={['btn', dark ? 'text-cream-100 ring-1 ring-cream-100/30 hover:bg-cream-50/10' : 'btn-ghost']}>
+            {secondary.label}
+          </a>
+        )
+      }
+    </div>
+  </div>
+</section>

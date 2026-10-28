@@ -1,0 +1,33 @@
+---
+// Visible breadcrumb trail. Pair with breadcrumbSchema() for BreadcrumbList JSON-LD.
+import Icon from './Icon.astro';
+import type { Locale } from '../config/site';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+  items: { name: string; url: string }[];
+}
+const { lang, items } = Astro.props;
+---
+
+<nav aria-label={ui.breadcrumb[lang]} class="container-x pt-6">
+  <ol class="flex flex-wrap items-center gap-1 text-sm text-ink-500">
+    {
+      items.map((item, i) => (
+        <li class="flex items-center gap-1">
+          {i > 0 && <Icon name="chevron" class="size-4 text-gold-500" flip />}
+          {i < items.length - 1 ? (
+            <a href={item.url} class="inline-flex min-h-11 items-center hover:text-green-700 hover:underline">
+              {item.name}
+            </a>
+          ) : (
+            <span aria-current="page" class="text-ink-700">
+              {item.name}
+            </span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>

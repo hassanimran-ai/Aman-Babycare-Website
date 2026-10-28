@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import HeartLine from '../components/HeartLine.astro';
 ---
 
 <BaseLayout
@@ -9,12 +10,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   path="404"
   alternates={false}
 >
-  <main class="mx-auto max-w-5xl px-4 py-24 text-center">
-    <h1 class="text-4xl font-bold text-green-600">الصفحة غير موجودة</h1>
-    <p class="mt-4 text-ink-700" lang="en" dir="ltr">Page not found.</p>
-    <div class="mt-8 flex justify-center gap-6">
-      <a class="text-green-600 underline" href="/">الصفحة الرئيسية</a>
-      <a class="text-green-600 underline" href="/en/" lang="en">Home (English)</a>
+  <section class="container-x py-24 pb-40 text-center">
+    <HeartLine class="mx-auto w-40 text-gold-500" />
+    <h1 class="mt-6 text-4xl text-green-800">الصفحة غير موجودة</h1>
+    <p class="mt-4 text-ink-600">ربما تغيّر الرابط. هذه أهم الصفحات:</p>
+    <p class="mt-1 text-ink-500" lang="en" dir="ltr">This page doesn't exist. Here are the main pages:</p>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <a class="btn btn-primary" href="/">الصفحة الرئيسية</a>
+      <a class="btn btn-ghost" href="/services/">الخدمات</a>
+      <a class="btn btn-ghost" href="/en/" lang="en">Home (English)</a>
     </div>
-  </main>
+  </section>
 </BaseLayout>

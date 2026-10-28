@@ -1,0 +1,149 @@
+---
+// Nestling-inspired header (client will revise it later): docs/build/header-and-navigation.md
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import logoMark from '../assets/logo-mark.png';
+import { site, whatsappUrl, type Locale } from '../config/site';
+import { href, other, ui } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+  path: string;
+  waMessage: string;
+}
+
+const { lang, path, waMessage } = Astro.props;
+const alt = other(lang);
+const home = href(lang, '');
+
+const links = [
+  { label: ui.nav.home[lang], url: home, active: path === '' },
+  { label: ui.nav.services[lang], url: href(lang, 'services'), active: path.startsWith('services') },
+  { label: ui.nav.packages[lang], url: href(lang, 'packages'), active: path === 'packages' },
+  { label: ui.nav.offers[lang], url: `${home}#offers`, active: false },
+  { label: ui.nav.faq[lang], url: `${home}#faq`, active: false },
+];
+---
+
+<header class="sticky top-0 z-40 border-b border-green-700/5 bg-cream-100/90 backdrop-blur-md">
+  <div class="container-x flex h-[4.5rem] items-center gap-4">
+    <a href={home} class="flex min-h-11 items-center gap-3 rounded-full" aria-label={site.name[lang]}>
+      <Image src={logoMark} alt="" width={52} height={46} densities={[2, 3]} loading="eager" class="h-11 w-auto" />
+      <span class="flex flex-col leading-tight">
+        <span class:list={['text-lg font-bold text-green-700', lang === 'en' && 'font-display tracking-[0.08em]']}>
+          {lang === 'ar' ? 'أمان' : 'AMAN'}
+        </span>
+        <span class="hidden text-xs text-ink-500 sm:block">
+          {lang === 'ar' ? 'رعاية المواليد والخدمات المنزلية' : 'Baby Care & Home Services'}
+        </span>
+      </span>
+    </a>
+
+    <nav aria-label={ui.mainNav[lang]} class="mx-auto hidden lg:block">
+      <ul class="flex items-center gap-1 rounded-full bg-cream-50 p-1 shadow-soft">
+        {
+          links.map((l) => (
+            <li>
+              <a
+                href={l.url}
+                aria-current={l.active ? 'page' : undefined}
+                class:list={[
+                  'flex min-h-10 items-center rounded-full px-4 text-sm font-medium transition-transform duration-200 active:scale-[0.98]',
+                  l.active ? 'bg-green-700 text-cream-50' : 'text-ink-700 hover:bg-green-50 hover:text-green-700',
+                ]}
+              >
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="ms-auto flex items-center gap-2 lg:ms-0">
+      <a
+        href={href(alt, path)}
+        hreflang={alt}
+        lang={alt}
+        class="flex min-h-11 items-center rounded-full px-3 text-sm font-semibold text-green-700 hover:bg-green-50 active:scale-[0.98]"
+        title={ui.switchTo[lang]}
+      >
+        {alt === 'en' ? 'EN' : 'عربي'}
+      </a>
+      <a href={whatsappUrl(waMessage)} class="btn btn-primary hidden min-h-11 text-sm lg:inline-flex" rel="noopener">
+        <Icon name="whatsapp" class="size-5" />
+        {ui.bookWhatsApp[lang]}
+      </a>
+      <button
+        type="button"
+        class="flex size-11 items-center justify-center rounded-full text-green-700 hover:bg-green-50 active:scale-[0.98] lg:hidden"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+        data-menu-open
+      >
+        <Icon name="menu" class="size-6" />
+        <span class="sr-only">{ui.menu[lang]}</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Outside the header: its backdrop-filter would trap position:fixed. -->
+<div
+    id="mobile-menu"
+    class="pointer-events-none fixed inset-x-0 top-0 z-50 opacity-0 transition-opacity duration-200 data-[open]:pointer-events-auto data-[open]:opacity-100 lg:hidden"
+  >
+    <div class="absolute inset-0 h-dvh bg-green-950/30" data-menu-close></div>
+    <div class="relative m-3 rounded-3xl bg-cream-50 p-4 shadow-float">
+      <div class="flex items-center justify-between">
+        <span class="ps-2 text-sm text-ink-500">{ui.menu[lang]}</span>
+        <button
+          type="button"
+          class="flex size-11 items-center justify-center rounded-full text-green-700 hover:bg-green-50"
+          data-menu-close
+        >
+          <Icon name="close" class="size-6" />
+          <span class="sr-only">{ui.closeMenu[lang]}</span>
+        </button>
+      </div>
+      <ul class="mt-2 grid gap-1">
+        {
+          links.map((l) => (
+            <li>
+              <a
+                href={l.url}
+                aria-current={l.active ? 'page' : undefined}
+                class:list={[
+                  'flex min-h-12 items-center justify-between rounded-2xl px-4 text-lg font-medium',
+                  l.active ? 'bg-green-50 text-green-700' : 'text-ink-900 hover:bg-cream-200',
+                ]}
+              >
+                {l.label}
+                <Icon name="chevron" class="size-5 text-gold-500" flip />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a href={whatsappUrl(waMessage)} class="btn btn-primary mt-4 w-full" rel="noopener">
+        <Icon name="whatsapp" class="size-5" />
+        {ui.bookWhatsApp[lang]}
+      </a>
+    </div>
+</div>
+
+<script>
+  const menu = document.getElementById('mobile-menu')!;
+  const openBtn = document.querySelector<HTMLButtonElement>('[data-menu-open]')!;
+  const setOpen = (open: boolean) => {
+    menu.toggleAttribute('data-open', open);
+    openBtn.setAttribute('aria-expanded', String(open));
+    if (open) menu.querySelector<HTMLElement>('a')?.focus();
+    else openBtn.focus();
+  };
+  openBtn.addEventListener('click', () => setOpen(true));
+  menu.querySelectorAll('[data-menu-close], a').forEach((el) => el.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu.hasAttribute('data-open')) setOpen(false);
+  });
+</script>

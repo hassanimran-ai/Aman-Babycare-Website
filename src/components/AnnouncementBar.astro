@@ -1,0 +1,33 @@
+---
+import Icon from './Icon.astro';
+import Countdown from './Countdown.astro';
+import type { Locale } from '../config/site';
+import { featuredOffer as o } from '../data/offers';
+import { href, ui } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+---
+
+<div class="bg-green-800 text-cream-100">
+  <a
+    href={`${href(lang, '')}#offers`}
+    class="container-x flex min-h-11 items-center justify-center gap-3 py-2 text-center text-sm hover:text-cream-50"
+  >
+    <Icon name={o.icon} class="size-4 text-gold-300" />
+    <span>
+      <span class="font-semibold text-gold-200">{o.event[lang]}</span>
+      <span class="mx-1 text-gold-300/60" aria-hidden="true">|</span>
+      <span class="hidden sm:inline">{o.title[lang]}</span>
+      <span class="sm:hidden">{ui.viewOffer[lang]}</span>
+    </span>
+    {o.endsAt && (
+      <span class="hidden text-cream-200 md:inline">
+        <Countdown lang={lang} endsAt={o.endsAt} />
+      </span>
+    )}
+    <Icon name="chevron" class="size-4 text-gold-300" flip />
+  </a>
+</div>

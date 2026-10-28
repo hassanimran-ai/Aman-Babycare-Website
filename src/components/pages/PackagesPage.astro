@@ -1,0 +1,168 @@
+---
+// Packages: docs/build/packages-and-pricing.md
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../Breadcrumbs.astro';
+import Icon from '../Icon.astro';
+import PackageCard from '../PackageCard.astro';
+import BundleBuilder from '../BundleBuilder.astro';
+import CtaBand from '../CtaBand.astro';
+import { personalizedCarePlans, whatsappUrl, type Locale } from '../../config/site';
+import { groups, packagesIn, welcomeOffer } from '../../data/packages';
+import { offers } from '../../data/offers';
+import { services } from '../../data/services';
+import { href, ui } from '../../i18n/ui';
+import { breadcrumbSchema } from '../../lib/schema';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const crumbs = [
+  { name: ui.nav.home[lang], url: href(lang, '') },
+  { name: ui.nav.packages[lang], url: href(lang, 'packages') },
+];
+const unpriced = services.filter((s) => !['babysitting', 'elderly-companionship'].includes(s.slug));
+// REVIEW-AR
+const t = {
+  ar: {
+    title: 'باقات وأسعار رعاية الأطفال والخدمات المنزلية | أمان',
+    description: 'باقات بالساعة والأسبوع والشهر لرعاية الأطفال ومرافقة كبار السن في الرياض، وعروض المواسم، وأداة لتكوين باقتك.',
+    h1: 'باقات تناسب إيقاع بيتكم',
+    lead: 'ساعات قليلة أو خطة شهرية ثابتة. كلما طالت الخطة، قلّ سعر الساعة.',
+    draftNote: 'الأسعار المعروضة مبدئية، ونؤكد السعر النهائي معكم على واتساب قبل الحجز.',
+    otherTitle: 'خدمات بسعر حسب الطلب',
+    otherText: 'التنظيف، رعاية الحيوانات، التوصيل، والمشتريات تُسعّر حسب حجم العمل.',
+    planTitle: personalizedCarePlans.name.ar,
+    planText: 'لعائلات تحتاج مزيجاً خاصاً من الخدمات والأوقات. نصمم الخطة معكم.',
+    seasonTitle: 'عروض المواسم',
+    ctaTitle: 'غير متأكدين أي باقة تناسبكم؟',
+    ctaText: 'أخبرونا عن يومكم، ونقترح لكم الأنسب.',
+  },
+  en: {
+    title: 'Babysitting & Home Service Packages | Aman Riyadh',
+    description: 'Hourly, weekly and monthly babysitting and elderly companionship packages in Riyadh, seasonal offers, and a bundle builder.',
+    h1: "Packages that fit your home's rhythm",
+    lead: 'A few hours or a steady monthly plan. The longer the plan, the lower the hourly rate.',
+    draftNote: 'Prices shown are provisional; we confirm the final price with you on WhatsApp before booking.',
+    otherTitle: 'Priced on request',
+    otherText: 'Cleaning, pet sitting, rides and errands are priced by the size of the job.',
+    planTitle: personalizedCarePlans.name.en,
+    planText: 'For families who need their own mix of services and times. We design the plan with you.',
+    seasonTitle: 'Seasonal offers',
+    ctaTitle: 'Not sure which package fits?',
+    ctaText: "Tell us about your day, and we'll suggest the best fit.",
+  },
+}[lang];
+const planMsg = lang === 'ar' ? 'السلام عليكم، أرغب بخطة رعاية مخصصة.' : "Hello, I'd like a personalised care plan.";
+---
+
+<BaseLayout lang={lang} title={t.title} description={t.description} path="packages" schema={[breadcrumbSchema(crumbs, Astro.site)]}>
+  <Breadcrumbs lang={lang} items={crumbs} />
+  <section class="container-x pb-8 pt-8">
+    <h1 class="max-w-[20ch] text-4xl text-green-800 sm:text-5xl">{t.h1}</h1>
+    <p class="mt-6 max-w-xl text-lg text-ink-600">{t.lead}</p>
+    <p class="mt-4 flex items-center gap-2 text-sm text-ink-500">
+      <Icon name="clock" class="size-4 text-gold-600" />
+      {t.draftNote}
+    </p>
+  </section>
+
+  <!-- Group tabs: plain anchor links, so no JS needed -->
+  <nav class="sticky top-[4.5rem] z-20 bg-cream-100/90 backdrop-blur-md" aria-label={ui.nav.packages[lang]}>
+    <ul class="container-x flex gap-2 overflow-x-auto py-3">
+      {
+        groups.map((g) => (
+          <li class="shrink-0">
+            <a href={`#${g.id}`} class="flex min-h-11 items-center rounded-full bg-cream-50 px-5 text-sm font-medium text-green-800 ring-1 ring-green-700/10 hover:bg-green-50 active:scale-[0.98]">
+              {g.name[lang]}
+            </a>
+          </li>
+        ))
+      }
+      <li class="shrink-0">
+        <a href="#builder" class="flex min-h-11 items-center rounded-full bg-cream-50 px-5 text-sm font-medium text-green-800 ring-1 ring-green-700/10 hover:bg-green-50 active:scale-[0.98]">
+          {lang === 'ar' ? 'كوّنوا باقتكم' : 'Build a bundle'}
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  {
+    groups.map((g, gi) => (
+      <section id={g.id} class:list={['scroll-mt-40 py-12 md:py-16', gi % 2 === 1 && 'bg-cream-200/60']}>
+        <div class="container-x">
+          <h2 class="text-3xl text-green-800">{g.name[lang]}</h2>
+          <p class="mt-2 text-ink-600">{g.intro[lang]}</p>
+          <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {packagesIn(g.id).map((p) => <PackageCard lang={lang} pkg={p} />)}
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  <section class="container-x grid gap-6 py-12 md:grid-cols-3 md:py-16">
+    <article class="flex flex-col rounded-[2rem] bg-pink-100 p-8">
+      <Icon name="gift" class="size-8 text-gold-700" />
+      <h2 class="mt-4 text-xl text-green-800">{welcomeOffer.name[lang]}</h2>
+      <p class="mt-2 text-ink-600">{welcomeOffer.detail[lang]}</p>
+      <div class="mt-auto pt-6">
+        <a href={whatsappUrl(lang === 'ar' ? `السلام عليكم، أرغب بـ${welcomeOffer.name.ar}.` : `Hello, I'd like the ${welcomeOffer.name.en}.`)} rel="noopener" class="btn btn-primary">
+          <Icon name="whatsapp" class="size-5" />
+          {ui.bookWhatsApp[lang]}
+        </a>
+      </div>
+    </article>
+    <article class="flex flex-col rounded-[2rem] bg-cream-50 p-8 shadow-soft ring-1 ring-green-700/5">
+      <Icon name="heart" class="size-8 text-gold-700" />
+      <h2 class="mt-4 text-xl text-green-800">{t.planTitle}</h2>
+      <p class="mt-2 text-ink-600">{t.planText}</p>
+      <div class="mt-auto pt-6">
+        <a href={whatsappUrl(planMsg)} rel="noopener" class="btn btn-ghost">{ui.askPrice[lang]}</a>
+      </div>
+    </article>
+    <article class="flex flex-col rounded-[2rem] bg-cream-50 p-8 shadow-soft ring-1 ring-green-700/5">
+      <Icon name="tag" class="size-8 text-gold-700" />
+      <h2 class="mt-4 text-xl text-green-800">{t.otherTitle}</h2>
+      <p class="mt-2 text-ink-600">{t.otherText}</p>
+      <ul class="mt-4 flex flex-wrap gap-2">
+        {unpriced.map((s) => (
+          <li>
+            <a href={href(lang, `services/${s.slug}`)} class="inline-flex min-h-11 items-center gap-2 rounded-full bg-cream-200 px-4 text-sm text-green-800 hover:bg-green-50">
+              <Icon name={s.icon} class="size-4 text-gold-700" />
+              {s.name[lang]}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </article>
+  </section>
+
+  <section class="container-x py-12 md:py-16">
+    <BundleBuilder lang={lang} />
+  </section>
+
+  <section class="bg-cream-200/60 py-12 md:py-16">
+    <div class="container-x">
+      <h2 class="text-3xl text-green-800">{t.seasonTitle}</h2>
+      <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          offers.map((o) => (
+            <li class:list={['rounded-3xl p-6', o.featured ? 'bg-green-800 text-cream-100' : 'bg-cream-50 ring-1 ring-green-700/5']}>
+              <Icon name={o.icon} class:list={['size-6', o.featured ? 'text-gold-300' : 'text-gold-600']} />
+              <h3 class:list={['mt-3 text-lg', o.featured ? 'text-cream-50' : 'text-green-800']}>{o.event[lang]}</h3>
+              <p class:list={['text-xs', o.featured ? 'text-cream-200' : 'text-ink-500']}>
+                {o.when[lang]}
+                {o.hijri && ` (${ui.expected[lang]})`}
+              </p>
+              <p class:list={['mt-3 text-sm', o.featured ? 'text-cream-100' : 'text-ink-600']}>{o.title[lang]}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} tone="dark" title={t.ctaTitle} text={t.ctaText} message={lang === 'ar' ? 'السلام عليكم، أحتاج مساعدة في اختيار باقة.' : 'Hello, I need help choosing a package.'} />
+  <div class="h-24 md:h-28" aria-hidden="true"></div>
+</BaseLayout>

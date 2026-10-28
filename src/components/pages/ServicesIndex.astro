@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../Breadcrumbs.astro';
+import ServiceCard from '../ServiceCard.astro';
+import CtaBand from '../CtaBand.astro';
+import type { Locale } from '../../config/site';
+import { services } from '../../data/services';
+import { href, ui } from '../../i18n/ui';
+import { breadcrumbSchema } from '../../lib/schema';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const crumbs = [
+  { name: ui.nav.home[lang], url: href(lang, '') },
+  { name: ui.nav.services[lang], url: href(lang, 'services') },
+];
+// REVIEW-AR
+const t = {
+  ar: {
+    title: 'خدمات أمان المنزلية في الرياض | أمان',
+    description: 'رعاية الأطفال، تنظيف المنازل، مرافقة كبار السن، رعاية القطط والكلاب، التوصيل، والمشتريات في الرياض. احجز عبر واتساب.',
+    h1: 'كل ما يحتاجه بيتكم، مع فريق واحد',
+    lead: 'ست خدمات منزلية يمكن حجزها منفردة أو جمعها في زيارة واحدة مع مقدّمة رعاية واحدة.',
+    ctaTitle: 'لم تجدوا ما تبحثون عنه؟',
+    ctaText: 'اسألونا على واتساب؛ كثير من الطلبات المنزلية يمكننا ترتيبها.',
+  },
+  en: {
+    title: 'Home Services in Riyadh | Aman',
+    description: 'Babysitting, home cleaning, elderly companionship, cat and dog sitting, rides and errands in Riyadh. Book on WhatsApp.',
+    h1: 'Everything your home needs, from one team',
+    lead: 'Six home services you can book on their own, or combine in a single visit with one caregiver.',
+    ctaTitle: "Can't find what you need?",
+    ctaText: 'Ask us on WhatsApp; we can arrange many other jobs around the home.',
+  },
+}[lang];
+---
+
+<BaseLayout lang={lang} title={t.title} description={t.description} path="services" schema={[breadcrumbSchema(crumbs, Astro.site)]}>
+  <Breadcrumbs lang={lang} items={crumbs} />
+  <section class="container-x pb-16 pt-8 md:pb-24">
+    <h1 class="max-w-[20ch] text-4xl text-green-800 sm:text-5xl">{t.h1}</h1>
+    <p class="mt-6 max-w-xl text-lg text-ink-600">{t.lead}</p>
+    <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {services.map((s) => <li><ServiceCard lang={lang} service={s} headingLevel="h2" /></li>)}
+    </ul>
+  </section>
+  <CtaBand
+    lang={lang}
+    tone="dark"
+    title={t.ctaTitle}
+    text={t.ctaText}
+    message={lang === 'ar' ? 'السلام عليكم، لدي استفسار عن خدمة منزلية.' : 'Hello, I have a question about a home service.'}
+    secondary={{ label: ui.seePackages[lang], url: href(lang, 'packages') }}
+  />
+  <div class="h-24 md:h-28" aria-hidden="true"></div>
+</BaseLayout>

@@ -12,12 +12,17 @@ export const site = {
     ar: 'أمان لرعاية المواليد والخدمات المنزلية',
   },
   shortName: { en: 'Aman', ar: 'أمان' },
+  // From the logo.
+  tagline: {
+    en: 'Your Comfort, Our Priority',
+    ar: 'راحتكم أولويتنا', // REVIEW-AR
+  },
 
   city: { en: 'Riyadh', ar: 'الرياض' },
   country: { en: 'Saudi Arabia', ar: 'المملكة العربية السعودية' },
   countryCode: 'SA',
 
-  // Digits only, international format without "+", e.g. 9665XXXXXXXX.
+  // Any format works: spaces, dashes and "+" are stripped when building links.
   whatsappNumber: '+966 59 500 2539',
   phoneDisplay: '[PHONE]',
   email: '[EMAIL]',
@@ -45,17 +50,17 @@ export interface Service {
   name: Record<Locale, string>;
 }
 
-// Main services: each gets its own page.
+// Main services: each gets its own page. Order follows the mock-up's "Other services" block.
 export const mainServices: Service[] = [
-  { slug: 'babysitting', name: { en: 'Babysitting', ar: 'رعاية الأطفال' } },
-  { slug: 'home-cleaning', name: { en: 'Home Cleaning', ar: 'تنظيف المنازل' } },
-  { slug: 'elderly-companionship', name: { en: 'Elderly Companionship', ar: 'مرافقة كبار السن' } },
   { slug: 'pet-sitting', name: { en: 'Dog & Cat Sitting', ar: 'رعاية الكلاب والقطط' } },
+  { slug: 'home-cleaning', name: { en: 'Home Cleaning', ar: 'تنظيف المنازل' } },
   { slug: 'pick-up-drop-off', name: { en: 'Pick-up & Drop-off', ar: 'التوصيل والاستقبال' } },
+  { slug: 'babysitting', name: { en: 'Babysitting', ar: 'رعاية الأطفال' } },
+  { slug: 'elderly-companionship', name: { en: 'Elderly Companionship', ar: 'مرافقة كبار السن' } },
   { slug: 'errands', name: { en: 'Errands & Personal Assistance', ar: 'المشتريات والمساعدة الشخصية' } },
 ];
 
-// Newborn & mother care: all on one combined page.
+// PHASE 2: Newborn & mother care, all on one combined page. Not linked anywhere yet.
 export const newbornCarePage = {
   slug: 'newborn-care',
   name: { en: 'Newborn & Mother Care', ar: 'رعاية المواليد والأمهات' }, // REVIEW-AR
@@ -79,8 +84,9 @@ export function isPlaceholder(value: string): boolean {
   return /^\[.+\]$/.test(value);
 }
 
-// wa.me link with a prefilled message. Returns null until the real number is set.
-export function whatsappUrl(message: string): string | null {
-  if (isPlaceholder(site.whatsappNumber)) return null;
-  return `https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent(message)}`;
+// wa.me link with a prefilled message. Without a real number it opens WhatsApp's contact picker.
+export function whatsappUrl(message: string): string {
+  const text = `?text=${encodeURIComponent(message)}`;
+  if (isPlaceholder(site.whatsappNumber)) return `https://wa.me/${text}`;
+  return `https://wa.me/${site.whatsappNumber.replace(/\D/g, '')}${text}`;
 }

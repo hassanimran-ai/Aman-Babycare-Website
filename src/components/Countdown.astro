@@ -1,0 +1,62 @@
+---
+// Live countdown to an offer's end. Renders nothing visible until the script fills it; hides once expired.
+import type { Locale } from '../config/site';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+  endsAt: string;
+  variant?: 'inline' | 'blocks';
+}
+
+const { lang, endsAt, variant = 'inline' } = Astro.props;
+const labels = { d: ui.days[lang], h: ui.hours[lang], m: ui.minutes[lang] };
+---
+
+<span data-countdown={endsAt} data-variant={variant} data-labels={JSON.stringify(labels)} hidden>
+  {
+    variant === 'blocks' ? (
+      <span class="flex gap-2" dir="ltr">
+        {(['d', 'h', 'm'] as const).map((k) => (
+          <span class="flex min-w-16 flex-col items-center rounded-2xl bg-cream-50/10 px-3 py-2 ring-1 ring-gold-300/30">
+            <span data-unit={k} class="text-2xl font-semibold tabular-nums text-cream-50">
+              --
+            </span>
+            <span class="text-xs text-cream-200">{labels[k]}</span>
+          </span>
+        ))}
+      </span>
+    ) : (
+      <span>
+        {ui.endsIn[lang]} <span data-text class="font-semibold tabular-nums" />
+      </span>
+    )
+  }
+</span>
+
+<script>
+  const tick = () => {
+    document.querySelectorAll<HTMLElement>('[data-countdown]').forEach((el) => {
+      const ms = new Date(el.dataset.countdown!).getTime() - Date.now();
+      if (!(ms > 0)) {
+        el.hidden = true;
+        return;
+      }
+      const d = Math.floor(ms / 864e5);
+      const h = Math.floor((ms % 864e5) / 36e5);
+      const m = Math.floor((ms % 36e5) / 6e4);
+      const labels = JSON.parse(el.dataset.labels!);
+      if (el.dataset.variant === 'blocks') {
+        const set = (k: string, v: number) => (el.querySelector(`[data-unit="${k}"]`)!.textContent = String(v).padStart(2, '0'));
+        set('d', d);
+        set('h', h);
+        set('m', m);
+      } else {
+        el.querySelector('[data-text]')!.textContent = `${d} ${labels.d} ${h} ${labels.h}`;
+      }
+      el.hidden = false;
+    });
+  };
+  tick();
+  setInterval(tick, 30_000);
+</script>

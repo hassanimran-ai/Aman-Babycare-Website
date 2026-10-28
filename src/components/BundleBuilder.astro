@@ -1,0 +1,122 @@
+---
+// Tick services, choose how often, and send the built message on WhatsApp. Works as a plain link without JS.
+import Icon from './Icon.astro';
+import { whatsappUrl, type Locale } from '../config/site';
+import { services } from '../data/services';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+  id?: string;
+}
+const { lang, id = 'builder' } = Astro.props;
+
+const t = {
+  ar: {
+    title: 'كوّنوا باقتكم',
+    text: 'اختاروا الخدمات التي تحتاجونها، ومقدّمة رعاية واحدة يمكنها أن تجمعها لكم. نرد عليكم بالسعر على واتساب.',
+    pick: 'الخدمات',
+    often: 'كم مرة؟',
+    preview: 'رسالتكم',
+    empty: 'اختاروا خدمة واحدة على الأقل.',
+    hello: 'السلام عليكم، أرغب بباقة تشمل:',
+    oftenLabel: 'التكرار:',
+  },
+  en: {
+    title: 'Build your bundle',
+    text: "Pick the services you need; one caregiver can combine them. We'll reply with a price on WhatsApp.",
+    pick: 'Services',
+    often: 'How often?',
+    preview: 'Your message',
+    empty: 'Choose at least one service.',
+    hello: "Hello, I'd like a bundle with:",
+    oftenLabel: 'Frequency:',
+  },
+}[lang];
+
+const frequencies = [
+  { id: 'once', label: { ar: 'مرة واحدة', en: 'Just once' } },
+  { id: 'weekly', label: { ar: 'أسبوعياً', en: 'Weekly' } },
+  { id: 'monthly', label: { ar: 'خطة شهرية', en: 'Monthly plan' } },
+];
+const fallback = whatsappUrl(lang === 'ar' ? 'السلام عليكم، أرغب بتكوين باقة خدمات.' : "Hello, I'd like to build a bundle of services.");
+const base = whatsappUrl('').replace(/\?text=$/, '');
+---
+
+<section id={id} class="scroll-mt-28 rounded-[2rem] bg-green-800 p-6 text-cream-100 md:p-10" data-builder data-base={base} data-hello={t.hello} data-often-label={t.oftenLabel}>
+  <div class="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
+    <div>
+      <h2 class="text-3xl text-cream-50">{t.title}</h2>
+      <p class="mt-3 max-w-lg text-cream-200">{t.text}</p>
+
+      <fieldset class="mt-8">
+        <legend class="text-sm font-semibold text-gold-300">{t.pick}</legend>
+        <div class="mt-3 grid gap-2 sm:grid-cols-2">
+          {
+            services.map((s, i) => (
+              <label class="flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl bg-cream-50/5 px-4 ring-1 ring-cream-50/10 transition-transform duration-200 hover:bg-cream-50/10 active:scale-[0.99] has-[:checked]:bg-cream-50 has-[:checked]:text-green-800 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-gold-300">
+                <input type="checkbox" name="service" value={s.name[lang]} class="peer sr-only" checked={i === 3} />
+                <Icon name={s.icon} class="size-5 text-gold-300 peer-checked:text-gold-600" />
+                <span class="font-medium">{s.name[lang]}</span>
+                <Icon name="check" class="ms-auto size-5 opacity-0 transition-opacity duration-200 peer-checked:opacity-100" stroke={2} />
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+
+      <fieldset class="mt-6">
+        <legend class="text-sm font-semibold text-gold-300">{t.often}</legend>
+        <div class="mt-3 flex flex-wrap gap-2">
+          {
+            frequencies.map((f, i) => (
+              <label class="flex min-h-11 cursor-pointer items-center rounded-full px-5 ring-1 ring-cream-50/20 hover:bg-cream-50/10 has-[:checked]:bg-gold-500 has-[:checked]:text-green-950 has-[:checked]:ring-gold-500 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-gold-300">
+                <input type="radio" name="often" value={f.label[lang]} class="sr-only" checked={i === 1} />
+                {f.label[lang]}
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="flex flex-col rounded-3xl bg-cream-50 p-6 text-ink-900">
+      <p class="flex items-center gap-2 text-sm font-semibold text-gold-700">
+        <Icon name="chat" class="size-5" />
+        {t.preview}
+      </p>
+      <p class="mt-4 flex-1 whitespace-pre-line rounded-2xl rounded-ss-sm bg-green-50 p-4 text-green-900" data-preview aria-live="polite">
+        {t.hello}
+      </p>
+      <p class="mt-2 hidden text-sm text-gold-700" data-empty>{t.empty}</p>
+      <a href={fallback} rel="noopener" class="btn btn-primary mt-6 w-full" data-send>
+        <Icon name="whatsapp" class="size-5" />
+        {ui.bookWhatsApp[lang]}
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-builder]').forEach((root) => {
+    const preview = root.querySelector<HTMLElement>('[data-preview]')!;
+    const send = root.querySelector<HTMLAnchorElement>('[data-send]')!;
+    const empty = root.querySelector<HTMLElement>('[data-empty]')!;
+    const update = () => {
+      const picked = [...root.querySelectorAll<HTMLInputElement>('input[name=service]:checked')].map((i) => i.value);
+      const often = root.querySelector<HTMLInputElement>('input[name=often]:checked')?.value ?? '';
+      const msg = `${root.dataset.hello}\n${picked.map((p) => `• ${p}`).join('\n')}\n${root.dataset.oftenLabel} ${often}`;
+      preview.textContent = msg;
+      const none = picked.length === 0;
+      empty.classList.toggle('hidden', !none);
+      send.setAttribute('aria-disabled', String(none));
+      send.classList.toggle('opacity-50', none);
+      send.href = `${root.dataset.base}?text=${encodeURIComponent(msg)}`;
+    };
+    send.addEventListener('click', (e) => {
+      if (send.getAttribute('aria-disabled') === 'true') e.preventDefault();
+    });
+    root.addEventListener('change', update);
+    update();
+  });
+</script>

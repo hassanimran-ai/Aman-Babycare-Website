@@ -1,0 +1,26 @@
+---
+import { icons, type IconName } from './icons';
+
+interface Props {
+  name: IconName;
+  class?: string;
+  /** Directional icons (arrow, chevron) mirror in RTL. */
+  flip?: boolean;
+  stroke?: number;
+}
+
+const { name, class: cls = 'size-5', flip = false, stroke = 1.6 } = Astro.props;
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width={stroke}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  class:list={[cls, 'shrink-0', flip && 'rtl:-scale-x-100']}
+  set:html={icons[name]}
+/>

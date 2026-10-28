@@ -12,6 +12,8 @@ export default defineConfig({
   site: PUBLIC_SITE_URL || 'http://localhost:4321',
   output: 'static',
   trailingSlash: 'always',
+  // Keeps visual-QA screenshots clean.
+  devToolbar: { enabled: false },
   i18n: {
     defaultLocale: 'ar',
     locales: ['ar', 'en'],
