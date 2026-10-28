@@ -2,6 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../Breadcrumbs.astro';
 import ServiceCard from '../ServiceCard.astro';
+import Visual from '../Visual.astro';
+import { hasPhoto } from '../../lib/photos';
 import CtaBand from '../CtaBand.astro';
 import type { Locale } from '../../config/site';
 import { coreServices, moreServices } from '../../data/services';
@@ -42,8 +44,13 @@ const t = {
 <BaseLayout lang={lang} title={t.title} description={t.description} path="services" schema={[breadcrumbSchema(crumbs, Astro.site)]}>
   <Breadcrumbs lang={lang} items={crumbs} />
   <section class="container-x pb-16 pt-8 md:pb-24">
-    <h1 class="max-w-[20ch] text-4xl text-green-800 sm:text-5xl">{t.h1}</h1>
-    <p class="mt-6 max-w-xl text-lg text-ink-600">{t.lead}</p>
+    <div class="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+      <div>
+        <h1 class="max-w-[20ch] text-4xl text-green-800 sm:text-5xl">{t.h1}</h1>
+        <p class="mt-6 max-w-xl text-lg text-ink-600">{t.lead}</p>
+      </div>
+      {hasPhoto('services-hero') && <Visual lang={lang} photo="services-hero" alt="" shape="rounded" eager sizes="(min-width: 1024px) 560px, 90vw" class="shadow-card" />}
+    </div>
     <ul class="reveal-group mt-12 grid gap-6 md:grid-cols-3">
       {coreServices.map((s) => <li><ServiceCard lang={lang} service={s} headingLevel="h2" /></li>)}
     </ul>

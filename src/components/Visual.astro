@@ -1,15 +1,19 @@
 ---
-// A framed visual. If src/assets/photos/<photo>.(jpg|jpeg|png|webp) exists it is shown;
-// otherwise a branded line-art panel stands in (docs/build/imagery.md).
+// A framed visual. If the photo slot has a file (src/lib/photos.ts) it is shown, with that photo's
+// own alt text and crop; otherwise a branded line-art panel stands in (docs/build/imagery.md).
 import { Image, Picture } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
 import Icon from './Icon.astro';
 import type { IconName } from './icons';
 import logoMark from '../assets/logo-mark.png';
+import type { Locale } from '../config/site';
+import { photo as photoFile, photoMeta } from '../lib/photos';
 
 interface Props {
   photo: string;
+  /** Panel label while the slot has no photo (and the photo's alt if it has none of its own). */
   alt: string;
+  /** Picks the photo's own alt text in this language. */
+  lang?: Locale;
   icon?: IconName;
   /** 'logo' shows the logo mark in the panel instead of an icon. */
   art?: 'icon' | 'logo';
@@ -23,6 +27,7 @@ interface Props {
 const {
   photo,
   alt,
+  lang,
   icon = 'heart',
   art = 'icon',
   tone = 'cream',
@@ -32,9 +37,9 @@ const {
   class: cls = '',
 } = Astro.props;
 
-const files = import.meta.glob<{ default: ImageMetadata }>('../assets/photos/*.{jpg,jpeg,png,webp}', { eager: true });
-const match = Object.entries(files).find(([path]) => path.split('/').pop()!.replace(/\.\w+$/, '') === photo);
-const image = match?.[1].default;
+const image = photoFile(photo);
+const meta = photoMeta(photo);
+const photoAlt = (lang && meta?.alt[lang]) || alt;
 
 const panel = {
   cream: 'bg-cream-200 text-gold-600',
@@ -53,13 +58,14 @@ const shapeCls = {
     image ? (
       <Picture
         src={image}
-        alt={alt}
+        alt={photoAlt}
         formats={['avif', 'webp']}
-        widths={[400, 640, 960]}
+        widths={[400, 640, 960, 1280]}
         sizes={sizes}
         loading={eager ? 'eager' : 'lazy'}
         fetchpriority={eager ? 'high' : 'auto'}
         class="size-full object-cover"
+        style={meta?.focus ? `object-position: ${meta.focus}` : undefined}
       />
     ) : (
       <div class:list={['flex size-full items-center justify-center', panel]} role="img" aria-label={alt}>

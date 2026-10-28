@@ -8,7 +8,9 @@
 - No visible third-party logos or watermarks.
 
 ## Sources
-Free-for-commercial-use stock only (Unsplash, Pexels). Record every file in `src/assets/photos/CREDITS.md` with source URL, author and licence.
+- Client-supplied AI-generated photos (Google Gemini), approved Oct 2026. Each must pass the checklist above. They are illustrations: never caption or describe them as real staff, real clients or "our team".
+- Free-for-commercial-use stock (Unsplash, Pexels).
+- Record every file in `src/assets/photos/CREDITS.md` with source, author and licence.
 If no fitting photo exists, use a branded illustration panel. Never fill a gap with an off-culture photo.
 
 ## Technical

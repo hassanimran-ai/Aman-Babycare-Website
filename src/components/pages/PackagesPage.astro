@@ -6,6 +6,8 @@ import Icon from '../Icon.astro';
 import PackageCard from '../PackageCard.astro';
 import BundleBuilder from '../BundleBuilder.astro';
 import GlassRibbon, { type RibbonItem } from '../GlassRibbon.astro';
+import Visual from '../Visual.astro';
+import { hasPhoto } from '../../lib/photos';
 import CtaBand from '../CtaBand.astro';
 import { personalizedCarePlans, whatsappUrl, type Locale } from '../../config/site';
 import { groups, packagesIn, welcomeOffer } from '../../data/packages';
@@ -64,13 +66,16 @@ const planMsg = lang === 'ar' ? 'السلام عليكم، أرغب بخطة ر�
 
 <BaseLayout lang={lang} title={t.title} description={t.description} path="packages" schema={[breadcrumbSchema(crumbs, Astro.site)]}>
   <Breadcrumbs lang={lang} items={crumbs} />
-  <section class="container-x pb-8 pt-8">
-    <h1 class="max-w-[20ch] text-4xl text-green-800 sm:text-5xl">{t.h1}</h1>
-    <p class="mt-6 max-w-xl text-lg text-ink-600">{t.lead}</p>
-    <p class="mt-4 flex items-center gap-2 text-sm text-ink-500">
-      <Icon name="clock" class="size-4 text-gold-600" />
-      {t.draftNote}
-    </p>
+  <section class="container-x grid items-center gap-10 pb-8 pt-8 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+    <div>
+      <h1 class="max-w-[20ch] text-4xl text-green-800 sm:text-5xl">{t.h1}</h1>
+      <p class="mt-6 max-w-xl text-lg text-ink-600">{t.lead}</p>
+      <p class="mt-4 flex items-center gap-2 text-sm text-ink-500">
+        <Icon name="clock" class="size-4 text-gold-600" />
+        {t.draftNote}
+      </p>
+    </div>
+    {hasPhoto('packages-hero') && <Visual lang={lang} photo="packages-hero" alt="" shape="rounded" eager sizes="(min-width: 1024px) 560px, 90vw" class="shadow-card" />}
   </section>
 
   <!-- Glass ribbon of in-page links; the pill follows the scroll. -->

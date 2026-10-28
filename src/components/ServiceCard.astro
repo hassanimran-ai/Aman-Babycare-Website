@@ -23,7 +23,7 @@ const more = lang === 'ar' ? 'تفاصيل الخدمة' : 'About this service';
       data-tilt
       class="group flex h-full flex-col rounded-3xl bg-cream-50 p-3 shadow-soft ring-1 ring-green-700/5 transition-transform duration-300 hover:-translate-y-1 active:scale-[0.99]"
     >
-      <Visual photo={s.slug} alt={s.name[lang]} icon={s.icon} shape="rounded" sizes="(min-width: 1024px) 360px, 90vw" />
+      <Visual lang={lang} photo={s.slug} alt={s.name[lang]} icon={s.icon} shape="rounded" sizes="(min-width: 1024px) 360px, 90vw" />
       <div class="flex flex-1 flex-col px-3 pb-3 pt-5">
         <div class="flex items-center gap-3">
           <span class="flex size-10 items-center justify-center rounded-full bg-green-50 text-green-700">
@@ -44,7 +44,7 @@ const more = lang === 'ar' ? 'تفاصيل الخدمة' : 'About this service';
       data-tilt
       class="group grid h-full grid-cols-[6rem_1fr] items-center gap-4 rounded-3xl bg-cream-50 p-3 shadow-soft ring-1 ring-green-700/5 transition-transform duration-300 hover:-translate-y-1 active:scale-[0.99]"
     >
-      <Visual photo={s.slug} alt={s.name[lang]} icon={s.icon} shape="square" sizes="96px" />
+      <Visual lang={lang} photo={s.slug} alt={s.name[lang]} icon={s.icon} shape="square" sizes="96px" />
       <div class="pe-2">
         <H class="text-lg text-green-800">{s.name[lang]}</H>
         <p class="mt-1 text-sm text-ink-600">{s.card[lang]}</p>
