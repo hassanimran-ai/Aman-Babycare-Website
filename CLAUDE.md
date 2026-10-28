@@ -7,7 +7,7 @@ Deadline: Saturday Oct 31, 2026, 6 PM. MVP first; mark later work with `// PHASE
 
 ## Always Do First
 - Read `src/config/site.ts` (all business facts) and this file before any change.
-- Invoke the `frontend-design` skill before writing UI code, if it is installed.
+- Do not start any design work until the `frontend-design` skill is installed and activated. Invoke it before writing UI code.
 - Check `brand_assets/` for logo, colors, and images. Use real assets over placeholders.
 
 ## Stack (do not change)

@@ -18,7 +18,7 @@ export const site = {
   countryCode: 'SA',
 
   // Digits only, international format without "+", e.g. 9665XXXXXXXX.
-  whatsappNumber: '[WHATSAPP_NUMBER]',
+  whatsappNumber: '+966 59 500 2539',
   phoneDisplay: '[PHONE]',
   email: '[EMAIL]',
   address: { en: '[ADDRESS]', ar: '[ADDRESS]' },
