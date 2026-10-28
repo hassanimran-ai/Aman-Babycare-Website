@@ -15,6 +15,11 @@ interface Props {
 const { lang, path, waMessage } = Astro.props;
 const alt = other(lang);
 const home = href(lang, '');
+// "Baby Care & Home Services" / "لرعاية المواليد والخدمات المنزلية": the full name minus the short name.
+const sub = {
+  en: site.name.en.replace(site.shortName.en, '').trim(),
+  ar: site.name.ar.replace(site.shortName.ar, '').trim(),
+};
 
 const links = [
   { label: ui.nav.home[lang], url: home, active: path === '' },
@@ -27,15 +32,27 @@ const links = [
 
 <header class="sticky top-0 z-40 border-b border-green-700/5 bg-cream-100/90 backdrop-blur-md">
   <div class="container-x flex h-[4.5rem] items-center gap-4">
-    <a href={home} class="flex min-h-11 items-center gap-3 rounded-full" aria-label={site.name[lang]}>
-      <Image src={logoMark} alt="" width={52} height={46} densities={[2, 3]} loading="eager" class="h-11 w-auto" />
-      <span class="flex flex-col leading-tight">
-        <span class:list={['text-lg font-bold text-green-700', lang === 'en' && 'font-display tracking-[0.08em]']}>
-          {lang === 'ar' ? 'أمان' : 'AMAN'}
+    <!-- Lockup mirrors brand_assets/Logo.png: name, English line, Arabic line. -->
+    <a href={home} class="flex min-h-11 items-center gap-2 rounded-2xl sm:gap-3" aria-label={site.name[lang]}>
+      <Image src={logoMark} alt="" width={52} height={46} densities={[2, 3]} loading="eager" class="h-11 w-auto sm:h-12" />
+      <span class="flex flex-col" aria-hidden="true">
+        <span class="flex items-center gap-1 leading-none">
+          {
+            lang === 'ar' ? (
+              <span class="text-xl font-bold text-green-700">{site.shortName.ar}</span>
+            ) : (
+              <span class="font-display text-xl font-semibold tracking-[0.08em] text-green-700">{site.shortName.en.toUpperCase()}</span>
+            )
+          }
+          <Icon name="heart" class="size-3.5 text-gold-500" stroke={2} />
         </span>
-        <span class="hidden text-xs text-ink-500 sm:block">
-          {lang === 'ar' ? 'رعاية المواليد والخدمات المنزلية' : 'Baby Care & Home Services'}
-        </span>
+        {
+          (lang === 'ar' ? (['ar', 'en'] as const) : (['en', 'ar'] as const)).map((l) => (
+            <span lang={l} class:list={['whitespace-nowrap text-ink-600', l === 'en' ? 'text-[0.625rem] font-semibold leading-4 tracking-[0.04em] text-green-700' : 'text-[0.6875rem] leading-4']}>
+              {sub[l]}
+            </span>
+          ))
+        }
       </span>
     </a>
 
