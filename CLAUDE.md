@@ -83,6 +83,15 @@ Newborn & mother care (one combined page): Newborn Care at Home, Feeding Support
 5. Run Lighthouse on mobile for the changed pages; target 95+ in Performance, Accessibility, Best Practices, and SEO.
 6. Report what changed, what is still a placeholder, and any `REVIEW-AR` items.
 
+## Commit After Every Change
+Commit every change to the project as soon as `npm run build` passes, one commit per change, so any step can be undone on its own. Never batch several changes into one commit, and never leave work uncommitted at the end of a task.
+
+1. Check what changed: `git status --short`.
+2. Stage it: `git add -A`. Before committing, read the staged list; leave out secrets, `.env` files, and anything unrelated to the change (for example new files the client is still dropping into `brand_assets/`): `git restore --staged <path>`.
+3. Commit with a one-line summary of what changed and why:
+   `git commit -m "<Area>: <what changed>"` (e.g. `git commit -m "Packages: glass bar follows the scroll"`).
+4. Confirm: `git log --oneline -1`.
+
 ## Hard Rules
 - Never invent business facts, credentials, reviews, or statistics.
 - Never use the Tailwind CDN or a single-file `index.html` build.
