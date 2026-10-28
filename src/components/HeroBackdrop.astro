@@ -1,0 +1,28 @@
+---
+// Slow-drifting brand shapes behind the home hero: the arch, a Najdi triangle band and gold leaves.
+// Decorative only; motion lives in global.css (.drift-*) and stops under reduced motion.
+---
+
+<div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+  <!-- Arch outline, echoing the hero photo frame -->
+  <svg class="drift-a absolute -top-24 -end-24 w-[28rem] text-gold-300/40 md:w-[36rem]" viewBox="0 0 400 480" fill="none">
+    <path d="M20 480V200C20 100 100 20 200 20s180 80 180 180v280" stroke="currentColor" stroke-width="1.2" />
+    <path d="M60 480V210c0-78 62-140 140-140s140 62 140 140v270" stroke="currentColor" stroke-width="0.8" />
+  </svg>
+
+  <!-- Najdi crenellation band -->
+  <svg class="drift-b absolute bottom-12 -start-10 h-10 w-[40rem] text-green-700/[0.07]" viewBox="0 0 640 40" fill="none">
+    <path d="M0 40 20 12l20 28 20-28 20 28 20-28 20 28 20-28 20 28 20-28 20 28 20-28 20 28 20-28 20 28 20-28 20 28 20-28 20 28 20-28 20 28 20-28 20 28 20-28 20 28 20-28 20 28 20-28 20 28 20-28 20 28 20-28 20 28" stroke="currentColor" stroke-width="2" />
+  </svg>
+
+  <!-- Gold leaves -->
+  <svg class="drift-c absolute top-[18%] start-[46%] w-8 text-gold-400/50" viewBox="0 0 24 24" fill="none">
+    <path d="M3 21C3 11 9 4 21 3c-1 12-8 18-18 18Z M3 21 14 10" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" />
+  </svg>
+  <svg class="drift-d absolute bottom-[22%] end-[8%] w-6 text-gold-400/50" viewBox="0 0 24 24" fill="none">
+    <path d="M3 21C3 11 9 4 21 3c-1 12-8 18-18 18Z M3 21 14 10" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" />
+  </svg>
+  <svg class="drift-c absolute top-[64%] start-[6%] w-5 text-green-400/30 [animation-delay:-6s]" viewBox="0 0 24 24" fill="none">
+    <path d="M3 21C3 11 9 4 21 3c-1 12-8 18-18 18Z M3 21 14 10" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" />
+  </svg>
+</div>

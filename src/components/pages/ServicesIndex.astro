@@ -44,11 +44,11 @@ const t = {
   <section class="container-x pb-16 pt-8 md:pb-24">
     <h1 class="max-w-[20ch] text-4xl text-green-800 sm:text-5xl">{t.h1}</h1>
     <p class="mt-6 max-w-xl text-lg text-ink-600">{t.lead}</p>
-    <ul class="mt-12 grid gap-6 md:grid-cols-3">
+    <ul class="reveal-group mt-12 grid gap-6 md:grid-cols-3">
       {coreServices.map((s) => <li><ServiceCard lang={lang} service={s} headingLevel="h2" /></li>)}
     </ul>
-    <h2 class="mt-16 text-2xl text-green-800">{t.moreHelp}</h2>
-    <ul class="mt-6 grid gap-4 lg:grid-cols-3">
+    <h2 class="reveal mt-16 text-2xl text-green-800">{t.moreHelp}</h2>
+    <ul class="reveal-group mt-6 grid gap-4 lg:grid-cols-3">
       {moreServices.map((s) => <li><ServiceCard lang={lang} service={s} size="compact" /></li>)}
     </ul>
   </section>

@@ -35,6 +35,14 @@ const labels = { d: ui.days[lang], h: ui.hours[lang], m: ui.minutes[lang] };
 </span>
 
 <script>
+  // Changed values flip in (.flip in global.css).
+  const show = (el: Element, text: string) => {
+    if (el.textContent === text) return;
+    el.textContent = text;
+    el.classList.remove('flip');
+    void (el as HTMLElement).offsetWidth;
+    el.classList.add('flip');
+  };
   const tick = () => {
     document.querySelectorAll<HTMLElement>('[data-countdown]').forEach((el) => {
       const ms = new Date(el.dataset.countdown!).getTime() - Date.now();
@@ -47,12 +55,12 @@ const labels = { d: ui.days[lang], h: ui.hours[lang], m: ui.minutes[lang] };
       const m = Math.floor((ms % 36e5) / 6e4);
       const labels = JSON.parse(el.dataset.labels!);
       if (el.dataset.variant === 'blocks') {
-        const set = (k: string, v: number) => (el.querySelector(`[data-unit="${k}"]`)!.textContent = String(v).padStart(2, '0'));
+        const set = (k: string, v: number) => show(el.querySelector(`[data-unit="${k}"]`)!, String(v).padStart(2, '0'));
         set('d', d);
         set('h', h);
         set('m', m);
       } else {
-        el.querySelector('[data-text]')!.textContent = `${d} ${labels.d} ${h} ${labels.h}`;
+        show(el.querySelector('[data-text]')!, `${d} ${labels.d} ${h} ${labels.h}`);
       }
       el.hidden = false;
     });

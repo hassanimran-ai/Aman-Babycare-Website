@@ -85,7 +85,7 @@ const planMsg =lang === 'ar' ? 'السلام عليكم، أرغب بخطة رع
         <div class="container-x">
           <h2 class="text-3xl text-green-800">{g.name[lang]}</h2>
           <p class="mt-2 text-ink-600">{g.intro[lang]}</p>
-          <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="reveal-group mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {packagesIn(g.id).map((p) => <PackageCard lang={lang} pkg={p} />)}
           </div>
         </div>
@@ -96,7 +96,7 @@ const planMsg =lang === 'ar' ? 'السلام عليكم، أرغب بخطة رع
     <BundleBuilder lang={lang} id="bundle-builder" />
   </section>
 
-  <section class="container-x grid gap-6 py-12 md:grid-cols-3 md:py-16">
+  <section class="reveal-group container-x grid gap-6 py-12 md:grid-cols-3 md:py-16">
     <article class="flex flex-col rounded-[2rem] bg-pink-100 p-8">
       <Icon name="gift" class="size-8 text-gold-700" />
       <h2 class="mt-4 text-xl text-green-800">{welcomeOffer.name[lang]}</h2>
@@ -135,8 +135,8 @@ const planMsg =lang === 'ar' ? 'السلام عليكم، أرغب بخطة رع
 
   <section class="bg-cream-200/60 py-12 md:py-16">
     <div class="container-x">
-      <h2 class="text-3xl text-green-800">{t.seasonTitle}</h2>
-      <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <h2 class="reveal text-3xl text-green-800">{t.seasonTitle}</h2>
+      <ul class="reveal-group mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {
           offers.map((o) => (
             <li class:list={['rounded-3xl p-6', o.featured ? 'bg-green-800 text-cream-100' : 'bg-cream-50 ring-1 ring-green-700/5']}>

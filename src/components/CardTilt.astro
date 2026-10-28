@@ -1,0 +1,19 @@
+<!-- Gentle 3D tilt for [data-tilt] cards on desktop pointers. The transform itself is in global.css. -->
+<script>
+  const ok = matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
+  if (ok.matches) {
+    for (const card of document.querySelectorAll<HTMLElement>('[data-tilt]')) {
+      card.addEventListener('pointermove', (e) => {
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        card.style.setProperty('--ry', `${(x * 8).toFixed(2)}deg`); // ±4°
+        card.style.setProperty('--rx', `${(-y * 8).toFixed(2)}deg`);
+      });
+      card.addEventListener('pointerleave', () => {
+        card.style.removeProperty('--rx');
+        card.style.removeProperty('--ry');
+      });
+    }
+  }
+</script>

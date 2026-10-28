@@ -19,7 +19,8 @@ await mkdir('screenshots', { recursive: true });
 const browser = await chromium.launch();
 try {
   for (const vp of viewports) {
-    const page = await browser.newPage({ viewport: { width: vp.width, height: vp.height } });
+    // Reduced motion: scroll-reveal content would otherwise be caught mid-fade in a full-page capture.
+    const page = await browser.newPage({ viewport: { width: vp.width, height: vp.height }, reducedMotion: 'reduce' });
     await page.goto(url, { waitUntil: 'networkidle' });
     // Scroll through so lazy images load, then return to the top.
     const height = await page.evaluate(() => document.body.scrollHeight);

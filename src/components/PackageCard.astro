@@ -15,11 +15,11 @@ const message =
 const saving = p.was && p.price ? p.was - p.price : 0;
 ---
 
-<article class="flex h-full flex-col rounded-3xl bg-cream-50 p-6 shadow-soft ring-1 ring-green-700/5">
+<article class="flex h-full flex-col rounded-3xl bg-cream-50 p-6 shadow-soft ring-1 ring-green-700/5" data-tilt>
   <div class="flex min-h-7 items-start">
     {
       saving > 0 && (
-        <span class="rounded-full bg-gold-50 px-3 py-1 text-xs font-semibold text-gold-700 ring-1 ring-gold-500/30">
+        <span class="shimmer rounded-full bg-gold-50 px-3 py-1 text-xs font-semibold text-gold-700 ring-1 ring-gold-500/30">
           {lang === 'ar' ? `وفّر ${money(saving)} ${ui.sar.ar}` : `Save ${ui.sar.en} ${money(saving)}`}
         </span>
       )
