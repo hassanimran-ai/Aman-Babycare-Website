@@ -4,7 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../Breadcrumbs.astro';
 import Icon from '../Icon.astro';
 import PackageCard from '../PackageCard.astro';
-import BundleBuilder from '../BundleBuilder.astro';
+import BookingCard from '../BookingCard.astro';
 import GlassRibbon, { type RibbonItem } from '../GlassRibbon.astro';
 import Visual from '../Visual.astro';
 import { hasPhoto } from '../../lib/photos';
@@ -59,7 +59,8 @@ const t = {
 // In-page bar: the glass follows the section you're reading.
 const sections: RibbonItem[] = [
   ...groups.map((g) => ({ label: g.tab[lang], href: `#${g.id}`, section: g.id })),
-  { label: lang === 'ar' ? 'كوّنوا باقتكم' : 'Build your own', href: '#builder', section: 'builder' },
+  // Short English label: "Book Your Service" wraps to three lines in the phone ribbon.
+  { label: lang === 'ar' ? 'احجزي خدمتك' : 'Book now', href: '#booking', section: 'booking' },
 ];
 const planMsg = lang === 'ar' ? 'السلام عليكم، أرغب بخطة رعاية مخصصة.' : "Hello, I'd like a personalised care plan.";
 ---
@@ -98,9 +99,9 @@ const planMsg = lang === 'ar' ? 'السلام عليكم، أرغب بخطة ر�
       </section>
     ))
   }
-  <section id="builder" class="container-x scroll-mt-40 py-12 md:py-16">
-    <BundleBuilder lang={lang} id="bundle-builder" />
-  </section>
+  <div class="container-x py-12 md:py-16">
+    <BookingCard lang={lang} />
+  </div>
 
   <section class="reveal-group container-x grid gap-6 py-12 md:grid-cols-3 md:py-16">
     <article class="flex flex-col rounded-[2rem] bg-pink-100 p-8">

@@ -1,0 +1,926 @@
+---
+// "Book Your Service": pick one or more services (each expands to its timing, package and extras),
+// review "Your Package", then a short form builds a booking request and opens it in WhatsApp.
+// Config: src/data/booking.ts. Nothing is stored: every field lives in memory until the visitor sends it.
+// REVIEW-AR: Arabic follows the client's feminine address and is a first draft.
+import Icon from './Icon.astro';
+import { whatsappUrl, type Locale } from '../config/site';
+import { bookingServices, caregiverLanguages, DISTRICTS, mobility, petTypes, plans, priceTable, startTimes, timings } from '../data/booking';
+import { href, money, ui } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+
+const t = {
+  ar: {
+    title: 'احجزي خدمتك',
+    text: 'اختاري خدمة أو أكثر، وحددي التوقيت والباقة لكل خدمة. مقدّمة رعاية واحدة يمكنها أن تجمع لكِ أكثر من خدمة.',
+    often: 'كم مرة؟',
+    oftenHint: 'يُطبَّق على كل الخدمات المختارة، ويمكنك تغييره لكل خدمة.',
+    services: 'الخدمات',
+    selected: 'مختارة',
+    timing: 'التوقيت',
+    plan: 'الباقة',
+    hrsDay: 'ساعة يومياً',
+    from: 'من',
+    yourPkg: 'باقتك',
+    empty: 'لم تختاري أي خدمة بعد. اختاري خدمة واحدة على الأقل لتظهر هنا.',
+    estimate: 'التقدير يبدأ من',
+    priceWa: 'السعر يُؤكَّد عبر واتساب',
+    note: 'التقدير مبدئي وقد يتغير حسب التفاصيل',
+    edit: 'تعديل',
+    remove: 'إزالة',
+    toggle: 'عرض التفاصيل',
+    bookNow: 'احجزي الآن',
+    noscript: 'لإكمال الحجز، راسلينا مباشرة على واتساب.',
+    formTitle: 'طلب الحجز',
+    formIntro: 'بعض التفاصيل لنجهّز طلبك. رقمك يصلنا من واتساب، والعنوان نأخذه في المحادثة.',
+    name: 'الاسم الأول',
+    district: 'الحي',
+    districtPick: 'اختاري الحي',
+    districtOther: 'اسم الحي',
+    date: 'تاريخ البدء',
+    time: 'وقت البدء المفضّل',
+    ages: 'أعمار الأطفال',
+    childAge: 'عمر الطفل {n} (بالسنوات)',
+    babyAge: 'عمر المولود {n} (بالأسابيع)',
+    elder: 'عن الشخص الذي سنرافقه',
+    elderAge: 'العمر',
+    mobility: 'الحركة',
+    pets: 'نوع الحيوان',
+    language: 'لغة مقدّمة الرعاية المفضّلة',
+    optional: 'اختياري',
+    notes: 'ملاحظات',
+    consentA: 'أوافق على إرسال هذه التفاصيل عبر واتساب وفق',
+    consentLink: 'سياسة الخصوصية',
+    submit: 'أرسلي طلب الحجز عبر واتساب',
+    close: 'إغلاق',
+    errorsTitle: 'يرجى تصحيح ما يلي:',
+    doneTitle: 'تم تجهيز طلبك',
+    doneText: 'سنؤكد التوفر والسعر عبر واتساب.',
+    doneAgain: 'فتح واتساب مرة أخرى',
+  },
+  en: {
+    title: 'Book Your Service',
+    text: 'Pick one or more services and set the timing and package for each. One caregiver can combine several services for you.',
+    often: 'How often?',
+    oftenHint: 'Applies to every selected service; you can still change it per service.',
+    services: 'Services',
+    selected: 'selected',
+    timing: 'Timing',
+    plan: 'Package',
+    hrsDay: 'hrs/day',
+    from: 'from',
+    yourPkg: 'Your Package',
+    empty: "You haven't chosen a service yet. Pick at least one and it will appear here.",
+    estimate: 'Estimated from',
+    priceWa: 'Price confirmed on WhatsApp',
+    note: 'Estimate only; final price confirmed on WhatsApp.',
+    edit: 'Edit',
+    remove: 'Remove',
+    toggle: 'Show details',
+    bookNow: 'Book Now',
+    noscript: 'To finish your booking request, message us directly on WhatsApp.',
+    formTitle: 'Booking request',
+    formIntro: "A few details to prepare your request. WhatsApp gives us your number, and we'll take the address in the chat.",
+    name: 'First name',
+    district: 'District',
+    districtPick: 'Choose your district',
+    districtOther: 'District name',
+    date: 'Start date',
+    time: 'Preferred start time',
+    ages: "Children's ages",
+    childAge: 'Child {n} age (years)',
+    babyAge: 'Baby {n} age (weeks)',
+    elder: "About the person we'll keep company",
+    elderAge: 'Age',
+    mobility: 'Mobility',
+    pets: 'Pet type',
+    language: 'Preferred caregiver language',
+    optional: 'optional',
+    notes: 'Notes',
+    consentA: 'I agree to send these details via WhatsApp per the',
+    consentLink: 'Privacy Policy',
+    submit: 'Send booking request via WhatsApp',
+    close: 'Close',
+    errorsTitle: 'Please fix the following:',
+    doneTitle: 'Your request is ready',
+    doneText: "We'll confirm availability and price on WhatsApp.",
+    doneAgain: 'Open WhatsApp again',
+  },
+}[lang];
+
+// Strings and data for the browser script (labels in this page's language only).
+const config = {
+  lang,
+  sar: ui.sar[lang],
+  base: whatsappUrl('').replace(/\?text=$/, ''),
+  prices: priceTable,
+  timings: Object.fromEntries(Object.entries(timings).map(([id, v]) => [id, { label: v.label[lang], hours: v.hoursPerDay }])),
+  plans: Object.fromEntries(Object.entries(plans).map(([id, v]) => [id, v[lang]])),
+  services: Object.fromEntries(
+    bookingServices.map((s) => [
+      s.id,
+      {
+        name: s.name[lang],
+        extras: s.extras.map((e) =>
+          e.kind === 'count'
+            ? { id: e.id, kind: e.kind, label: e.label[lang] }
+            : { id: e.id, kind: e.kind, label: e.label[lang], options: Object.fromEntries(e.options.map((o) => [o.id, o.label[lang]])) },
+        ),
+      },
+    ]),
+  ),
+  districts: Object.fromEntries(DISTRICTS.map((d) => [d.id, d.label[lang]])),
+  startTimes: Object.fromEntries(startTimes.map((d) => [d.id, d.label[lang]])),
+  languages: Object.fromEntries(caregiverLanguages.map((d) => [d.id, d.label[lang]])),
+  mobility: Object.fromEntries(mobility.map((d) => [d.id, d.label[lang]])),
+  pets: Object.fromEntries(petTypes.map((d) => [d.id, d.label[lang]])),
+  t: {
+    from: t.from,
+    hrsDay: t.hrsDay,
+    estimate: t.estimate,
+    priceWa: t.priceWa,
+    remove: t.remove,
+    edit: t.edit,
+    childAge: t.childAge,
+    babyAge: t.babyAge,
+  },
+  msg:
+    lang === 'ar'
+      ? {
+          hello: 'السلام عليكم',
+          header: 'طلب حجز',
+          name: 'الاسم',
+          district: 'الحي',
+          date: 'تاريخ البدء',
+          time: 'وقت البدء',
+          ages: 'أعمار الأطفال',
+          years: 'سنوات',
+          weeks: 'أسابيع',
+          babies: 'أعمار المواليد',
+          elderAge: 'عمر كبير السن',
+          mobility: 'الحركة',
+          pets: 'الحيوانات',
+          language: 'لغة مقدّمة الرعاية',
+          notes: 'ملاحظات',
+          estimate: 'التقدير المبدئي: يبدأ من',
+          estimateWa: 'التقدير المبدئي: السعر يُؤكَّد عبر واتساب',
+        }
+      : {
+          hello: 'Hello',
+          header: 'Booking request',
+          name: 'Name',
+          district: 'District',
+          date: 'Start date',
+          time: 'Start time',
+          ages: "Children's ages",
+          years: 'years',
+          weeks: 'weeks',
+          babies: "Babies' ages",
+          elderAge: 'Age of the person',
+          mobility: 'Mobility',
+          pets: 'Pets',
+          language: 'Caregiver language',
+          notes: 'Notes',
+          estimate: 'Estimate: from',
+          estimateWa: 'Estimate: price confirmed on WhatsApp',
+        },
+  errors:
+    lang === 'ar'
+      ? {
+          name: 'اكتبي اسمك الأول.',
+          district: 'اختاري الحي.',
+          districtOther: 'اكتبي اسم الحي.',
+          date: 'اختاري تاريخ البدء.',
+          datePast: 'اختاري تاريخاً من اليوم فصاعداً.',
+          time: 'اختاري وقت البدء.',
+          age: 'أدخلي العمر بالأرقام.',
+          mobility: 'اختاري حالة الحركة.',
+          pets: 'اختاري نوع الحيوان.',
+          consent: 'يلزم الموافقة لإرسال الطلب.',
+        }
+      : {
+          name: 'Enter your first name.',
+          district: 'Choose your district.',
+          districtOther: 'Enter the district name.',
+          date: 'Choose a start date.',
+          datePast: 'Choose today or a later date.',
+          time: 'Choose a start time.',
+          age: 'Enter the age as a number.',
+          mobility: 'Choose a mobility option.',
+          pets: 'Choose at least one pet type.',
+          consent: 'Your agreement is needed to send the request.',
+        },
+};
+
+// Arabic puts the currency after the number, English before it.
+const sar = (n: number) => (lang === 'ar' ? `${money(n)} ${ui.sar.ar}` : `${ui.sar.en} ${money(n)}`);
+const priceLabel = (id: string, timing: string, plan: string) => {
+  const p = priceTable[`${id}|${timing}|${plan}`];
+  return p ? `${t.from} ${sar(p)}` : '[PRICE]';
+};
+const hoursLabel = (timing: keyof typeof timings) => {
+  if (timing === 'hourly') return '';
+  const h = timings[timing].hoursPerDay;
+  return h ? `${h} ${t.hrsDay}` : '[HOURS_PER_DAY]';
+};
+const chip =
+  'flex min-h-11 cursor-pointer flex-col items-start justify-center rounded-2xl bg-cream-100 px-3 py-1.5 text-sm ring-1 ring-green-700/10 transition-transform duration-200 hover:bg-green-50 active:scale-[0.98] has-[:checked]:bg-green-700 has-[:checked]:text-cream-50 has-[:checked]:ring-green-700 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-gold-500';
+const field = 'mt-1 block min-h-11 w-full rounded-xl bg-cream-50 px-3 text-ink-900 ring-1 ring-green-700/20 focus:outline-2 focus:outline-gold-500 aria-[invalid=true]:ring-2 aria-[invalid=true]:ring-pink-700';
+const err = 'mt-1 text-sm font-medium text-pink-800';
+---
+
+<section id="booking" class="scroll-mt-40 rounded-[2rem] bg-green-800 p-4 text-cream-100 sm:p-6 md:p-10" data-booking>
+  <script type="application/json" data-booking-config set:html={JSON.stringify(config)} />
+  <div class="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-start lg:gap-10">
+    <div>
+      <h2 class="text-3xl text-cream-50">{t.title}</h2>
+      <p class="mt-3 max-w-lg text-cream-200">{t.text}</p>
+
+      <fieldset class="mt-8">
+        <legend class="text-sm font-semibold text-gold-300">{t.often}</legend>
+        <p class="mt-1 text-xs text-cream-200/80">{t.oftenHint}</p>
+        <div class="mt-3 flex flex-wrap gap-2">
+          {
+            Object.entries(plans).map(([id, label], i) => (
+              <label class="flex min-h-11 cursor-pointer items-center rounded-full px-5 ring-1 ring-cream-50/20 transition-transform duration-200 hover:bg-cream-50/10 active:scale-[0.98] has-[:checked]:bg-gold-500 has-[:checked]:text-green-950 has-[:checked]:ring-gold-500 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-gold-300">
+                <input type="radio" name="bk-often" value={id} class="sr-only" checked={i === 0} data-often />
+                {label[lang]}
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+
+      <h3 class="mt-8 text-sm font-semibold text-gold-300" id="bk-services-label">{t.services}</h3>
+      <ul class="mt-3 grid gap-2" aria-labelledby="bk-services-label">
+        {
+          bookingServices.map((s) => (
+            <li data-svc={s.id} class="scroll-mt-32 rounded-2xl ring-1 ring-cream-50/10 has-[[aria-expanded=true]]:bg-cream-50 has-[[aria-expanded=true]]:text-ink-900">
+              <button
+                type="button"
+                id={`bk-${s.id}`}
+                aria-expanded="false"
+                aria-controls={`bk-${s.id}-panel`}
+                data-toggle
+                class="group flex min-h-14 w-full items-center gap-3 rounded-2xl px-4 text-start transition-transform duration-200 hover:bg-cream-50/10 active:scale-[0.99] aria-expanded:hover:bg-transparent"
+              >
+                <Icon name={s.icon} class="size-5 shrink-0 text-gold-300 group-aria-expanded:text-gold-700" />
+                <span class="font-medium group-aria-expanded:text-green-800">{s.name[lang]}</span>
+                <span class="sr-only" data-selected-label hidden>
+                  ({t.selected})
+                </span>
+                <span class="ms-auto flex size-6 shrink-0 items-center justify-center rounded-full ring-1 ring-cream-50/40 group-aria-expanded:bg-green-700 group-aria-expanded:ring-green-700">
+                  <Icon name="check" class="size-4 text-cream-50 opacity-0 group-aria-expanded:opacity-100" stroke={2.4} />
+                </span>
+              </button>
+              <div id={`bk-${s.id}-panel`} role="group" aria-labelledby={`bk-${s.id}`} hidden class="bk-panel grid gap-5 px-4 pb-5 pt-1">
+                <fieldset>
+                  <legend class="text-xs font-semibold text-gold-800">{t.timing}</legend>
+                  <div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {s.timings.map((tm, i) => (
+                      <label class={chip}>
+                        <input type="radio" name={`${s.id}-timing`} value={tm} class="sr-only" checked={i === 0} data-timing />
+                        <span class="font-medium">{timings[tm].label[lang]}</span>
+                        {hoursLabel(tm) && <span class="text-xs opacity-80">{hoursLabel(tm)}</span>}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+                <fieldset>
+                  <legend class="text-xs font-semibold text-gold-800">{t.plan}</legend>
+                  <div class="mt-2 grid grid-cols-3 gap-2">
+                    {s.plans.map((pl, i) => (
+                      <label class={chip}>
+                        <input type="radio" name={`${s.id}-plan`} value={pl} class="sr-only" checked={i === 0} data-plan />
+                        <span class="font-medium">{plans[pl][lang]}</span>
+                        <span class="text-xs tabular-nums opacity-80" data-price-for={pl}>
+                          {priceLabel(s.id, s.timings[0], pl)}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+                {s.extras.map((e) =>
+                  e.kind === 'count' ? (
+                    <div class="flex items-center justify-between gap-4" role="group" aria-labelledby={`bk-${s.id}-${e.id}-label`}>
+                      <span id={`bk-${s.id}-${e.id}-label`} class="text-sm font-medium text-green-800">
+                        {e.label[lang]}
+                      </span>
+                      <span class="flex items-center gap-1" data-count={e.id} data-min={e.min} data-max={e.max}>
+                        <button type="button" data-step="-1" class="flex size-11 items-center justify-center rounded-full bg-cream-100 text-xl text-green-800 ring-1 ring-green-700/15 hover:bg-green-50 active:scale-95 disabled:opacity-40" aria-label={`${e.label[lang]} −1`}>
+                          −
+                        </button>
+                        <output class="w-8 text-center font-semibold tabular-nums" aria-live="polite">
+                          {e.default}
+                        </output>
+                        <button type="button" data-step="1" class="flex size-11 items-center justify-center rounded-full bg-cream-100 text-xl text-green-800 ring-1 ring-green-700/15 hover:bg-green-50 active:scale-95 disabled:opacity-40" aria-label={`${e.label[lang]} +1`}>
+                          +
+                        </button>
+                      </span>
+                    </div>
+                  ) : (
+                    <fieldset>
+                      <legend class="text-xs font-semibold text-gold-800">{e.label[lang]}</legend>
+                      <div class="mt-2 grid grid-cols-2 gap-2">
+                        {e.options.map((o, i) => (
+                          <label class={chip}>
+                            <input type="radio" name={`${s.id}-${e.id}`} value={o.id} class="sr-only" checked={i === 0} data-choice={e.id} />
+                            <span class="font-medium">{o.label[lang]}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </fieldset>
+                  ),
+                )}
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <!-- Your Package: sticky on desktop, collapsible at the bottom on phones. -->
+    <aside class="rounded-3xl bg-cream-50 p-5 text-ink-900 shadow-float lg:sticky lg:top-28 md:p-6" aria-labelledby="bk-pkg-title">
+      <div class="flex items-center justify-between gap-3">
+        <h3 id="bk-pkg-title" class="flex items-center gap-2 text-xl text-green-800">
+          <Icon name="gift" class="size-5 text-gold-700" />
+          {t.yourPkg}
+          <span class="rounded-full bg-green-50 px-2 text-sm tabular-nums text-green-700" data-count-badge>0</span>
+        </h3>
+        <button type="button" class="flex size-11 items-center justify-center rounded-full text-green-800 hover:bg-green-50 active:scale-95 lg:hidden" aria-expanded="true" aria-controls="bk-pkg-body" aria-label={t.toggle} data-pkg-toggle>
+          <Icon name="chevron" class="size-5 rotate-90 transition-transform duration-200 [[aria-expanded=false]>&]:-rotate-90" />
+        </button>
+      </div>
+      <div id="bk-pkg-body" class="mt-4">
+        <p class="rounded-2xl bg-cream-100 p-4 text-sm text-ink-600" data-empty>{t.empty}</p>
+        <ul class="grid gap-2" data-summary></ul>
+      </div>
+      <div class="mt-4 border-t border-green-700/10 pt-4" data-estimate-box hidden>
+        <p class="font-semibold text-green-800" data-estimate aria-live="polite"></p>
+        <p class="mt-1 text-xs text-ink-500">{t.note}</p>
+      </div>
+      <button type="button" class="btn btn-primary mt-5 w-full disabled:pointer-events-none disabled:opacity-50" disabled data-book>
+        <Icon name="calendar" class="size-5" />
+        {t.bookNow}
+      </button>
+      <noscript>
+        <p class="mt-3 text-sm text-ink-600">
+          {t.noscript} <a class="font-semibold text-green-700 underline" href={whatsappUrl(lang === 'ar' ? 'السلام عليكم، أرغب بطلب حجز.' : "Hello, I'd like to make a booking request.")}>WhatsApp</a>
+        </p>
+      </noscript>
+    </aside>
+  </div>
+
+  <!-- Booking request form: bottom sheet on phones, modal on desktop (native dialog: focus trap + Esc). -->
+  <dialog class="bk-sheet bg-cream-50 text-ink-900" aria-labelledby="bk-form-title" data-dialog>
+    <div class="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-green-700/10 bg-cream-50 px-5 py-3">
+      <h2 id="bk-form-title" class="text-xl text-green-800">{t.formTitle}</h2>
+      <button type="button" class="flex size-11 items-center justify-center rounded-full text-green-800 hover:bg-green-50 active:scale-95" aria-label={t.close} data-close>
+        <Icon name="close" class="size-5" />
+      </button>
+    </div>
+
+    <form class="grid gap-5 px-5 pb-6 pt-4" novalidate data-form>
+      <p class="text-sm text-ink-600">{t.formIntro}</p>
+      <div class="rounded-2xl bg-pink-100 p-4 ring-1 ring-pink-700/20" role="alert" tabindex="-1" hidden data-errors>
+        <p class="font-semibold text-pink-900">{t.errorsTitle}</p>
+        <ul class="mt-2 list-disc ps-5 text-sm text-pink-900"></ul>
+      </div>
+
+      <div>
+        <label for="bk-name" class="text-sm font-medium text-green-800">{t.name}</label>
+        <input id="bk-name" name="name" type="text" autocomplete="given-name" maxlength="40" class={field} aria-describedby="bk-name-err" />
+        <p id="bk-name-err" class={err} hidden></p>
+      </div>
+
+      <div>
+        <label for="bk-district" class="text-sm font-medium text-green-800">{t.district}</label>
+        <select id="bk-district" name="district" class={field} aria-describedby="bk-district-err">
+          <option value="">{t.districtPick}</option>
+          {DISTRICTS.map((d) => <option value={d.id}>{d.label[lang]}</option>)}
+        </select>
+        <p id="bk-district-err" class={err} hidden></p>
+        <div class="mt-3" hidden data-other-wrap>
+          <label for="bk-district-other" class="text-sm font-medium text-green-800">{t.districtOther}</label>
+          <input id="bk-district-other" name="districtOther" type="text" maxlength="40" class={field} aria-describedby="bk-district-other-err" />
+          <p id="bk-district-other-err" class={err} hidden></p>
+        </div>
+      </div>
+
+      <div>
+        <label for="bk-date" class="text-sm font-medium text-green-800">{t.date}</label>
+        <input id="bk-date" name="date" type="date" class={field} aria-describedby="bk-date-err" />
+        <p id="bk-date-err" class={err} hidden></p>
+      </div>
+
+      <fieldset id="bk-time" aria-describedby="bk-time-err">
+        <legend class="text-sm font-medium text-green-800">{t.time}</legend>
+        <div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {startTimes.map((s) => (
+            <label class={chip}>
+              <input type="radio" name="time" value={s.id} class="sr-only" />
+              <span class="font-medium">{s.label[lang]}</span>
+            </label>
+          ))}
+        </div>
+        <p id="bk-time-err" class={err} hidden></p>
+      </fieldset>
+
+      <fieldset hidden data-cond="ages">
+        <legend class="text-sm font-medium text-green-800">{t.ages}</legend>
+        <div class="mt-2 grid gap-3 sm:grid-cols-2" data-ages></div>
+      </fieldset>
+
+      <fieldset hidden data-cond="elderly">
+        <legend class="text-sm font-medium text-green-800">{t.elder}</legend>
+        <div class="mt-2 grid gap-4">
+          <div>
+            <label for="bk-elder-age" class="text-sm text-ink-700">{t.elderAge}</label>
+            <input id="bk-elder-age" name="elderAge" type="number" inputmode="numeric" min="1" max="120" class={field} aria-describedby="bk-elder-age-err" />
+            <p id="bk-elder-age-err" class={err} hidden></p>
+          </div>
+          <fieldset id="bk-mobility" aria-describedby="bk-mobility-err">
+            <legend class="text-sm text-ink-700">{t.mobility}</legend>
+            <div class="mt-2 grid grid-cols-2 gap-2">
+              {mobility.map((m) => (
+                <label class={chip}>
+                  <input type="radio" name="mobility" value={m.id} class="sr-only" />
+                  <span class="font-medium">{m.label[lang]}</span>
+                </label>
+              ))}
+            </div>
+            <p id="bk-mobility-err" class={err} hidden></p>
+          </fieldset>
+        </div>
+      </fieldset>
+
+      <fieldset id="bk-pets" hidden data-cond="pets" aria-describedby="bk-pets-err">
+        <legend class="text-sm font-medium text-green-800">{t.pets}</legend>
+        <div class="mt-2 grid grid-cols-3 gap-2">
+          {petTypes.map((p) => (
+            <label class={chip}>
+              <input type="checkbox" name="pet" value={p.id} class="sr-only" />
+              <span class="font-medium">{p.label[lang]}</span>
+            </label>
+          ))}
+        </div>
+        <p id="bk-pets-err" class={err} hidden></p>
+      </fieldset>
+
+      <fieldset>
+        <legend class="text-sm font-medium text-green-800">
+          {t.language} <span class="font-normal text-ink-500">({t.optional})</span>
+        </legend>
+        <div class="mt-2 grid grid-cols-3 gap-2">
+          {caregiverLanguages.map((l, i) => (
+            <label class={chip}>
+              <input type="radio" name="language" value={l.id} class="sr-only" checked={i === 0} />
+              <span class="font-medium">{l.label[lang]}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <div>
+        <label for="bk-notes" class="text-sm font-medium text-green-800">
+          {t.notes} <span class="font-normal text-ink-500">({t.optional})</span>
+        </label>
+        <textarea id="bk-notes" name="notes" maxlength="300" rows="3" class:list={[field, 'py-2']} aria-describedby="bk-notes-count"></textarea>
+        <p id="bk-notes-count" class="mt-1 text-end text-xs tabular-nums text-ink-500" dir="ltr" data-notes-count>0 / 300</p>
+      </div>
+
+      <div>
+        <label class="flex cursor-pointer items-start gap-3 text-sm text-ink-700">
+          <input id="bk-consent" name="consent" type="checkbox" class="mt-0.5 size-5 shrink-0 accent-green-700" aria-describedby="bk-consent-err" />
+          <span>
+            {t.consentA} <a href={href(lang, 'privacy')} target="_blank" class="font-semibold text-green-700 underline hover:text-green-800">{t.consentLink}</a>
+          </span>
+        </label>
+        <p id="bk-consent-err" class={err} hidden></p>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-full">
+        <Icon name="whatsapp" class="size-5" />
+        {t.submit}
+      </button>
+    </form>
+
+    <div class="grid justify-items-center gap-4 px-5 pb-8 pt-6 text-center" hidden data-done>
+      <span class="flex size-16 items-center justify-center rounded-full bg-green-50 text-green-700">
+        <Icon name="check" class="size-8" stroke={2} />
+      </span>
+      <h3 class="text-2xl text-green-800" tabindex="-1" data-done-title>{t.doneTitle}</h3>
+      <p class="text-ink-600">{t.doneText}</p>
+      <a href="#" target="_blank" rel="noopener" class="btn btn-primary" data-again>
+        <Icon name="whatsapp" class="size-5" />
+        {t.doneAgain}
+      </a>
+      <button type="button" class="btn btn-ghost" data-close>{t.close}</button>
+    </div>
+  </dialog>
+</section>
+
+<script>
+  import { track } from '../lib/analytics';
+
+  type Extra = { id: string; kind: 'count' | 'choice'; label: string; options?: Record<string, string> };
+  type Config = {
+    lang: 'ar' | 'en';
+    sar: string;
+    base: string;
+    prices: Record<string, number | null>;
+    timings: Record<string, { label: string; hours: number | null }>;
+    plans: Record<string, string>;
+    services: Record<string, { name: string; extras: Extra[] }>;
+    districts: Record<string, string>;
+    startTimes: Record<string, string>;
+    languages: Record<string, string>;
+    mobility: Record<string, string>;
+    pets: Record<string, string>;
+    t: Record<string, string>;
+    msg: Record<string, string>;
+    errors: Record<string, string>;
+  };
+  type Picked = { id: string; timing: string; plan: string; extras: Record<string, string | number> };
+  export type BookingPayload = {
+    lang: string;
+    services: Picked[];
+    name: string;
+    district: string;
+    date: string;
+    time: string;
+    ages: { kind: 'child' | 'baby'; value: number }[];
+    elderAge?: number;
+    mobility?: string;
+    pets?: string[];
+    language: string;
+    notes: string;
+    estimate: number | null;
+  };
+
+  /**
+   * PHASE 2 hook: save the booking request to the admin panel / database.
+   * Today it does nothing; the request only travels inside the visitor's WhatsApp message.
+   */
+  async function submitBooking(_payload: BookingPayload): Promise<void> {}
+
+  const money = (n: number) => n.toLocaleString('en-US', { maximumFractionDigits: 2 });
+  const sarFor = (lang: string, sar: string, n: number) => (lang === 'ar' ? `${money(n)} ${sar}` : `${sar} ${money(n)}`);
+  // Today in Riyadh as YYYY-MM-DD.
+  const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Riyadh' }).format(new Date());
+
+  document.querySelectorAll<HTMLElement>('[data-booking]').forEach((root) => {
+    const cfg: Config = JSON.parse(root.querySelector('[data-booking-config]')!.textContent!);
+    const $ = <T extends Element = HTMLElement>(sel: string, el: ParentNode = root) => el.querySelector<T>(sel)!;
+    const $$ = <T extends Element = HTMLElement>(sel: string, el: ParentNode = root) => [...el.querySelectorAll<T>(sel)];
+    const items = $$('[data-svc]');
+    const item = (id: string) => items.find((li) => li.dataset.svc === id)!;
+    const isOn = (li: HTMLElement) => $('[data-toggle]', li).getAttribute('aria-expanded') === 'true';
+    const checked = (li: ParentNode, sel: string) => $<HTMLInputElement>(`${sel}:checked`, li)?.value ?? '';
+
+    // ---------- Service selection ----------
+    const read = (li: HTMLElement): Picked => {
+      const extras: Picked['extras'] = {};
+      $$('[data-count]', li).forEach((c) => (extras[c.dataset.count!] = Number($('output', c).textContent)));
+      $$<HTMLInputElement>('[data-choice]:checked', li).forEach((r) => (extras[r.dataset.choice!] = r.value));
+      return { id: li.dataset.svc!, timing: checked(li, '[data-timing]'), plan: checked(li, '[data-plan]'), extras };
+    };
+    const picked = () => items.filter(isOn).map(read);
+    const priceOf = (p: Picked) => cfg.prices[`${p.id}|${p.timing}|${p.plan}`] ?? null;
+
+    const setOn = (li: HTMLElement, on: boolean) => {
+      const btn = $('[data-toggle]', li);
+      btn.setAttribute('aria-expanded', String(on));
+      $('[data-selected-label]', li).hidden = !on;
+      $(`#${btn.getAttribute('aria-controls')}`).hidden = !on;
+      if (on) {
+        // A newly selected service takes the "How often" choice.
+        const often = checked(root, '[data-often]');
+        const r = $<HTMLInputElement>(`[data-plan][value="${often}"]`, li);
+        if (r) r.checked = true;
+        track('booking_service_select', { service: li.dataset.svc!, package: checked(li, '[data-plan]') });
+      }
+    };
+
+    // Plan prices follow the chosen timing.
+    const refreshPrices = (li: HTMLElement) => {
+      const timing = checked(li, '[data-timing]');
+      $$('[data-price-for]', li).forEach((el) => {
+        const p = cfg.prices[`${li.dataset.svc}|${timing}|${el.dataset.priceFor}`];
+        el.textContent = p ? `${cfg.t.from} ${sarFor(cfg.lang, cfg.sar, p)}` : '[PRICE]';
+      });
+    };
+
+    // "How often" shows the shared plan, or nothing when selected services differ.
+    const syncOften = () => {
+      const plans = new Set(picked().map((p) => p.plan));
+      $$<HTMLInputElement>('[data-often]').forEach((r) => (r.checked = plans.size === 1 && plans.has(r.value)));
+    };
+
+    // ---------- Your Package ----------
+    const summary = $('[data-summary]');
+    const describe = (p: Picked) => {
+      const s = cfg.services[p.id];
+      const tm = cfg.timings[p.timing];
+      const parts = [tm.label + (tm.hours ? ` (${tm.hours} ${cfg.t.hrsDay})` : ''), cfg.plans[p.plan]];
+      s.extras.forEach((e) => {
+        const v = p.extras[e.id];
+        if (e.kind === 'count') v && parts.push(`${e.label}: ${v}`); // "Dogs: 0" adds nothing
+        else parts.push(`${e.label}: ${e.options![v as string]}`);
+      });
+      return parts;
+    };
+    const estimate = (list: Picked[]) => {
+      const prices = list.map(priceOf);
+      return prices.some((p) => p == null) ? null : prices.reduce<number>((a, b) => a + (b ?? 0), 0);
+    };
+
+    const render = () => {
+      const list = picked();
+      summary.replaceChildren(
+        ...list.map((p) => {
+          const li = document.createElement('li');
+          li.className = 'flex items-start gap-2 rounded-2xl bg-cream-100 p-3';
+          const text = document.createElement('div');
+          text.className = 'min-w-0 flex-1';
+          const name = document.createElement('p');
+          name.className = 'font-semibold text-green-800';
+          name.textContent = cfg.services[p.id].name;
+          const detail = document.createElement('p');
+          detail.className = 'text-xs text-ink-600';
+          detail.textContent = describe(p).join(' · ');
+          text.append(name, detail);
+          const edit = document.createElement('button');
+          edit.type = 'button';
+          edit.className = 'min-h-11 shrink-0 rounded-full px-3 text-sm font-semibold text-gold-800 underline-offset-2 hover:underline active:scale-95';
+          edit.textContent = cfg.t.edit;
+          edit.setAttribute('aria-label', `${cfg.t.edit}: ${cfg.services[p.id].name}`);
+          edit.addEventListener('click', () => {
+            const target = item(p.id);
+            target.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+            $('[data-toggle]', target).focus({ preventScroll: true });
+          });
+          const remove = document.createElement('button');
+          remove.type = 'button';
+          remove.className = 'flex size-11 shrink-0 items-center justify-center rounded-full text-ink-500 hover:bg-pink-100 hover:text-pink-900 active:scale-95';
+          remove.setAttribute('aria-label', `${cfg.t.remove}: ${cfg.services[p.id].name}`);
+          remove.textContent = '×';
+          remove.style.fontSize = '1.5rem';
+          remove.addEventListener('click', () => {
+            setOn(item(p.id), false);
+            update();
+            $<HTMLButtonElement>('[data-book]').disabled ? $('[data-toggle]', item(p.id)).focus() : $('[data-book]').focus();
+          });
+          li.append(text, edit, remove);
+          return li;
+        }),
+      );
+      $('[data-empty]').hidden = list.length > 0;
+      $('[data-count-badge]').textContent = String(list.length);
+      $('[data-estimate-box]').hidden = list.length === 0;
+      const est = estimate(list);
+      $('[data-estimate]').textContent = est == null ? cfg.t.priceWa : `${cfg.t.estimate}: ${sarFor(cfg.lang, cfg.sar, est)}`;
+      $<HTMLButtonElement>('[data-book]').disabled = list.length === 0;
+    };
+    const update = () => {
+      syncOften();
+      render();
+    };
+
+    items.forEach((li) => {
+      $('[data-toggle]', li).addEventListener('click', () => {
+        setOn(li, !isOn(li));
+        update();
+      });
+      li.addEventListener('change', (e) => {
+        if ((e.target as HTMLElement).matches('[data-timing]')) refreshPrices(li);
+        update();
+      });
+      $$('[data-count]', li).forEach((c) => {
+        const out = $('output', c);
+        const [min, max] = [Number(c.dataset.min), Number(c.dataset.max)];
+        const buttons = $$<HTMLButtonElement>('[data-step]', c);
+        const set = (n: number) => {
+          out.textContent = String(n);
+          buttons[0].disabled = n <= min;
+          buttons[1].disabled = n >= max;
+        };
+        set(Number(out.textContent));
+        buttons.forEach((b) =>
+          b.addEventListener('click', () => {
+            set(Math.min(max, Math.max(min, Number(out.textContent) + Number(b.dataset.step))));
+            update();
+          }),
+        );
+      });
+    });
+
+    $$<HTMLInputElement>('[data-often]').forEach((r) =>
+      r.addEventListener('change', () => {
+        items.filter(isOn).forEach((li) => {
+          const p = $<HTMLInputElement>(`[data-plan][value="${r.value}"]`, li);
+          if (p) p.checked = true;
+        });
+        update();
+      }),
+    );
+
+    // Collapsible "Your Package" on phones.
+    const pkgToggle = $('[data-pkg-toggle]');
+    pkgToggle.addEventListener('click', () => {
+      const open = pkgToggle.getAttribute('aria-expanded') !== 'true';
+      pkgToggle.setAttribute('aria-expanded', String(open));
+      $('#bk-pkg-body').hidden = !open;
+    });
+
+    // Deep link from a service page: /packages/?service=babysitting#booking
+    const wanted = new URLSearchParams(location.search).get('service');
+    const target = wanted && items.find((li) => li.dataset.svc === wanted);
+    if (target) {
+      setOn(target, true);
+      requestAnimationFrame(() => $('[data-toggle]', target).focus({ preventScroll: true }));
+    }
+    update();
+
+    // ---------- Booking request form ----------
+    const dialog = $<HTMLDialogElement>('[data-dialog]');
+    const form = $<HTMLFormElement>('[data-form]');
+    const done = $('[data-done]');
+    const errorsBox = $('[data-errors]');
+    const district = $<HTMLSelectElement>('#bk-district');
+    const date = $<HTMLInputElement>('#bk-date');
+    const notes = $<HTMLTextAreaElement>('#bk-notes');
+
+    const has = (id: string) => picked().some((p) => p.id === id);
+    const agesFor = () => {
+      const rows: { kind: 'child' | 'baby'; label: string }[] = [];
+      picked().forEach((p) => {
+        const n = Number(p.extras.children ?? 0);
+        const kind = p.id === 'newborn-care' ? 'baby' : p.id === 'babysitting' ? 'child' : null;
+        if (!kind) return;
+        for (let i = 1; i <= n; i++) rows.push({ kind, label: (kind === 'baby' ? cfg.t.babyAge : cfg.t.childAge).replace('{n}', String(i)) });
+      });
+      return rows;
+    };
+
+    const prepareForm = () => {
+      date.min = today();
+      // Age rows follow the counts chosen above; values already typed are kept.
+      const wrap = $('[data-ages]');
+      const old = $$<HTMLInputElement>('input', wrap).map((i) => i.value);
+      const rows = agesFor();
+      wrap.replaceChildren(
+        ...rows.map((r, i) => {
+          const div = document.createElement('div');
+          const id = `bk-age-${i}`;
+          div.innerHTML = `<label for="${id}" class="text-sm text-ink-700"></label><input id="${id}" type="number" inputmode="numeric" min="0" max="${r.kind === 'baby' ? 52 : 17}" data-kind="${r.kind}" class="${date.className}" aria-describedby="${id}-err" /><p id="${id}-err" class="${$('#bk-name-err').className}" hidden></p>`;
+          div.querySelector('label')!.textContent = r.label;
+          div.querySelector('input')!.value = old[i] ?? '';
+          return div;
+        }),
+      );
+      $('[data-cond="ages"]').hidden = rows.length === 0;
+      $('[data-cond="elderly"]').hidden = !has('elderly-companionship');
+      $('[data-cond="pets"]').hidden = !has('pet-sitting');
+      const pets = picked().find((p) => p.id === 'pet-sitting');
+      if (pets) {
+        $<HTMLInputElement>('input[name=pet][value=dog]').checked ||= Number(pets.extras.dogs) > 0;
+        $<HTMLInputElement>('input[name=pet][value=cat]').checked ||= Number(pets.extras.cats) > 0;
+      }
+    };
+
+    const open = () => {
+      prepareForm();
+      form.hidden = false;
+      done.hidden = true;
+      dialog.showModal();
+      history.pushState({ booking: true }, '');
+      track('booking_form_open', { services: picked().map((p) => p.id).join(','), packages: picked().map((p) => p.plan).join(',') });
+    };
+    $('[data-book]').addEventListener('click', open);
+    $$('[data-close]').forEach((b) => b.addEventListener('click', () => dialog.close()));
+    dialog.addEventListener('click', (e) => e.target === dialog && dialog.close()); // tap on the backdrop
+    // The phone's back button closes the form instead of leaving the page.
+    window.addEventListener('popstate', () => dialog.open && dialog.close());
+    dialog.addEventListener('close', () => {
+      if (history.state?.booking) history.back();
+      $('[data-book]').focus();
+    });
+
+    district.addEventListener('change', () => ($('[data-other-wrap]').hidden = district.value !== 'other'));
+    notes.addEventListener('input', () => ($('[data-notes-count]').textContent = `${notes.value.length} / 300`));
+
+    // ---------- Validation ----------
+    const fieldError = (id: string, msg: string) => {
+      const el = $(`#${id}`);
+      const p = $(`#${id}-err`);
+      p.textContent = msg;
+      p.hidden = !msg;
+      if (el.matches('input, select, textarea')) el.setAttribute('aria-invalid', String(!!msg));
+    };
+    const validate = () => {
+      // `label` names the field in the summary where the message alone is ambiguous (several ages).
+      const errors: { id: string; focus: string; msg: string; label?: string }[] = [];
+      const add = (id: string, msg: string, focus = id, label?: string) => errors.push({ id, focus, msg, label });
+      const labelOf = (id: string) => $(`label[for="${id}"]`, form)?.textContent?.trim();
+      $$('[id$="-err"]', form).forEach((p) => fieldError(p.id.replace(/-err$/, ''), ''));
+
+      if (!$<HTMLInputElement>('#bk-name').value.trim()) add('bk-name', cfg.errors.name);
+      if (!district.value) add('bk-district', cfg.errors.district);
+      else if (district.value === 'other' && !$<HTMLInputElement>('#bk-district-other').value.trim()) add('bk-district-other', cfg.errors.districtOther);
+      if (!date.value) add('bk-date', cfg.errors.date);
+      else if (date.value < today()) add('bk-date', cfg.errors.datePast);
+      if (!checked(form, 'input[name=time]')) add('bk-time', cfg.errors.time, 'bk-time input');
+      $$<HTMLInputElement>('[data-ages] input').forEach((i) => {
+        if (i.value === '' || !i.checkValidity()) add(i.id, cfg.errors.age, i.id, labelOf(i.id));
+      });
+      if (has('elderly-companionship')) {
+        const age = $<HTMLInputElement>('#bk-elder-age');
+        if (age.value === '' || !age.checkValidity()) add('bk-elder-age', cfg.errors.age, 'bk-elder-age', labelOf('bk-elder-age'));
+        if (!checked(form, 'input[name=mobility]')) add('bk-mobility', cfg.errors.mobility, 'bk-mobility input');
+      }
+      if (has('pet-sitting') && !$$<HTMLInputElement>('input[name=pet]:checked').length) add('bk-pets', cfg.errors.pets, 'bk-pets input');
+      if (!$<HTMLInputElement>('#bk-consent').checked) add('bk-consent', cfg.errors.consent);
+
+      errors.forEach((e) => fieldError(e.id, e.msg));
+      const list = $('ul', errorsBox);
+      list.replaceChildren(
+        ...errors.map((e) => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = `#${e.id}`;
+          a.className = 'underline';
+          a.textContent = e.label ? `${e.label}: ${e.msg}` : e.msg;
+          a.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            $(`#${e.focus.split(' ')[0]}`).scrollIntoView({ block: 'center' });
+            $<HTMLElement>(`#${e.focus}`).focus();
+          });
+          li.append(a);
+          return li;
+        }),
+      );
+      errorsBox.hidden = errors.length === 0;
+      if (errors.length) errorsBox.focus();
+      return errors.length === 0;
+    };
+
+    // ---------- Message + submit ----------
+    const buildPayload = (): BookingPayload => {
+      const list = picked();
+      const elderly = has('elderly-companionship');
+      return {
+        lang: cfg.lang,
+        services: list,
+        name: $<HTMLInputElement>('#bk-name').value.trim(),
+        district: district.value === 'other' ? $<HTMLInputElement>('#bk-district-other').value.trim() : cfg.districts[district.value],
+        date: date.value,
+        time: checked(form, 'input[name=time]'),
+        ages: $$<HTMLInputElement>('[data-ages] input').map((i) => ({ kind: i.dataset.kind as 'child' | 'baby', value: Number(i.value) })),
+        elderAge: elderly ? Number($<HTMLInputElement>('#bk-elder-age').value) : undefined,
+        mobility: elderly ? checked(form, 'input[name=mobility]') : undefined,
+        pets: has('pet-sitting') ? $$<HTMLInputElement>('input[name=pet]:checked').map((i) => i.value) : undefined,
+        language: checked(form, 'input[name=language]'),
+        notes: notes.value.trim(),
+        estimate: estimate(list),
+      };
+    };
+    const buildMessage = (p: BookingPayload) => {
+      const m = cfg.msg;
+      const lines = [m.hello, `*${m.header}*`, ''];
+      p.services.forEach((s) => lines.push(`• ${cfg.services[s.id].name}: ${describe(s).join(' · ')}`));
+      lines.push('', `${m.name}: ${p.name}`, `${m.district}: ${p.district}`, `${m.date}: ${p.date}`, `${m.time}: ${cfg.startTimes[p.time]}`);
+      const kids = p.ages.filter((a) => a.kind === 'child').map((a) => `${a.value} ${m.years}`);
+      const babies = p.ages.filter((a) => a.kind === 'baby').map((a) => `${a.value} ${m.weeks}`);
+      if (kids.length) lines.push(`${m.ages}: ${kids.join('، ')}`);
+      if (babies.length) lines.push(`${m.babies}: ${babies.join('، ')}`);
+      if (p.elderAge != null) lines.push(`${m.elderAge}: ${p.elderAge}`, `${m.mobility}: ${cfg.mobility[p.mobility!]}`);
+      if (p.pets) lines.push(`${m.pets}: ${p.pets.map((x) => cfg.pets[x]).join('، ')}`);
+      lines.push(`${m.language}: ${cfg.languages[p.language]}`);
+      if (p.notes) lines.push(`${m.notes}: ${p.notes}`);
+      lines.push('', p.estimate == null ? m.estimateWa : `${m.estimate} ${sarFor(cfg.lang, cfg.sar, p.estimate)}`);
+      // English lists use commas.
+      return cfg.lang === 'ar' ? lines.join('\n') : lines.join('\n').replaceAll('، ', ', ');
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!validate()) return;
+      const payload = buildPayload();
+      const url = `${cfg.base}?text=${encodeURIComponent(buildMessage(payload))}`;
+      submitBooking(payload);
+      track('booking_whatsapp_submit', { services: payload.services.map((s) => s.id).join(','), packages: payload.services.map((s) => s.plan).join(',') });
+      $<HTMLAnchorElement>('[data-again]').href = url;
+      const win = window.open(url, '_blank');
+      if (win) win.opener = null;
+      else location.href = url;
+      form.hidden = true;
+      done.hidden = false;
+      $('[data-done-title]').focus();
+    });
+  });
+</script>

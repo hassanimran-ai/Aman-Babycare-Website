@@ -34,6 +34,10 @@ export default {
           100: '#F7E4E1', // soft tint for baby moments only
           200: '#EFCBC6',
           300: '#E3A9A2',
+          // Muted rose for form errors only (text and outlines), never as decoration.
+          700: '#9A4740',
+          800: '#7C3630',
+          900: '#5C2722',
         },
         cream: {
           50: '#FFFDF9', // cards

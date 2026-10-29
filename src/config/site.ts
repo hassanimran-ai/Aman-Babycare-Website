@@ -40,6 +40,9 @@ export const site = {
     },
   },
 
+  // Tag IDs. Empty = that tag never loads. PHASE 2: cookie banner; tags load only after consent.
+  analytics: { ga4: '', meta: '', snapchat: '' },
+
   social: {
     instagram: '',
     tiktok: '',
