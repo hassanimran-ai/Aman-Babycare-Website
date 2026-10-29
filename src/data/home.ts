@@ -20,8 +20,8 @@ export const homeFaq: { q: L; a: L }[] = [
   {
     q: { ar: 'هل يمكن لمقدّمة رعاية واحدة تقديم أكثر من خدمة؟', en: 'Can one caregiver do more than one service?' },
     a: {
-      ar: 'نعم، هذا ما يميز أمان. يمكن جمع رعاية الأطفال مع ترتيب البيت مثلاً، حسب حجم العمل. استخدموا أداة تكوين الباقة لتجربة ذلك.',
-      en: 'Yes, that is what makes Aman different. For example, babysitting can be combined with light housework, depending on the workload. Try the bundle builder to see how.',
+      ar: 'نعم، هذا ما يميز أمان. يمكن جمع رعاية الأطفال مع ترتيب البيت مثلاً، حسب حجم العمل. اختاروا خدماتكم في «احجزي خدمتك» لتروا ذلك.',
+      en: 'Yes, that is what makes Aman different. For example, babysitting can be combined with light housework, depending on the workload. Pick your services in Book Your Service to see how.',
     },
   },
   {

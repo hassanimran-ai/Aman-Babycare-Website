@@ -12,4 +12,4 @@ Data: `src/data/packages.ts`. Edit prices there only.
 - Never label a package "most popular" (that's a claim). "Lowest hourly rate" is allowed only when the maths shows it.
 
 ## Page layout
-- A glass-ribbon bar (`GlassRibbon`, `current="location"`) sticks under the nav with links to `#on-demand`, `#monthly`, `#elderly` and `#builder`. All sections stay on the page; the glass follows the section you scroll through, and tapping an item scrolls to it (client request: not tabs).
+- A glass-ribbon bar (`GlassRibbon`, `current="location"`) sticks under the nav with links to `#on-demand`, `#monthly`, `#elderly` and `#booking` (Book Your Service). All sections stay on the page; the glass follows the section you scroll through, and tapping an item scrolls to it (client request: not tabs).

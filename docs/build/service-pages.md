@@ -9,7 +9,7 @@ Template: `src/components/service/ServicePage.astro`. Content: `src/data/service
 4. What's included / what to have ready (two short lists).
 5. CTA band.
 6. Packages for this service (from `packages.ts`), or "Ask for a price" + a link to `/packages/`.
-7. Pairs well with: 2–3 related services and a link to the bundle builder (`/packages/#builder`).
+7. Pairs well with: 2–3 related services and a Book Your Service link that preselects this service (`/packages/?service=<slug>#booking`).
 8. Current seasonal offer tie-in.
 9. Service FAQ (FAQPage schema).
 10. Closing CTA.
@@ -18,4 +18,4 @@ Template: `src/components/service/ServicePage.astro`. Content: `src/data/service
 - Every page's copy is unique: no shared paragraphs between services.
 - Schema: LocalBusiness (layout) + Service + BreadcrumbList + FAQPage.
 - Title ≤ 60 chars, description ≤ 155 chars, in the page's language.
-- Links: Packages, the bundle builder, 2–3 related services. No dead ends.
+- Links: Packages, Book Your Service, 2–3 related services. No dead ends.
