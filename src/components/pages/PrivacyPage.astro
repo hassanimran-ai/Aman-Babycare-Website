@@ -1,0 +1,220 @@
+---
+// Privacy policy (PDPL-style). Describes what the site and WhatsApp booking actually do today:
+// no forms, no accounts, no analytics or ad cookies. Update it when any of that changes.
+// REVIEW-LEGAL: a Saudi lawyer should review before site.isLive = true. REVIEW-AR: Arabic is a first draft.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../Breadcrumbs.astro';
+import { site, whatsappUrl, type Locale } from '../../config/site';
+import { href, ui } from '../../i18n/ui';
+import { breadcrumbSchema } from '../../lib/schema';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const crumbs = [
+  { name: ui.nav.home[lang], url: href(lang, '') },
+  { name: ui.nav.privacy[lang], url: href(lang, 'privacy') },
+];
+const updated = lang === 'ar' ? '29 أكتوبر 2026' : '29 October 2026';
+
+type Block = { h: string; p?: string[]; list?: string[]; note?: string };
+const t: { title: string; description: string; h1: string; lead: string; updatedLabel: string; blocks: Block[]; contactCta: string } = {
+  ar: {
+    title: 'سياسة الخصوصية | أمان لرعاية المواليد والخدمات المنزلية',
+    description: 'كيف تجمع أمان بياناتك عبر واتساب والموقع وتستخدمها وتحفظها، ومدة الاحتفاظ بها، وحقوقك وفق نظام حماية البيانات الشخصية في المملكة.',
+    h1: 'سياسة الخصوصية',
+    lead: 'نحن ندخل بيوتكم، ونعرف أن الثقة تبدأ من طريقة تعاملنا مع معلوماتكم. توضح هذه الصفحة ما نجمعه، ولماذا، ومن يطّلع عليه، وكيف تمارسون حقوقكم.',
+    updatedLabel: 'آخر تحديث',
+    blocks: [
+      {
+        h: 'من نحن',
+        p: [
+          `تشرح هذه السياسة كيف تتعامل ${site.legalName.ar} (باسم «${site.name.ar}»، سجل تجاري رقم ${site.crNumber})، ومقرها ${site.city.ar}، ${site.country.ar}، مع البيانات الشخصية. نحن «جهة التحكم» في هذه البيانات وفق نظام حماية البيانات الشخصية في المملكة العربية السعودية.`,
+        ],
+      },
+      {
+        h: 'البيانات التي نجمعها',
+        p: [
+          'عبر واتساب: عندما تراسلوننا نحصل على اسمكم ورقم جوالكم والرسائل التي ترسلونها، وما تختارون مشاركته لترتيب الزيارة: العنوان أو الحي، والخدمات والمواعيد المطلوبة، ومعلومات عمّن سنرعاه، مثل عمر الطفل وروتينه، أو احتياجات الوالدين، أو معلومات عن حيواناتكم الأليفة.',
+          'عبر هذا الموقع: لا يحتوي الموقع على نماذج أو حسابات. يعالج مزوّد الاستضافة (Cloudflare) بيانات تقنية مثل عنوان IP ونوع المتصفح والصفحات المطلوبة، لتشغيل الموقع وحمايته. لا يستخدم الموقع حالياً ملفات تعريف ارتباط للتحليلات أو الإعلانات، وإن أضفناها مستقبلاً فلن تعمل إلا بعد موافقتكم.',
+          'البيانات الحساسة: بعض ما قد تشاركونه، مثل الحساسية أو تعليمات الدواء، يُعدّ بيانات حساسة. لا نطلب منها إلا ما يلزم لرعاية آمنة، والقرار في مشاركتها لكم.',
+        ],
+      },
+      {
+        h: 'لماذا نستخدمها',
+        list: [
+          'للرد عليكم وإرسال الأسعار وترتيب الحجوزات بناءً على طلبكم.',
+          'لتقديم الخدمة في بيتكم وفق تعليماتكم.',
+          'لحفظ السجلات التي يفرضها النظام، مثل الفواتير.',
+          'لا نبيع بياناتكم، ولا نستخدمها للإعلانات دون موافقتكم.',
+        ],
+      },
+      {
+        h: 'مع من نشاركها',
+        list: [
+          'مقدّمة الرعاية المكلّفة بزيارتكم، بالقدر الذي تحتاجه لأداء العمل.',
+          'مزوّدو خدمات يعملون لصالحنا: واتساب (Meta) للمراسلة، وCloudflare لاستضافة الموقع. تخضع رسائل واتساب أيضاً لسياسة الخصوصية الخاصة بواتساب.',
+          'الجهات الرسمية عندما يُلزمنا النظام بذلك.',
+          'قد يعالج هؤلاء المزوّدون البيانات خارج المملكة، ولا نعتمد عليهم إلا بالقدر الذي يسمح به النظام.',
+        ],
+      },
+      {
+        h: 'مدة الاحتفاظ',
+        p: [
+          'نحتفظ ببياناتكم ما دامت لازمة للغرض الذي جُمعت له: محادثات الحجز وتفاصيل الرعاية لمدة [RETENTION_PERIOD] بعد آخر حجز، والفواتير للمدة التي يحددها النظام. بعد ذلك نحذفها أو نجعلها غير قابلة لتحديد هويتكم.',
+        ],
+      },
+      {
+        h: 'حقوقكم',
+        list: [
+          'أن تعرفوا كيف تُجمع بياناتكم وتُستخدم.',
+          'أن تطّلعوا على بياناتكم وتحصلوا على نسخة منها.',
+          'أن تطلبوا تصحيح أي بيانات غير دقيقة.',
+          'أن تطلبوا حذف بياناتكم حين لا تعود لازمة.',
+          'أن تسحبوا موافقتكم في أي وقت.',
+          'أن تقدّموا شكوى إلى الهيئة السعودية للبيانات والذكاء الاصطناعي (سدايا).',
+        ],
+        note: `لممارسة أي من هذه الحقوق، راسلونا على واتساب أو على ${site.privacyEmail}، وسنرد خلال المدة التي يحددها النظام.`,
+      },
+      {
+        h: 'حماية البيانات',
+        p: ['نقصر الاطلاع على تفاصيلكم على من يرتّب زيارتكم ومن يقوم بها، ونحذف ما لا نحتاجه.'],
+      },
+      {
+        h: 'بيانات الأطفال',
+        p: ['لا نجمع معلومات عن الأطفال إلا من الوالدين أو الأولياء، ولغرض رعايتهم فقط.'],
+      },
+      {
+        h: 'تحديث هذه السياسة',
+        p: ['قد نحدّث هذه السياسة عند تغيّر خدماتنا أو الأنظمة، ونغيّر تاريخ «آخر تحديث» أعلى الصفحة.'],
+      },
+      {
+        h: 'التواصل بشأن الخصوصية',
+        list: [
+          `الجهة المسؤولة: ${site.legalName.ar}`,
+          `السجل التجاري: ${site.crNumber}`,
+          `البريد الإلكتروني للخصوصية: ${site.privacyEmail}`,
+          `واتساب: ${site.whatsappNumber}`,
+        ],
+      },
+    ],
+    contactCta: 'اسألونا عن بياناتكم',
+  },
+  en: {
+    title: 'Privacy Policy | Aman Baby Care & Home Services',
+    description: 'How Aman collects, uses and keeps your data via WhatsApp and this site, how long we keep it, and your rights under the Saudi PDPL.',
+    h1: 'Privacy policy',
+    lead: 'We come into your home, and trust starts with how we handle your information. This page explains what we collect, why, who sees it, and how to use your rights.',
+    updatedLabel: 'Last updated',
+    blocks: [
+      {
+        h: 'Who we are',
+        p: [
+          `This policy explains how ${site.legalName.en} (trading as "${site.name.en}", commercial registration ${site.crNumber}), based in ${site.city.en}, ${site.country.en}, handles personal data. We are the controller of this data under the Saudi Personal Data Protection Law (PDPL).`,
+        ],
+      },
+      {
+        h: 'What we collect',
+        p: [
+          "Through WhatsApp: when you message us we receive your name, phone number and the messages you send, plus whatever you choose to share to arrange a visit: your address or neighbourhood, the services and times you need, and details about who we'll look after, such as a child's age and routine, a parent's needs, or your pets.",
+          "Through this website: the site has no forms and no accounts. Our hosting provider (Cloudflare) processes technical data such as your IP address, browser type and the pages you request, to run and protect the site. The site uses no analytics or advertising cookies today; if we add them, they'll only run after you agree.",
+          "Sensitive data: some details you may share, such as allergies or medication instructions, count as sensitive data. We only ask for what safe care needs, and it's your choice to share it.",
+        ],
+      },
+      {
+        h: 'Why we use it',
+        list: [
+          'To reply to you, send prices and arrange bookings at your request.',
+          'To provide the service in your home, following your instructions.',
+          'To keep records the law requires, such as invoices.',
+          "We don't sell your data, and we don't use it for advertising without your consent.",
+        ],
+      },
+      {
+        h: 'Who we share it with',
+        list: [
+          'The caregiver assigned to your visit, only as much as the job needs.',
+          "Service providers working for us: WhatsApp (Meta) for messaging and Cloudflare for hosting this site. WhatsApp messages are also covered by WhatsApp's own privacy policy.",
+          'Public authorities, when the law requires it.',
+          'These providers may process data outside Saudi Arabia; we use them only as far as the law allows.',
+        ],
+      },
+      {
+        h: 'How long we keep it',
+        p: [
+          'We keep your data only as long as its purpose needs: booking conversations and care details for [RETENTION_PERIOD] after your last booking, and invoices for as long as the law requires. After that we delete it or make it anonymous.',
+        ],
+      },
+      {
+        h: 'Your rights',
+        list: [
+          'To know how your data is collected and used.',
+          'To see your data and get a copy of it.',
+          'To have inaccurate data corrected.',
+          "To ask us to delete your data once it's no longer needed.",
+          'To withdraw your consent at any time.',
+          'To complain to the Saudi Data & AI Authority (SDAIA).',
+        ],
+        note: `To use any of these rights, message us on WhatsApp or email ${site.privacyEmail}. We'll reply within the time the law sets.`,
+      },
+      {
+        h: 'Keeping it safe',
+        p: ["We limit access to your details to the people who arrange and carry out your visit, and we delete what we don't need."],
+      },
+      {
+        h: "Children's information",
+        p: ['We only collect information about children from their parents or guardians, and only to care for them.'],
+      },
+      {
+        h: 'Changes to this policy',
+        p: ['We may update this policy when our services or the law change, and we change the "Last updated" date at the top of this page.'],
+      },
+      {
+        h: 'Privacy contact',
+        list: [
+          `Controller: ${site.legalName.en}`,
+          `Commercial registration: ${site.crNumber}`,
+          `Privacy email: ${site.privacyEmail}`,
+          `WhatsApp: ${site.whatsappNumber}`,
+        ],
+      },
+    ],
+    contactCta: 'Ask us about your data',
+  },
+}[lang];
+const message = lang === 'ar' ? 'السلام عليكم، لدي سؤال عن بياناتي الشخصية.' : 'Hello, I have a question about my personal data.';
+---
+
+<BaseLayout lang={lang} title={t.title} description={t.description} path="privacy" schema={[breadcrumbSchema(crumbs, Astro.site)]} waMessage={message}>
+  <Breadcrumbs lang={lang} items={crumbs} />
+  <article class="container-x pb-24 pt-8 md:pb-32">
+    <div class="max-w-3xl">
+      <h1 class="text-4xl text-green-800 sm:text-5xl">{t.h1}</h1>
+      <p class="mt-6 text-lg text-ink-600">{t.lead}</p>
+      <p class="mt-4 text-sm text-ink-500">{t.updatedLabel}: {updated}</p>
+
+      {
+        t.blocks.map((b) => (
+          <section class="mt-12 border-t border-gold-500/20 pt-8">
+            <h2 class="text-2xl text-green-800">{b.h}</h2>
+            {b.p?.map((para) => <p class="mt-4 text-ink-700">{para}</p>)}
+            {b.list && (
+              <ul class="mt-4 grid gap-3">
+                {b.list.map((item) => (
+                  <li class="flex items-start gap-3 text-ink-700">
+                    <span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-gold-500" aria-hidden="true" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {b.note && <p class="mt-4 text-ink-700">{b.note}</p>}
+          </section>
+        ))
+      }
+
+      <a href={whatsappUrl(message)} rel="noopener" class="btn btn-primary mt-12">{t.contactCta}</a>
+    </div>
+  </article>
+</BaseLayout>

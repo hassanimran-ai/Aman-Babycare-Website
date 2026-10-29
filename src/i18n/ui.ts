@@ -17,6 +17,7 @@ export const ui = {
     offers: { ar: 'العروض', en: 'Offers' },
     faq: { ar: 'الأسئلة الشائعة', en: 'FAQ' },
     faqShort: { ar: 'الأسئلة', en: 'FAQ' }, // nav ribbon, where space is tight
+    privacy: { ar: 'سياسة الخصوصية', en: 'Privacy policy' },
   },
   langName: { ar: 'العربية', en: 'English' },
   switchTo: { ar: 'Switch to English', en: 'التبديل إلى العربية' },

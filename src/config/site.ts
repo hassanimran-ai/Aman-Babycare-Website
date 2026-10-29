@@ -28,6 +28,9 @@ export const site = {
   email: '[EMAIL]',
   address: { en: '[ADDRESS]', ar: '[ADDRESS]' },
   crNumber: '[CR_NUMBER]',
+  // Privacy policy: the registered legal entity (data controller) and its privacy contact.
+  legalName: { en: '[LEGAL_NAME]', ar: '[LEGAL_NAME]' },
+  privacyEmail: '[PRIVACY_EMAIL]',
 
   // The only allowed trust claim.
   trust: {
