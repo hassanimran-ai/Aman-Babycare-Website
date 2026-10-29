@@ -25,6 +25,4 @@ Rules: see `docs/build/imagery.md` (modest, Gulf home settings, bright and warm)
 ## Credits
 | File | Source | Author | Licence |
 | --- | --- | --- | --- |
-| `hero.jpg`, `babysitting.jpg`, `home-cleaning.jpg`, `elderly-companionship.jpg`, `pet-sitting.jpg`, `pick-up-drop-off.jpg`, `errands.jpg`, `trust.jpg`, `services-hero.jpg`, `packages-hero.jpg`, `how-it-works.jpg`, `first-families.jpg`, `offer-white-friday.jpg`, `offer-founding-day.jpg`, `offer-eid-al-fitr.jpg`, `offer-eid-al-adha.jpg`, `offer-back-to-school.jpg`, `offer-national-day.jpg` | AI-generated (Google Gemini, "Nano Banana"), supplied by the client, Oct 2026 | Client | Client-owned; illustrative, not real staff or clients |
-
-Missing: `offer-ramadan` (the delivered `14.png` was a copy of `13.png`).
+| `hero.jpg`, `babysitting.jpg`, `home-cleaning.jpg`, `elderly-companionship.jpg`, `pet-sitting.jpg`, `pick-up-drop-off.jpg`, `errands.jpg`, `trust.jpg`, `services-hero.jpg`, `packages-hero.jpg`, `how-it-works.jpg`, `first-families.jpg`, `offer-white-friday.jpg`, `offer-ramadan.jpg`, `offer-founding-day.jpg`, `offer-eid-al-fitr.jpg`, `offer-eid-al-adha.jpg`, `offer-back-to-school.jpg`, `offer-national-day.jpg` | AI-generated (Google Gemini, "Nano Banana"), supplied by the client, Oct 2026 | Client | Client-owned; illustrative, not real staff or clients |
