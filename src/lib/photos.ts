@@ -24,6 +24,10 @@ const meta: Record<string, { alt: L; focus?: string }> = {
     alt: { ar: 'مقدّمة رعاية تصبّ القهوة العربية لسيدة مسنّة مبتسمة في المجلس', en: 'A caregiver pouring Arabic coffee for a smiling elderly woman in the majlis' },
     focus: '52% 50%',
   },
+  'pet-sitting': {
+    alt: { ar: 'مقدّمة رعاية تضع الطعام لقطة في فناء البيت بينما تنام قطة أخرى على الأريكة', en: 'A caregiver feeding a cat in the courtyard while another cat naps on the bench' },
+    focus: '92% 50%',
+  },
   'pick-up-drop-off': {
     alt: { ar: 'مقدّمة رعاية تمشي مع تلميذ يداً بيد في شارع تحفّه النخيل', en: 'A caregiver walking hand in hand with a schoolboy along a palm-lined street' },
     focus: '50% 50%',
@@ -45,6 +49,31 @@ const meta: Record<string, { alt: L; focus?: string }> = {
   },
   'how-it-works': {
     alt: { ar: 'يدان تكتبان رسالة على الهاتف بجانب فنجان قهوة وتمر', en: 'Hands typing a message on a phone beside Arabic coffee and dates' },
+  },
+  'first-families': {
+    alt: { ar: 'أم تضحك مع ابنتها الصغيرة على الأريكة', en: 'A mother laughing with her little daughter on the sofa' },
+    focus: '42% 50%',
+  },
+  'offer-white-friday': {
+    alt: { ar: 'هدايا مغلّفة بالأبيض بشرائط ذهبية', en: 'Gifts wrapped in white with gold ribbons' },
+  },
+  'offer-ramadan': {
+    alt: { ar: 'مائدة إفطار رمضانية بالتمر والقهوة العربية', en: 'A Ramadan iftar table with dates and Arabic coffee' },
+  },
+  'offer-founding-day': {
+    alt: { ar: 'فناء نجدي تراثي بباب خشبي ملوّن ودلّة قهوة', en: 'A heritage Najdi courtyard with a painted wooden door and a coffee pot' },
+  },
+  'offer-eid-al-fitr': {
+    alt: { ar: 'مجلس مزيّن للعيد بالمعمول وأكياس الهدايا', en: 'A majlis ready for Eid with maamoul and gift bags' },
+  },
+  'offer-eid-al-adha': {
+    alt: { ar: 'حقيبة سفر عند باب البيت وقطة نائمة على المقعد', en: 'A suitcase by the front door and a cat asleep on the bench' },
+  },
+  'offer-back-to-school': {
+    alt: { ar: 'حقيبة مدرسية وعلبة طعام وحذاءان عند باب البيت', en: 'A school bag, lunch box and shoes by the front door' },
+  },
+  'offer-national-day': {
+    alt: { ar: 'غرفة معيشة مزيّنة بالأخضر والأبيض لليوم الوطني', en: 'A living room dressed in green and white for National Day' },
   },
 };
 

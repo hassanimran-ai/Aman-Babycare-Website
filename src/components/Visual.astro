@@ -18,7 +18,8 @@ interface Props {
   /** 'logo' shows the logo mark in the panel instead of an icon. */
   art?: 'icon' | 'logo';
   tone?: 'cream' | 'pink' | 'green';
-  shape?: 'arch' | 'rounded' | 'square';
+  /** banner: wide strip across the top of a card; card: small rounded photo inside a card. */
+  shape?: 'arch' | 'rounded' | 'square' | 'banner' | 'card';
   eager?: boolean;
   sizes?: string;
   class?: string;
@@ -50,6 +51,8 @@ const shapeCls = {
   arch: 'arch aspect-[4/5]',
   rounded: 'rounded-[2rem] aspect-[16/10] overflow-hidden',
   square: 'rounded-2xl aspect-square overflow-hidden',
+  banner: 'aspect-[16/7] overflow-hidden',
+  card: 'rounded-2xl aspect-[16/10] overflow-hidden',
 }[shape];
 ---
 
