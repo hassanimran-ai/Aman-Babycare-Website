@@ -237,12 +237,13 @@ const welcomeMsg = lang === 'ar' ? `السلام عليكم، أرغب بـ${wel
 
     <!-- Coming soon: smaller bars that scroll sideways. -->
     <h3 class="mt-10 text-lg text-green-800">{ui.comingNext[lang]}</h3>
-    <ul
-      class="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-4 px-4 pb-3 focus-visible:outline-offset-[-2px] md:mx-0 md:scroll-px-0 md:px-0"
+    <div
+      class="-mx-4 mt-3 snap-x snap-mandatory overflow-x-auto scroll-px-4 px-4 pb-3 focus-visible:outline-offset-[-2px] md:mx-0 md:scroll-px-0 md:px-0"
       tabindex="0"
       role="region"
       aria-label={ui.comingNext[lang]}
     >
+    <ul class="flex gap-3">
       {
         upcomingOffers.map((o) => (
           <li class="flex w-72 shrink-0 snap-start items-center gap-3 rounded-2xl bg-cream-50 p-2.5 shadow-soft ring-1 ring-green-700/5">
@@ -262,6 +263,7 @@ const welcomeMsg = lang === 'ar' ? `السلام عليكم، أرغب بـ${wel
         ))
       }
     </ul>
+    </div>
   </div>
 </section>
 
