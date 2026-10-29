@@ -303,6 +303,14 @@ const welcomeMsg = lang === 'ar' ? `السلام عليكم، أرغب بـ${wel
   </div>
 </section>
 
+<!-- FAQ -->
+<section id="faq" class="scroll-mt-28 bg-cream-200/60 py-16 md:py-24">
+  <div class="container-x grid gap-10 lg:grid-cols-[1fr_2fr]">
+    <h2 class="reveal text-3xl text-green-800 md:text-4xl">{c.faqTitle}</h2>
+    <FAQ lang={lang} items={homeFaq} />
+  </div>
+</section>
+
 <CtaBand
   lang={lang}
   title={c.cta1Title}
@@ -435,14 +443,6 @@ const welcomeMsg = lang === 'ar' ? `السلام عليكم، أرغب بـ${wel
         </div>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- FAQ -->
-<section id="faq" class="scroll-mt-28 bg-cream-200/60 py-16 md:py-24">
-  <div class="container-x grid gap-10 lg:grid-cols-[1fr_2fr]">
-    <h2 class="reveal text-3xl text-green-800 md:text-4xl">{c.faqTitle}</h2>
-    <FAQ lang={lang} items={homeFaq} />
   </div>
 </section>
 
