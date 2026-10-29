@@ -8,6 +8,7 @@ Data: `src/data/packages.ts`. Edit prices there only.
 - Groups: On-demand (hourly, weekly), Monthly babysitting (5/6/7 days, stay-in), Monthly elderly companionship (5/6/7 days), Welcome offer.
 - Services without a price (cleaning, pets, pick-up, errands) show "Ask for a price on WhatsApp".
 - Currency: «ر.س» in Arabic, "SAR" in English. Prices use Western digits in both languages (common on Saudi sites); revisit if the client prefers Arabic-Indic digits.
+- `SHOW_DISCOUNTS` in `src/config/site.ts` (currently `false`) hides every "was" price, strike-through and "Save SAR" badge. Turn it on only once the client confirms the discounts are real.
 - Never label a package "most popular" (that's a claim). "Lowest hourly rate" is allowed only when the maths shows it.
 
 ## Page layout

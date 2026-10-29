@@ -48,6 +48,10 @@ export const site = {
   },
 } as const;
 
+// While false: no "was" prices, strike-throughs or "Save SAR" badges anywhere on the site.
+// Turn on only once the client confirms the discounts are real.
+export const SHOW_DISCOUNTS = false;
+
 export interface Service {
   slug: string;
   name: Record<Locale, string>;
