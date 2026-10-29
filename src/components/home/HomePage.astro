@@ -12,7 +12,7 @@ import BundleBuilder from '../BundleBuilder.astro';
 import CtaBand from '../CtaBand.astro';
 import FAQ from '../FAQ.astro';
 import { whatsappUrl, type Locale } from '../../config/site';
-import { coreServices, moreServices, serviceBySlug } from '../../data/services';
+import { coreServices, featuredServices, moreServices, serviceBySlug } from '../../data/services';
 import { featuredOffer as featured, upcomingOffers } from '../../data/offers';
 import { packages, welcomeOffer } from '../../data/packages';
 import { href, ui } from '../../i18n/ui';
@@ -27,7 +27,7 @@ const { lang } = Astro.props;
 const c = {
   ar: {
     h1: 'يدٌ أمينة في بيتك، لكل من تحب',
-    lead: 'رعاية الأطفال، تنظيف المنزل، صحبة الوالدين، ورعاية القطط والكلاب في الرياض. مقدّمة رعاية واحدة يمكنها أن تجمع لكم أكثر من خدمة في زيارة واحدة.',
+    lead: 'رعاية المواليد والأمهات، رعاية الأطفال، تنظيف المنزل، صحبة الوالدين، ورعاية القطط والكلاب في الرياض. مقدّمة رعاية واحدة يمكنها أن تجمع لكم أكثر من خدمة في زيارة واحدة.',
     trust: ['فريق خضع للتحقق من الخلفية', 'مقدّمة رعاية واحدة لعدة خدمات', 'الحجز مباشرة عبر واتساب'],
     heroAlt: 'شعار أمان: أم تحتضن طفلها داخل قلب',
     offersTitle: 'عروض المواسم',
@@ -74,7 +74,7 @@ const c = {
   },
   en: {
     h1: 'A trusted pair of hands at home, for everyone you love',
-    lead: 'Babysitting, home cleaning, company for your parents, and cat and dog sitting in Riyadh. One caregiver can combine several services in a single visit.',
+    lead: 'Newborn and mother care, babysitting, home cleaning, company for your parents, and cat and dog sitting in Riyadh. One caregiver can combine several services in a single visit.',
     trust: ['Background-checked staff', 'One caregiver, several services', 'Book directly on WhatsApp'],
     heroAlt: 'Aman logo: a mother holding her baby inside a heart',
     offersTitle: 'Seasonal offers',
@@ -274,7 +274,10 @@ const welcomeMsg = lang === 'ar' ? `السلام عليكم، أرغب بـ${wel
         <p class="mt-3 text-ink-600">{c.servicesText}</p>
       </div>
     </div>
-    <ul class="reveal-group mt-10 grid gap-6 md:grid-cols-3">
+    <ul class="reveal-group mt-10 grid gap-6">
+      {featuredServices.map((s) => <li><ServiceCard lang={lang} service={s} size="featured" /></li>)}
+    </ul>
+    <ul class="reveal-group mt-6 grid gap-6 md:grid-cols-3">
       {coreServices.map((s) => <li><ServiceCard lang={lang} service={s} /></li>)}
     </ul>
     <h3 class="mt-16 text-2xl text-green-800">{c.moreHelpTitle}</h3>

@@ -29,7 +29,7 @@ Deadline: Saturday Oct 31, 2026, 6 PM. MVP first; mark later work with `// PHASE
 
 ## Services (one caregiver can combine several; sold as bundles)
 Main: Babysitting, Home Cleaning, Elderly Companionship, Dog & Cat Sitting, Pick-up & Drop-off, Errands & Personal Assistance.
-Newborn & mother care (one combined page): Newborn Care at Home, Feeding Support, Baby Bathing & Hygiene, Sleep & Comfort, Mother & Baby Support. Parked as PHASE 2 for now (client instruction); do not link to it. Personalized Care Plans live on the Packages page.
+Newborn & Mother Care (one combined page at /services/newborn-care/, featured first): Newborn Care at Home, Feeding Support, Baby Bathing & Hygiene, Sleep & Comfort, Mother & Baby Support, Baby Shower & Welcoming Guests. Help and support only, never nursing or medical care. Personalized Care Plans live on the Packages page.
 
 ## SEO Rules (every page)
 - One unique `<title>` (≤60 chars) and meta description (≤155 chars), in the page's language.

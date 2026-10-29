@@ -38,6 +38,15 @@ export const icons = {
   calendar: '<rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>',
   chat: '<path d="M5 18.5V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H8.5z"/><path d="M9 9.5h6M9 12.5h4"/>',
   home: '<path d="M4 11 12 4l8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/>',
+  // Newborn & mother care
+  baby:
+    '<circle cx="12" cy="7.5" r="3.5"/><path d="M8.5 11.5C6.9 13.1 6 15.5 6 18c0 1.5 2.7 2.5 6 2.5s6-1 6-2.5c0-2.5-.9-4.9-2.5-6.5"/><path d="M9.5 15.5c1.5 1 3.5 1 5 0"/>',
+  bottle:
+    '<path d="M10 3.5h4"/><path d="M10.5 3.5V6L9 8h6l-1.5-2V3.5"/><rect x="8" y="8" width="8" height="12.5" rx="2"/><path d="M8 12h3M8 15.5h3"/>',
+  bath: '<path d="M3.5 12h17v2a5 5 0 0 1-5 5h-7a5 5 0 0 1-5-5z"/><path d="M6 12V6.5a2 2 0 0 1 3.6-1.2"/><path d="M7 19l-1 2M17 19l1 2"/>',
+  sleep: '<path d="M13 5a7.5 7.5 0 1 0 6.5 11A6 6 0 0 1 13 5z"/><path d="M16 3.5h4l-4 4h4"/>',
+  mother:
+    '<circle cx="9.5" cy="5" r="2.3"/><path d="M5 21v-6a4.5 4.5 0 0 1 8.2-2.5"/><circle cx="16" cy="13.5" r="2.3"/><path d="M9 17.5c2.5 1.8 6 2 9-.2"/>',
 } as const;
 
 export type IconName = keyof typeof icons;

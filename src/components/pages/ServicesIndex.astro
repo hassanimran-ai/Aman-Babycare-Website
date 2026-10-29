@@ -6,7 +6,7 @@ import Visual from '../Visual.astro';
 import { hasPhoto } from '../../lib/photos';
 import CtaBand from '../CtaBand.astro';
 import type { Locale } from '../../config/site';
-import { coreServices, moreServices } from '../../data/services';
+import { coreServices, featuredServices, moreServices } from '../../data/services';
 import { href, ui } from '../../i18n/ui';
 import { breadcrumbSchema } from '../../lib/schema';
 
@@ -22,18 +22,18 @@ const crumbs = [
 const t = {
   ar: {
     title: 'خدمات أمان المنزلية في الرياض | أمان',
-    description: 'رعاية الأطفال، مرافقة كبار السن، تنظيف المنازل، رعاية القطط والكلاب، التوصيل، والمشتريات في الرياض. احجز عبر واتساب.',
+    description: 'رعاية المواليد والأمهات، رعاية الأطفال، مرافقة كبار السن، تنظيف المنازل، رعاية الحيوانات، التوصيل، والمشتريات في الرياض.',
     h1: 'كل ما يحتاجه بيتكم، مع فريق واحد',
-    lead: 'ست خدمات منزلية يمكن حجزها منفردة أو جمعها في زيارة واحدة مع مقدّمة رعاية واحدة.',
+    lead: 'سبع خدمات منزلية يمكن حجزها منفردة أو جمعها في زيارة واحدة مع مقدّمة رعاية واحدة.',
     moreHelp: 'ومساعدة أكثر في البيت',
     ctaTitle: 'لم تجدوا ما تبحثون عنه؟',
     ctaText: 'اسألونا على واتساب؛ كثير من الطلبات المنزلية يمكننا ترتيبها.',
   },
   en: {
     title: 'Home Services in Riyadh | Aman',
-    description: 'Babysitting, elderly companionship, home cleaning, cat and dog sitting, rides and errands in Riyadh. Book on WhatsApp.',
+    description: 'Newborn and mother care, babysitting, elderly companionship, home cleaning, pet sitting, rides and errands in Riyadh. Book on WhatsApp.',
     h1: 'Everything your home needs, from one team',
-    lead: 'Six home services you can book on their own, or combine in a single visit with one caregiver.',
+    lead: 'Seven home services you can book on their own, or combine in a single visit with one caregiver.',
     moreHelp: 'More help at home',
     ctaTitle: "Can't find what you need?",
     ctaText: 'Ask us on WhatsApp; we can arrange many other jobs around the home.',
@@ -51,7 +51,10 @@ const t = {
       </div>
       {hasPhoto('services-hero') && <Visual lang={lang} photo="services-hero" alt="" shape="rounded" eager sizes="(min-width: 1024px) 560px, 90vw" class="shadow-card" />}
     </div>
-    <ul class="reveal-group mt-12 grid gap-6 md:grid-cols-3">
+    <ul class="reveal-group mt-12 grid gap-6">
+      {featuredServices.map((s) => <li><ServiceCard lang={lang} service={s} size="featured" headingLevel="h2" /></li>)}
+    </ul>
+    <ul class="reveal-group mt-6 grid gap-6 md:grid-cols-3">
       {coreServices.map((s) => <li><ServiceCard lang={lang} service={s} headingLevel="h2" /></li>)}
     </ul>
     <h2 class="reveal mt-16 text-2xl text-green-800">{t.moreHelp}</h2>

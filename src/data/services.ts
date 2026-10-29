@@ -5,8 +5,12 @@ import type { IconName } from '../components/icons';
 
 export interface ServiceContent {
   slug: string;
-  tier: 'core' | 'more'; // core: the three headline services, shown first and larger
+  // featured: Newborn & Mother Care, a wide card above the rest; core: the three headline services,
+  // shown large; more: the smaller "more help at home" row.
+  tier: 'featured' | 'core' | 'more';
   icon: IconName;
+  /** Services offered within this page (Newborn & Mother Care), shown as their own section. */
+  subservices?: { icon: IconName; name: L; text: L }[];
   name: L;
   card: L; // one line for cards
   meta: { title: L; description: L };
@@ -21,6 +25,77 @@ export interface ServiceContent {
 }
 
 export const services: ServiceContent[] = [
+  {
+    // Help and companionship only: never describe it as nursing, medical or clinical care.
+    slug: 'newborn-care',
+    tier: 'featured',
+    icon: 'baby',
+    name: { ar: 'رعاية المواليد والأمهات', en: 'Newborn & Mother Care' },
+    card: { ar: 'يد حانية لمولودكم، وراحة للأم في أسابيعها الأولى', en: 'Gentle hands for your newborn, and rest for mum in the early weeks' },
+    meta: {
+      title: { ar: 'رعاية المواليد والأمهات في المنزل بالرياض | أمان', en: 'Newborn & Mother Care at Home in Riyadh | Aman' },
+      description: {
+        ar: 'مساعدة في رعاية المولود ودعم الأم في بيتها بالرياض: الاستحمام، تجهيز الرضّاعات، النوم، واستقبال المولود. فريق خضع للتحقق من الخلفية.',
+        en: 'Help with your newborn and support for mum at home in Riyadh: bathing, bottles, settling to sleep and welcoming guests. Background-checked staff.',
+      },
+    },
+    h1: { ar: 'أسابيعكم الأولى مع المولود، بهدوء وطمأنينة', en: 'Your first weeks with baby, calmer and well rested' },
+    intro: {
+      ar: 'الأسابيع الأولى بعد الولادة جميلة ومتعبة معاً. مقدّمة رعاية هادئة تساعدكم في العناية اليومية بالمولود، وتخفف عن الأم أعباء البيت، لترتاح وتستقبل أهلها براحة بال.',
+      en: "The first weeks after birth are beautiful and exhausting. A calm caregiver helps with your baby's daily care and takes the housework off mum's hands, so she can rest and welcome family with peace of mind.",
+    },
+    subservices: [
+      { icon: 'baby', name: { ar: 'رعاية المولود في المنزل', en: 'Newborn care at home' }, text: { ar: 'عناية يومية لطيفة بمولودكم في بيته.', en: 'Gentle everyday care for your baby, at home.' } },
+      { icon: 'bottle', name: { ar: 'دعم الرضاعة والتغذية', en: 'Feeding support' }, text: { ar: 'تجهيز الرضّاعات وتعقيمها، والتجشئة والتهدئة بعد الرضعة.', en: 'Bottles prepared and sterilised; burping and settling after feeds.' } },
+      { icon: 'bath', name: { ar: 'استحمام المولود ونظافته', en: 'Baby bathing & hygiene' }, text: { ar: 'حمام آمن ولطيف، وعناية يومية بالنظافة.', en: 'A safe, gentle bath and daily hygiene care.' } },
+      { icon: 'sleep', name: { ar: 'النوم والراحة', en: 'Sleep & comfort' }, text: { ar: 'نساعد مولودكم على نوم أهدأ وروتين أوضح.', en: 'Helping your baby sleep more calmly, with a clearer routine.' } },
+      { icon: 'mother', name: { ar: 'دعم الأم والطفل', en: 'Mother & baby support' }, text: { ar: 'وقت للأم لترتاح، ووجبات خفيفة، ومساعدة في البيت.', en: 'Time for mum to rest, light meals and help around the house.' } },
+      { icon: 'gift', name: { ar: 'استقبال المولود', en: 'Baby shower & welcoming guests' }, text: { ar: 'تجهيز البيت والضيافة لاستقبال المهنئين، ورعاية الإخوة الكبار.', en: 'Home and hospitality ready for visitors, and older siblings looked after.' } },
+    ],
+    visit: [
+      { title: { ar: 'نتعرف على روتينكم', en: 'We learn your routine' }, text: { ar: 'مواعيد الرضعات والنوم، وطريقتكم في كل شيء.', en: 'Feeds, naps, and how you like things done.' } },
+      { title: { ar: 'عناية يومية بالمولود', en: 'Daily care for baby' }, text: { ar: 'حمام لطيف، وتغيير الحفاض، وتجهيز الملابس.', en: 'A gentle bath, nappy changes, clothes ready.' } },
+      { title: { ar: 'وقت لراحة الأم', en: 'Time for mum to rest' }, text: { ar: 'نهتم بالمولود بينما ترتاح الأم أو تنام قليلاً.', en: 'We mind the baby while mum rests or naps.' } },
+      { title: { ar: 'تسليم واضح', en: 'A clear handover' }, text: { ar: 'ملخص قصير: متى رضع، ومتى نام، وما لاحظناه.', en: 'A short note: feeds, sleeps and anything we noticed.' } },
+    ],
+    included: [
+      { ar: 'تغيير الحفاض وتجهيز الملابس', en: 'Nappy changes and dressing' },
+      { ar: 'حمام المولود ونظافته اليومية', en: "Baby's bath and daily hygiene" },
+      { ar: 'تجهيز الرضّاعات وتعقيمها', en: 'Preparing and sterilising bottles' },
+      { ar: 'تهدئة المولود ومساعدته على النوم', en: 'Soothing baby and settling them to sleep' },
+      { ar: 'وجبات خفيفة للأم وترتيب البيت', en: 'Light meals for mum and tidying up' },
+    ],
+    prepare: [
+      { ar: 'جدول الرضعات والنوم إن وُجد', en: 'Your feeding and sleep routine, if you have one' },
+      { ar: 'مستلزمات المولود في مكان واحد', en: "Baby's essentials in one place" },
+      { ar: 'أرقام الطوارئ وطبيب الأطفال', en: "Emergency contacts and your paediatrician's number" },
+    ],
+    related: ['babysitting', 'home-cleaning', 'errands'],
+    faq: [
+      {
+        q: { ar: 'هل هذه رعاية تمريضية؟', en: 'Is this nursing care?' },
+        a: {
+          ar: 'لا. نقدم مساعدة يومية في رعاية المولود ودعماً للأم في البيت. أي احتياج صحي للأم أو المولود يحتاج طبيباً أو مختصاً.',
+          en: 'No. We offer everyday help with your newborn and support for mum at home. Any health need for mother or baby needs a doctor or specialist.',
+        },
+      },
+      {
+        q: { ar: 'هل تساعدون في الرضاعة الطبيعية؟', en: 'Do you help with breastfeeding?' },
+        a: {
+          ar: 'نساعد فيما حول الرضعة: تجهيز المكان، وتجشئة المولود وتهدئته بعدها، وتجهيز الرضّاعات. الاستشارات المتخصصة في الرضاعة ليست من خدماتنا.',
+          en: 'We help around feeds: setting up, burping and settling baby afterwards, and preparing bottles. Specialist breastfeeding advice is not part of our service.',
+        },
+      },
+      {
+        q: { ar: 'هل يمكنكم مساعدتنا في استقبال المولود؟', en: 'Can you help us welcome guests for the new baby?' },
+        a: {
+          ar: 'نعم. نجهز البيت والضيافة قبل وصول المهنئين، ونرعى الإخوة الكبار أثناء الزيارة، ويمكن جمعها مع التنظيف والمشتريات.',
+          en: 'Yes. We get the home and hospitality ready before visitors arrive and look after older siblings during the visit. You can add cleaning and errands too.',
+        },
+      },
+    ],
+    whatsapp: { ar: 'السلام عليكم، أرغب بحجز رعاية المواليد والأمهات.', en: 'Hello, I would like to book newborn and mother care.' },
+  },
   {
     slug: 'babysitting',
     tier: 'core',
@@ -328,5 +403,6 @@ export const services: ServiceContent[] = [
 ];
 
 export const serviceBySlug = (slug: string) => services.find((s) => s.slug === slug)!;
+export const featuredServices = services.filter((s) => s.tier === 'featured');
 export const coreServices = services.filter((s) => s.tier === 'core');
 export const moreServices = services.filter((s) => s.tier === 'more');

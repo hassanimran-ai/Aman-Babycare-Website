@@ -16,9 +16,10 @@ Drop a photo here and it replaces the matching branded panel automatically. The 
 | 10 | `packages-hero` | Top of the Packages page (shown only when present) |
 | 11 | `how-it-works` | Home page "How it works" (shown only when present) |
 | 12 | `first-families` | "Be among our first families" card on the home page (shown only when present) |
+| 20 | `newborn-care` | Newborn & mother care card + page (branded panel until present) |
 | 13–19 | `offer-white-friday`, `offer-ramadan`, `offer-founding-day`, `offer-eid-al-fitr`, `offer-eid-al-adha`, `offer-back-to-school`, `offer-national-day` | Home page offers: banner on the featured offer card, photo on each "Coming up" card (branded panel until present) |
 
-The client delivers numbered files in `brand_assets/Website photos/` (`1.png` … `19.png`, numbers as above); they are converted to `<slot>.jpg` here.
+The client delivers numbered files in `brand_assets/Website photos/` (`1.png` … `20.png`, numbers as above); they are converted to `<slot>.jpg` here.
 
 Rules: see `docs/build/imagery.md` (modest, Gulf home settings, bright and warm).
 
@@ -26,3 +27,5 @@ Rules: see `docs/build/imagery.md` (modest, Gulf home settings, bright and warm)
 | File | Source | Author | Licence |
 | --- | --- | --- | --- |
 | `hero.jpg`, `babysitting.jpg`, `home-cleaning.jpg`, `elderly-companionship.jpg`, `pet-sitting.jpg`, `pick-up-drop-off.jpg`, `errands.jpg`, `trust.jpg`, `services-hero.jpg`, `packages-hero.jpg`, `how-it-works.jpg`, `first-families.jpg`, `offer-white-friday.jpg`, `offer-ramadan.jpg`, `offer-founding-day.jpg`, `offer-eid-al-fitr.jpg`, `offer-eid-al-adha.jpg`, `offer-back-to-school.jpg`, `offer-national-day.jpg` | AI-generated (Google Gemini, "Nano Banana"), supplied by the client, Oct 2026 | Client | Client-owned; illustrative, not real staff or clients |
+
+Missing: `newborn-care` (20).

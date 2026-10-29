@@ -12,6 +12,9 @@ const meta: Record<string, { alt: L; focus?: string }> = {
     alt: { ar: 'مقدّمة رعاية بالحجاب تقرأ قصة مصوّرة مع طفلة مبتسمة على الأريكة', en: 'A caregiver in a hijab reading a picture book with a smiling little girl on the sofa' },
     focus: '42% 50%',
   },
+  'newborn-care': {
+    alt: { ar: 'مقدّمة رعاية بالحجاب تحمل مولوداً ملفوفاً بقماط أبيض بجانب أمه المرتاحة', en: 'A caregiver in a hijab holding a swaddled newborn beside the resting mother' },
+  },
   babysitting: {
     alt: { ar: 'مقدّمة رعاية تبني بيتاً من المكعبات الخشبية مع طفل صغير يضحك', en: 'A caregiver building a wooden block house with a laughing toddler' },
     focus: '52% 50%',

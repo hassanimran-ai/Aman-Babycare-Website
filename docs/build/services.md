@@ -4,6 +4,7 @@ The site's services are the **"Other services"** block of `brand_assets/referenc
 
 | Tier | Slug | English | Arabic |
 | --- | --- | --- | --- |
+| featured | `newborn-care` | Newborn & Mother Care | رعاية المواليد والأمهات |
 | core | `babysitting` | Babysitting | رعاية الأطفال |
 | core | `elderly-companionship` | Elderly Companionship | مرافقة كبار السن |
 | core | `home-cleaning` | Home Cleaning | تنظيف المنازل |
@@ -15,4 +16,4 @@ The site's services are the **"Other services"** block of `brand_assets/referenc
 - **Order and tiers are client-approved** (Oct 2026): the three core services lead as large cards; the other three sit in a smaller "More help at home" row (`tier` in `src/data/services.ts`). The mock-up's "Other services" row repeats "More services", so it is not built twice.
 - Each service has its own page at `/services/<slug>/` (Arabic) and `/en/services/<slug>/`.
 - One caregiver can combine several services; this is sold through bundles and the bundle builder.
-- **Parked (PHASE 2):** the Newborn & mother care block from the mock-up (`newbornServices` in `site.ts`). Do not link to it until it is built.
+- **Newborn & Mother Care** (client request, Oct 2026) is the mock-up's top "Newborn Care at Home" block: one combined page with its sub-services (newborn care at home, feeding support, baby bathing & hygiene, sleep & comfort, mother & baby support, baby shower & welcoming guests) listed in `subservices`. It shows as a wide featured card above the core row. Help and companionship only: never call it nursing, medical or clinical care.

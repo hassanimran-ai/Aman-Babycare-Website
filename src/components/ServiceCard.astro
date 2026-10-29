@@ -9,15 +9,46 @@ interface Props {
   lang: Locale;
   service: ServiceContent;
   headingLevel?: 'h2' | 'h3' | 'h4';
-  /** 'compact' is the smaller, side-by-side card for the "more help at home" row. */
-  size?: 'large' | 'compact';
+  /** 'compact' is the smaller, side-by-side card for the "more help at home" row; 'featured' is the
+   *  wide card with a strip of sub-services (Newborn & Mother Care). */
+  size?: 'large' | 'compact' | 'featured';
 }
 const { lang, service: s, headingLevel: H = 'h3', size = 'large' } = Astro.props;
 const more = lang === 'ar' ? 'تفاصيل الخدمة' : 'About this service';
 ---
 
 {
-  size === 'large' ? (
+  size === 'featured' ? (
+    <a
+      href={href(lang, `services/${s.slug}`)}
+      class="group grid gap-6 rounded-[2rem] bg-pink-100 p-3 shadow-soft ring-1 ring-gold-500/15 transition-transform duration-300 hover:-translate-y-1 active:scale-[0.99] md:grid-cols-[2fr_3fr] md:items-center md:gap-8"
+    >
+      <Visual lang={lang} photo={s.slug} alt={s.name[lang]} icon={s.icon} tone="cream" shape="rounded" sizes="(min-width: 768px) 440px, 90vw" />
+      <div class="px-3 pb-3 md:py-4 md:pe-6 md:ps-0">
+        <div class="flex items-center gap-3">
+          <span class="flex size-11 items-center justify-center rounded-full bg-cream-50 text-green-700">
+            <Icon name={s.icon} class="size-6" />
+          </span>
+          <H class="text-2xl text-green-800">{s.name[lang]}</H>
+        </div>
+        <p class="mt-3 text-ink-600">{s.card[lang]}</p>
+        {s.subservices && (
+          <ul class="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {s.subservices.map((sub) => (
+              <li class="flex items-center gap-2 rounded-2xl bg-cream-50 px-3 py-2 text-sm text-green-800">
+                <Icon name={sub.icon} class="size-5 shrink-0 text-gold-700" />
+                {sub.name[lang]}
+              </li>
+            ))}
+          </ul>
+        )}
+        <span class="mt-5 flex items-center gap-2 text-sm font-semibold text-gold-700">
+          <span class="group-hover:underline">{more}</span>
+          <Icon name="arrow" class="size-4 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" flip />
+        </span>
+      </div>
+    </a>
+  ) : size === 'large' ? (
     <a
       href={href(lang, `services/${s.slug}`)}
       data-tilt

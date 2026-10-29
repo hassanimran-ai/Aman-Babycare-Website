@@ -51,6 +51,7 @@ const t = {
     ctaText: 'أرسلوا لنا الموعد المناسب، ونؤكد لكم كل التفاصيل.',
     closeTitle: 'كل شيء جاهز من جهتنا',
     closeText: 'رسالة واحدة على واتساب، ونبدأ.',
+    subs: 'كيف نساعدكم',
   },
   en: {
     visit: 'How a visit goes',
@@ -69,6 +70,7 @@ const t = {
     ctaText: "Send us a time that suits you, and we'll confirm every detail.",
     closeTitle: "Everything's ready on our side",
     closeText: 'One WhatsApp message, and we begin.',
+    subs: 'How we help',
   },
 }[lang];
 
@@ -104,6 +106,28 @@ const schema = [
       <Visual lang={lang} photo={slug} alt={s.name[lang]} icon={s.icon} eager class="shadow-card" sizes="(min-width: 1024px) 384px, 90vw" />
     </div>
   </section>
+
+  <!-- Services within this page (Newborn & Mother Care) -->
+  {
+    s.subservices && (
+      <section class="container-x pb-16 md:pb-24">
+        <h2 class="reveal text-3xl text-green-800 md:text-4xl">{t.subs}</h2>
+        <ul class="reveal-group mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {s.subservices.map((sub) => (
+            <li class="flex items-start gap-4 rounded-3xl bg-cream-50 p-6 shadow-soft ring-1 ring-green-700/5">
+              <span class="flex size-12 shrink-0 items-center justify-center rounded-full bg-pink-100 text-gold-700">
+                <Icon name={sub.icon} class="size-6" />
+              </span>
+              <div>
+                <h3 class="text-lg text-green-800">{sub.name[lang]}</h3>
+                <p class="mt-1 text-ink-600">{sub.text[lang]}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
 
   <!-- A visit with Aman -->
   <section class="bg-green-800 py-16 text-cream-100 md:py-24">
