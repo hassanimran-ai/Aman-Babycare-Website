@@ -39,7 +39,7 @@ export const ui = {
   hours: { ar: 'ساعة', en: 'hrs' },
   minutes: { ar: 'دقيقة', en: 'min' },
   expected: { ar: 'متوقع', en: 'expected' },
-  comingNext: { ar: 'المناسبات القادمة', en: 'Coming up' },
+  comingNext: { ar: 'قريباً', en: 'Coming soon' },
   footerServices: { ar: 'خدماتنا', en: 'Our services' },
   footerExplore: { ar: 'تصفّح', en: 'Explore' },
   footerContact: { ar: 'تواصل', en: 'Contact' },
