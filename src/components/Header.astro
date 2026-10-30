@@ -17,7 +17,7 @@ interface Props {
 const { lang, path, waMessage } = Astro.props;
 const alt = other(lang);
 const home = href(lang, '');
-// "Baby Care & Home Services" / "لرعاية المواليد والخدمات المنزلية": the full name minus the short name.
+// "Babycare & Home Services" / "لرعاية المواليد والخدمات المنزلية": the full name minus the short name.
 const sub = {
   en: business.brand.en.replace(business.shortName.en, '').trim(),
   ar: business.brand.ar.replace(business.shortName.ar, '').trim(),

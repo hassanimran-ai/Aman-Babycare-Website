@@ -1,7 +1,7 @@
-# CLAUDE.md — Aman Baby Care & Home Services Website
+# CLAUDE.md — Aman Babycare & Home Services Website
 
 ## Project
-Bilingual (Arabic-first) marketing website for "Aman Baby Care & Home Services" (أمان لرعاية المواليد والخدمات المنزلية), a home-care company in Riyadh, KSA.
+Bilingual (Arabic-first) marketing website for "Aman Babycare & Home Services" (أمان لرعاية المواليد والخدمات المنزلية), a home-care company in Riyadh, KSA.
 Goal: rank on Google for Riyadh home-care searches and turn visitors into WhatsApp bookings.
 Deadline: Saturday Oct 31, 2026, 6 PM. MVP first; mark later work with `// PHASE 2`.
 

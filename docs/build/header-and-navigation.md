@@ -3,7 +3,7 @@
 Self-contained component: `src/components/Header.astro`. The ribbon is `src/components/GlassRibbon.astro` (also used for the Packages tabs).
 
 - Order: announcement bar (featured offer) → header.
-- **Logo lockup** mirrors `brand_assets/Logo.png`: logo mark, the short name with a small gold heart, then "Baby Care & Home Services" and the Arabic line. Text comes from `site.name` / `site.shortName`. Never show the short name alone.
+- **Logo lockup** mirrors `brand_assets/Logo.png`: logo mark, the short name with a small gold heart, then "Babycare & Home Services" and the Arabic line. Text comes from `site.name` / `site.shortName`. Never show the short name alone.
 - **Navigation is a glass ribbon, never a hidden menu** (client request, Oct 2026): Home · Services · **Offers** (middle, gold, so it stands out) · Packages · FAQ. Only link pages that exist.
   - Phones and tablets: logo row, then the ribbon full width (icon over label). The header uses a negative sticky top, so the logo row scrolls away and the ribbon stays stuck.
   - Desktop: one sticky row: logo, ribbon in the middle (icon beside label), language toggle + "Book on WhatsApp".
