@@ -11,6 +11,7 @@ import plexArabic400 from '@fontsource/ibm-plex-sans-arabic/files/ibm-plex-sans-
 import { getImage } from 'astro:assets';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import ogSource from '../assets/og-image.png';
+import logoSource from '../assets/logo-full.png';
 import AnnouncementBar from '../components/AnnouncementBar.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -18,7 +19,7 @@ import StickyWhatsApp from '../components/StickyWhatsApp.astro';
 import CardTilt from '../components/CardTilt.astro';
 import CookieBanner from '../components/CookieBanner.astro';
 import { site, type Locale } from '../config/site';
-import { business } from '../data/business';
+import { business, telUrl } from '../data/business';
 
 interface Props {
   lang: Locale;
@@ -43,10 +44,16 @@ const urlFor = (locale: Locale) => new URL(getRelativeLocaleUrl(locale, path), A
 const canonical = urlFor(lang);
 const ogImage = await getImage({ src: ogSource, width: 1200, height: 630, format: 'png' });
 const ogImageUrl = new URL(ogImage.src, Astro.site).href;
+const logo = await getImage({ src: logoSource, width: 512, format: 'png' });
+const logoUrl = new URL(logo.src, Astro.site).href;
+// One stable id per entity, shared by both languages, so search engines see one business and one site.
+const businessId = new URL('/#business', Astro.site).href;
+const websiteId = new URL('/#website', Astro.site).href;
 
 const localBusiness = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
+  '@id': businessId,
   name: business.brand[lang],
   alternateName: business.brand[lang === 'ar' ? 'en' : 'ar'],
   legalName: business.legalName[lang],
@@ -54,6 +61,8 @@ const localBusiness = {
   slogan: business.tagline[lang],
   url: urlFor(lang),
   image: ogImageUrl,
+  logo: logoUrl,
+  telephone: telUrl().replace('tel:', ''),
   areaServed: { '@type': 'City', name: business.areaServed[lang] },
   // Booking hours, assumed daily (schema needs days). No Review or AggregateRating, ever.
   openingHours: `Mo-Su ${business.hours.opens}-${business.hours.closes}`,
@@ -63,6 +72,18 @@ const localBusiness = {
     addressLocality: business.areaServed.en,
     addressCountry: business.countryCode,
   },
+};
+
+// Home pages only.
+const webSite = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': websiteId,
+  name: business.brand[lang],
+  alternateName: business.brand[lang === 'ar' ? 'en' : 'ar'],
+  url: urlFor(lang),
+  inLanguage: lang === 'ar' ? 'ar-SA' : 'en',
+  publisher: { '@id': businessId },
 };
 ---
 
@@ -106,7 +127,7 @@ const localBusiness = {
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
 
-    {[localBusiness, ...schema].map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
+    {[localBusiness, ...(path === '' ? [webSite] : []), ...schema].map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
     <slot name="head" />
   </head>
   <body class="flex min-h-dvh flex-col bg-cream-100 text-ink-900 antialiased">
