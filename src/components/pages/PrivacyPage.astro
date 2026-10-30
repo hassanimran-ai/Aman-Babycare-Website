@@ -17,7 +17,7 @@ const crumbs = [
   { name: ui.nav.home[lang], url: href(lang, '') },
   { name: ui.nav.privacy[lang], url: href(lang, 'privacy') },
 ];
-const updated = lang === 'ar' ? '29 أكتوبر 2026' : '29 October 2026';
+const updated = lang === 'ar' ? '30 أكتوبر 2026' : '30 October 2026';
 
 type Block = { h: string; p?: string[]; list?: string[]; note?: string };
 const t: { title: string; description: string; h1: string; lead: string; updatedLabel: string; blocks: Block[]; contactCta: string } = {
@@ -93,7 +93,7 @@ const t: { title: string; description: string; h1: string; lead: string; updated
       {
         h: 'التواصل بشأن الخصوصية',
         list: [
-          `الجهة المسؤولة: ${business.legalName.ar}`,
+          `جهة التحكم في البيانات: ${business.legalName.ar} / ${business.legalName.en}`,
           `السجل التجاري: ${business.crNumber}`,
           `البريد الإلكتروني للخصوصية: ${business.privacyEmail}`,
           `واتساب: ${business.whatsapp}`,
@@ -174,8 +174,8 @@ const t: { title: string; description: string; h1: string; lead: string; updated
       {
         h: 'Privacy contact',
         list: [
-          `Controller: ${business.legalName.en}`,
-          `Commercial registration: ${business.crNumber}`,
+          `Data controller: ${business.legalName.ar} / ${business.legalName.en}`,
+          `Commercial registration (CR): ${business.crNumber}`,
           `Privacy email: ${business.privacyEmail}`,
           `WhatsApp: ${business.whatsapp}`,
         ],
