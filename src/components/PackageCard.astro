@@ -2,14 +2,17 @@
 import Icon from './Icon.astro';
 import { SHOW_DISCOUNTS, SHOW_PRICES, whatsappUrl, type Locale } from '../config/site';
 import type { Package } from '../data/packages';
-import { money, rate, ui } from '../i18n/ui';
+import { href, money, rate, ui } from '../i18n/ui';
+import { anchorFor } from '../data/seo';
 
 interface Props {
   lang: Locale;
   pkg: Package;
   headingLevel?: 'h3' | 'h4';
+  /** The service page this card sits on: its own link is left out there. */
+  current?: string;
 }
-const { lang, pkg: p, headingLevel: H = 'h3' } = Astro.props;
+const { lang, pkg: p, headingLevel: H = 'h3', current } = Astro.props;
 const message =
   lang === 'ar' ? `السلام عليكم، أرغب بالاستفسار عن باقة: ${p.name.ar}` : `Hello, I'd like to ask about the package: ${p.name.en}`;
 // SHOW_PRICES off: no figures at all, only "Price confirmed on WhatsApp".
@@ -31,6 +34,14 @@ const saving = was && price ? was - price : 0;
   </div>
   <H class:list={['text-lg text-green-800 max-md:text-base', SHOW_DISCOUNTS && 'mt-3']}>{p.name[lang]}</H>
   <p class="mt-1 text-sm text-ink-500 max-md:text-xs">{p.detail[lang]}</p>
+  {
+    p.service !== current && (
+      <a href={href(lang, `services/${p.service}`)} class="mt-1 inline-flex min-h-11 items-center gap-1 self-start text-sm font-semibold text-gold-800 hover:underline max-md:text-xs">
+        {anchorFor(p.service, lang, p.service)}
+        <Icon name="arrow" class="size-4 max-md:size-3.5" flip />
+      </a>
+    )
+  }
 
   {/* Price block sits on the card floor so figures line up across a row, whatever the title length. */}
   <div class="mt-auto pt-6 max-md:pt-4">
