@@ -52,11 +52,15 @@ describe('reference packages', () => {
     }
   });
 
-  it('the stay-in package is an exact match, and its rate is price ÷ hours', () => {
+  it('the stay-in package is an exact match, whatever the hourly override', () => {
     const line = priceLine({ service: 'babysitting', tier: 'monthly', timing: 'stay-in', people: 1, daysPerWeek: 6, months: 2 });
     expect(line.exact).toBe(true);
     expect(line.lineTotal).toBe(sar(17000));
-    const r = hourlyRate('babysitting', 'monthly')!;
+  });
+
+  it('without an override, a rate is the package price ÷ its hours', () => {
+    const c = cfg({ services: { babysitting: { ...PRICING.babysitting, hourlyRateOverride: undefined } } });
+    const r = hourlyRate('babysitting', 'monthly', c)!;
     expect(Number(r.num) / Number(r.den)).toBeCloseTo((8500 * 100) / 288, 6);
   });
 
@@ -84,10 +88,26 @@ describe('rates', () => {
   });
 
   it('never borrows a rate from another tier', () => {
-    expect(hourlyRate('babysitting', 'oneTime')).toBeNull(); // hours of the 345 SAR package not stated
-    expect(hourlyRate('babysitting', 'weekly')).toBeNull();
-    expect(hourlyRate('babysitting', 'monthly')).not.toBeNull();
-    expect(priceLine({ service: 'babysitting', tier: 'weekly', timing: 'day-shift', people: 1, daysPerWeek: 6, weeks: 1 }).priced).toBe(false);
+    expect(hourlyRate('elderly-companionship', 'weekly')).toBeNull(); // no weekly rate listed
+    expect(hourlyRate('elderly-companionship', 'monthly')).not.toBeNull();
+    expect(priceLine({ service: 'elderly-companionship', tier: 'weekly', timing: 'day-shift', people: 1, daysPerWeek: 3, weeks: 1 }).priced).toBe(false);
+    const c = cfg({ services: { babysitting: { ...PRICING.babysitting, hourlyRateOverride: undefined } } });
+    expect(hourlyRate('babysitting', 'oneTime', c)).toBeNull(); // hours of the 345 SAR package not stated
+    expect(hourlyRate('babysitting', 'weekly', c)).toBeNull();
+  });
+
+  it('prices the draft rates the client approved', () => {
+    const bs = (s: Partial<Selection>) => priceLine({ service: 'babysitting', tier: 'oneTime', timing: 'hourly', people: 1, ...s });
+    expect(bs({ hours: 4, days: 1 }).lineTotal).toBe(sar(180)); // 45 × 4
+    expect(bs({ tier: 'weekly', timing: 'day-shift', daysPerWeek: 5, weeks: 1 }).lineTotal).toBe(sar(2357)); // 39.29 × 12 × 5 = 2,357.4
+    expect(bs({ tier: 'monthly', timing: 'night', daysPerWeek: 5, months: 1 }).lineTotal).toBe(sar(8117)); // 33.82 × 12 × 20 = 8,116.8
+    expect(bs({ tier: 'weekly', timing: '24-hours', daysPerWeek: 1, weeks: 1 }).lineTotal).toBe(sar(943)); // 39.29 × 24 = 942.96
+    expect(bs({ hours: 4, days: 1, people: 2 }).priced).toBe(false); // extra child: rule not set
+    const el = priceLine({ service: 'elderly-companionship', tier: 'monthly', timing: 'day-shift', people: 1, daysPerWeek: 5, months: 1 });
+    expect(el.lineTotal).toBe(sar(8640)); // 36 × 12 × 20
+    const nb = priceLine({ service: 'newborn-care', tier: 'oneTime', timing: 'hourly', hours: 3, people: 1, days: 1 });
+    expect(nb.lineTotal).toBe(sar(135)); // babysitting rate 45 × 3
+    expect(priceLine({ service: 'home-cleaning', tier: 'oneTime', timing: 'hourly', hours: 3, people: 1, days: 1 }).priced).toBe(false);
   });
 
   it('hourlyRateOverride wins over reference packages', () => {
@@ -115,7 +135,7 @@ describe('lines', () => {
     const line = priceLine(sel({ people: 2, hours: 5 }), c);
     expect(line.priced).toBe(false);
     expect(line.missing).toContain('extraPersonPercent');
-    expect(priceLine({ service: 'newborn-care', tier: 'monthly', timing: 'day-shift', people: 1, daysPerWeek: 5, months: 1 }).priced).toBe(false);
+    expect(priceLine({ service: 'pet-sitting', tier: 'monthly', timing: 'hourly', hours: 2, people: 1, daysPerWeek: 5, months: 1 }).priced).toBe(false);
     expect(priceLine(sel({ homeSize: 'apartment:1-2', hours: 5 }), cfg()).missing).toContain('homeSizePercent:apartment:1-2');
   });
 
@@ -149,7 +169,7 @@ describe('lines', () => {
 describe('totals', () => {
   const lines = () => {
     const c = cfg();
-    return [priceLine(sel({ hours: 4 }), c), priceLine(sel({ hours: 8 }), c), priceLine({ service: 'newborn-care', tier: 'oneTime', timing: 'hourly', hours: 3, people: 1, days: 1 }, c)];
+    return [priceLine(sel({ hours: 4 }), c), priceLine(sel({ hours: 8 }), c), priceLine({ service: 'errands', tier: 'oneTime', timing: 'hourly', hours: 3, people: 1, days: 1 }, c)];
   };
 
   it('sums priced lines and counts unpriced ones', () => {

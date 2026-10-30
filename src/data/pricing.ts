@@ -4,7 +4,7 @@
 //
 // Reference prices are client-approved DRAFTS copied from https://feelvaleo.com/en-sa/riyadh/babysitting.
 // That page states hours for one plan only (stay-in: 12 hours, 6 days, 4 weeks), so every other plan's
-// hoursPerDay is null and cannot produce an hourly rate until the client confirms it.
+// hoursPerDay is null. Hourly rates come from the draft overrides below until the client confirms hours.
 import type { L } from '../i18n/ui';
 
 export type Tier = 'oneTime' | 'weekly' | 'monthly';
@@ -53,6 +53,14 @@ export const TIMINGS: Record<TimingId, { label: L; hoursPerDay: number | null; w
   'stay-in': { label: { ar: 'إقامة', en: 'Live-in' }, hoursPerDay: 12, adjusted: true }, // TODO(client): confirm 12 billable hours/day
 };
 
+// Shifts are billed at the tier's hourly rate: night 12 h, 24 hours 24 h, live-in 12 h (client decision, Oct 2026).
+const sameRateShifts: ServicePricing['timingPercent'] = { night: 0, '24-hours': 0, 'stay-in': 0 };
+
+// DRAFT hourly rates: the "From X SAR per hour" figures on the Packages page (the reference's "as low as"
+// rates), approved by the client as booking-card rates until the final price list. TODO(client): confirm.
+// Weekly uses 39.29 as approved; the 6-day weekly plan lists 39.
+const babysittingRates = { oneTime: 45, weekly: 39.29, monthly: 33.82 };
+
 // Reference packages (the Packages page shows these prices).
 const babysitting: ServicePricing = {
   unit: 'hour',
@@ -74,9 +82,10 @@ const babysitting: ServicePricing = {
       { id: 'stay-in', price: 8500, hoursPerDay: 12, daysPerWeek: 6, weeks: 4, timing: 'stay-in', label: { ar: 'إقامة: 12 ساعة × 6 أيام × 4 أسابيع', en: 'Stay-in: 12 hrs × 6 days × 4 weeks' } },
     ],
   },
+  hourlyRateOverride: babysittingRates,
   minHours: null, // TODO(client)
   extraPersonPercent: null, // TODO(client): price for each extra child
-  timingPercent: null, // TODO(client): night shift / 24 hours / live-in vs day rates
+  timingPercent: sameRateShifts,
 };
 
 const elderly: ServicePricing = {
@@ -91,9 +100,11 @@ const elderly: ServicePricing = {
       { id: 'elderly-7', price: 8050, hoursPerDay: null, daysPerWeek: 7, weeks: 4, label: { ar: '7 أيام × 4 أسابيع', en: '7 days × 4 weeks' } },
     ],
   },
+  // DRAFT: "From 36 SAR per hour" on the Packages page. No weekly rate is listed, so weekly stays on WhatsApp.
+  hourlyRateOverride: { oneTime: 36, monthly: 36 },
   minHours: null, // TODO(client)
   extraPersonPercent: null, // TODO(client): second person
-  timingPercent: null, // TODO(client)
+  timingPercent: sameRateShifts,
 };
 
 // TODO(client): price lists for these services. Until then every line shows "Price on WhatsApp".
@@ -105,10 +116,14 @@ const unpriced = (unit: ServicePricing['unit']): ServicePricing => ({
   timingPercent: null,
 });
 
+// TODO(client): own price lists. Until then (client decision, Oct 2026) these use the babysitting rates, but
+// not its packages.
+const likeBabysitting = (): ServicePricing => ({ ...unpriced('hour'), hourlyRateOverride: babysittingRates, timingPercent: sameRateShifts });
+
 export const PRICING: Record<string, ServicePricing> = {
-  'newborn-care': unpriced('hour'),
+  'newborn-care': likeBabysitting(),
   babysitting,
-  'mother-baby-support': unpriced('hour'),
+  'mother-baby-support': likeBabysitting(),
   'elderly-companionship': elderly,
   'home-cleaning': { ...unpriced('hour'), homeSizePercent: null }, // TODO(client): home size adjustments
   'pet-sitting': unpriced('hour'),
