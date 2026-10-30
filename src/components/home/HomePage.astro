@@ -22,6 +22,7 @@ import { href, ui } from '../../i18n/ui';
 import { homeFaqShown } from '../../data/home';
 import { business } from '../../data/business';
 import { hasPhoto } from '../../lib/photos';
+import { seo, tr } from '../../data/seo';
 
 interface Props {
   lang: Locale;
@@ -30,7 +31,6 @@ const { lang } = Astro.props;
 
 const c = {
   ar: {
-    h1: 'يدٌ أمينة في بيتكم، لكل من تحبون',
     lead: 'رعاية المواليد والأمهات، رعاية الأطفال، تنظيف المنزل، صحبة الوالدين، ورعاية القطط والكلاب في الرياض. ويمكن لشخص واحد من فريق الرعاية أن يجمع لكم أكثر من خدمة في زيارة واحدة.',
     trust: ['فريق خضع للتحقق من الخلفية', 'زيارة واحدة لعدة خدمات', 'الحجز مباشرة عبر واتساب'],
     trustLabel: 'لماذا أمان',
@@ -77,7 +77,6 @@ const c = {
     closeText: 'رسالة واحدة على واتساب، والباقي علينا.',
   },
   en: {
-    h1: 'A trusted pair of hands at home, for everyone you love',
     lead: 'Newborn and mother care, babysitting, home cleaning, company for your parents, and cat and dog sitting in Riyadh. One caregiver can combine several services in a single visit.',
     trust: ['Background-checked staff', 'One caregiver, several services', 'Book directly on WhatsApp'],
     trustLabel: 'Why Aman',
@@ -137,7 +136,7 @@ const teaser = ['hourly-babysitting', 'monthly-6', 'stay-in'].map((id) => packag
   <HeroBackdrop />
   <div class="container-x grid gap-8 pb-16 pt-10 md:pt-16 lg:grid-cols-[1.1fr_1fr] lg:gap-x-16 lg:gap-y-8 lg:pb-20">
     <div class="rise lg:col-start-1 lg:row-start-1 lg:self-end">
-      <h1 class="max-w-[16ch] text-4xl text-green-800 sm:text-5xl lg:text-6xl">{c.h1}</h1>
+      <h1 class="max-w-[16ch] text-4xl text-green-800 sm:text-5xl lg:text-6xl">{tr(seo.home.h1, lang)}</h1>
       <p class="mt-6 max-w-xl text-lg text-ink-600">{c.lead}</p>
     </div>
 

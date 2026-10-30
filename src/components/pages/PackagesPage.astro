@@ -15,6 +15,8 @@ import { offers } from '../../data/offers';
 import { services } from '../../data/services';
 import { href, ui } from '../../i18n/ui';
 import { breadcrumbSchema } from '../../lib/schema';
+import { moded, packagesKeywordH2, seo, tr } from '../../data/seo';
+import { business } from '../../data/business';
 
 interface Props {
   lang: Locale;
@@ -28,9 +30,11 @@ const unpriced = services.filter((s) => !['babysitting', 'elderly-companionship'
 // REVIEW-AR
 const t = {
   ar: {
-    title: 'باقات وأسعار رعاية الأطفال والخدمات المنزلية | أمان',
-    description: 'باقات بالساعة والأسبوع والشهر لرعاية الأطفال ومرافقة كبار السن في الرياض، وعروض المواسم، وأداة لحجز خدمتكم.',
-    h1: 'باقات تناسب إيقاع بيتكم',
+    tagline: 'باقات تناسب إيقاع بيتكم',
+    modesText: moded({
+      care: `احجزوا رعاية بالساعة حين تحتاجون يداً إضافية لساعات قليلة، أو اختاروا خطة شهرية مع الشخص نفسه من فريق الرعاية. الفترة الصباحية ${business.shifts.day.time.ar}، والليلية ${business.shifts.night.time.ar}، بإقامة في بيتكم أو بدوام يومي.`,
+      worker: `عاملة منزلية بالساعة حين تحتاجون يداً إضافية لساعات قليلة، أو بالشهر مع العاملة نفسها كل أسبوع. الفترة الصباحية ${business.shifts.day.time.ar}، والليلية ${business.shifts.night.time.ar}، بإقامة في بيتكم أو بدوام يومي.`,
+    }),
     lead: 'ساعات قليلة أو خطة شهرية ثابتة. كلما طالت الخطة، قلّ سعر الساعة.',
     draftNote: 'الأسعار المعروضة مبدئية، ونؤكد السعر النهائي معكم على واتساب قبل الحجز.',
     otherTitle: 'خدمات بسعر حسب الطلب',
@@ -42,9 +46,8 @@ const t = {
     ctaText: 'أخبرونا عن يومكم، ونقترح لكم الأنسب.',
   },
   en: {
-    title: 'Babysitting & Home Service Packages | Aman Riyadh',
-    description: 'Hourly, weekly and monthly babysitting and elderly companionship packages in Riyadh, seasonal offers, and a booking tool.',
-    h1: "Packages that fit your home's rhythm",
+    tagline: "Packages that fit your home's rhythm",
+    modesText: `Book an hourly maid or nanny when you need an extra pair of hands for a few hours, or choose a monthly plan with the same caregiver every week. Day shift ${business.shifts.day.time.en}, night shift ${business.shifts.night.time.en}, live-in or live-out.`,
     lead: 'A few hours or a steady monthly plan. The longer the plan, the lower the hourly rate.',
     draftNote: 'Prices shown are provisional; we confirm the final price with you on WhatsApp before booking.',
     otherTitle: 'Priced on request',
@@ -65,18 +68,26 @@ const sections: RibbonItem[] = [
 const planMsg = lang === 'ar' ? 'السلام عليكم، أرغب بخطة رعاية مخصصة.' : "Hello, I'd like a personalised care plan.";
 ---
 
-<BaseLayout lang={lang} title={t.title} description={t.description} path="packages" schema={[breadcrumbSchema(crumbs, Astro.site)]}>
+<BaseLayout lang={lang} title={tr(seo.packages.title, lang)} description={tr(seo.packages.description, lang)} path="packages" schema={[breadcrumbSchema(crumbs, Astro.site)]}>
   <Breadcrumbs lang={lang} items={crumbs} />
   <section class="container-x grid items-center gap-10 pb-8 pt-8 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
     <div>
-      <h1 class="max-w-[20ch] text-4xl text-green-800 sm:text-5xl">{t.h1}</h1>
-      <p class="mt-6 max-w-xl text-lg text-ink-600">{t.lead}</p>
+      <h1 class="max-w-[20ch] text-4xl text-green-800 sm:text-5xl">{tr(seo.packages.h1, lang)}</h1>
+      <p class="lead mt-6 max-w-xl text-xl font-medium text-green-700">{t.tagline}</p>
+      <p class="mt-4 max-w-xl text-lg text-ink-600">{t.lead}</p>
       <p class="mt-4 flex items-center gap-2 text-sm text-ink-500">
         <Icon name="clock" class="size-4 text-gold-600" />
         {t.draftNote}
       </p>
     </div>
     {hasPhoto('packages-hero') && <Visual lang={lang} photo="packages-hero" alt="" shape="rounded" eager sizes="(min-width: 1024px) 560px, 90vw" class="shadow-card" />}
+  </section>
+
+  <section class="container-x pb-8">
+    <div class="rounded-[2rem] bg-cream-50 p-8 shadow-soft ring-1 ring-green-700/5">
+      <h2 class="text-2xl text-green-800">{tr(packagesKeywordH2, lang)}</h2>
+      <p class="mt-3 max-w-3xl text-ink-600">{t.modesText}</p>
+    </div>
   </section>
 
   <!-- Glass ribbon of in-page links; the pill follows the scroll. -->

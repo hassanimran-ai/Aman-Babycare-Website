@@ -9,6 +9,7 @@ import type { Locale } from '../../config/site';
 import { coreServices, featuredServices, moreServices } from '../../data/services';
 import { href, ui } from '../../i18n/ui';
 import { breadcrumbSchema } from '../../lib/schema';
+import { seo, tr } from '../../data/seo';
 
 interface Props {
   lang: Locale;
@@ -21,18 +22,14 @@ const crumbs = [
 // REVIEW-AR
 const t = {
   ar: {
-    title: 'خدمات أمان المنزلية في الرياض | أمان',
-    description: 'رعاية المواليد والأمهات، رعاية الأطفال، مرافقة كبار السن، تنظيف المنازل، رعاية الحيوانات، التوصيل، والمشتريات في الرياض.',
-    h1: 'كل ما يحتاجه بيتكم، مع فريق واحد',
+    tagline: 'كل ما يحتاجه بيتكم، مع فريق واحد',
     lead: 'سبع خدمات منزلية يمكن حجزها منفردة أو جمعها في زيارة واحدة مع شخص واحد من فريق الرعاية.',
     moreHelp: 'ومساعدة أكثر في البيت',
     ctaTitle: 'لم تجدوا ما تبحثون عنه؟',
     ctaText: 'اسألونا على واتساب؛ كثير من الطلبات المنزلية يمكننا ترتيبها.',
   },
   en: {
-    title: 'Home Services in Riyadh | Aman',
-    description: 'Newborn and mother care, babysitting, elderly companionship, home cleaning, pet sitting, rides and errands in Riyadh. Book on WhatsApp.',
-    h1: 'Everything your home needs, from one team',
+    tagline: 'Everything your home needs, from one team',
     lead: 'Seven home services you can book on their own, or combine in a single visit with one caregiver.',
     moreHelp: 'More help at home',
     ctaTitle: "Can't find what you need?",
@@ -41,13 +38,14 @@ const t = {
 }[lang];
 ---
 
-<BaseLayout lang={lang} title={t.title} description={t.description} path="services" schema={[breadcrumbSchema(crumbs, Astro.site)]}>
+<BaseLayout lang={lang} title={tr(seo.services.title, lang)} description={tr(seo.services.description, lang)} path="services" schema={[breadcrumbSchema(crumbs, Astro.site)]}>
   <Breadcrumbs lang={lang} items={crumbs} />
   <section class="container-x pb-16 pt-8 md:pb-24">
     <div class="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
       <div>
-        <h1 class="max-w-[20ch] text-4xl text-green-800 sm:text-5xl">{t.h1}</h1>
-        <p class="mt-6 max-w-xl text-lg text-ink-600">{t.lead}</p>
+        <h1 class="max-w-[20ch] text-4xl text-green-800 sm:text-5xl">{tr(seo.services.h1, lang)}</h1>
+        <p class="lead mt-6 max-w-xl text-xl font-medium text-green-700">{t.tagline}</p>
+        <p class="mt-4 max-w-xl text-lg text-ink-600">{t.lead}</p>
       </div>
       {hasPhoto('services-hero') && <Visual lang={lang} photo="services-hero" alt="" shape="rounded" eager sizes="(min-width: 1024px) 560px, 90vw" class="shadow-card" />}
     </div>

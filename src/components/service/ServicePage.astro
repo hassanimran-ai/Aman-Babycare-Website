@@ -15,6 +15,7 @@ import { packagesFor } from '../../data/packages';
 import { offers, featuredOffer } from '../../data/offers';
 import { href, ui } from '../../i18n/ui';
 import { breadcrumbSchema, faqSchema, serviceSchema } from '../../lib/schema';
+import { pageSeo, tr, type SeoKey } from '../../data/seo';
 
 interface Props {
   lang: Locale;
@@ -22,6 +23,7 @@ interface Props {
 }
 const { lang, slug } = Astro.props;
 const s = serviceBySlug(slug);
+const meta = pageSeo(slug as SeoKey);
 const path = `services/${slug}`;
 const crumbs = [
   { name: ui.nav.home[lang], url: href(lang, '') },
@@ -75,13 +77,13 @@ const t = {
 }[lang];
 
 const schema = [
-  serviceSchema(lang, s.name[lang], s.meta.description[lang], new URL(href(lang, path), Astro.site).href),
+  serviceSchema(lang, s.name[lang], tr(meta.description, lang), new URL(href(lang, path), Astro.site).href),
   breadcrumbSchema(crumbs, Astro.site),
   faqSchema(lang, s.faq),
 ];
 ---
 
-<BaseLayout lang={lang} title={s.meta.title[lang]} description={s.meta.description[lang]} path={path} schema={schema} waMessage={s.whatsapp[lang]}>
+<BaseLayout lang={lang} title={tr(meta.title, lang)} description={tr(meta.description, lang)} path={path} schema={schema} waMessage={s.whatsapp[lang]}>
   <Breadcrumbs lang={lang} items={crumbs} />
 
   <!-- Hero -->
@@ -91,8 +93,9 @@ const schema = [
         <Icon name={s.icon} class="size-7" />
       </span>
       <p class="mt-6 font-medium text-gold-700">{s.name[lang]}</p>
-      <h1 class="mt-2 max-w-[18ch] text-4xl text-green-800 sm:text-5xl">{s.h1[lang]}</h1>
-      <p class="mt-6 max-w-xl text-lg text-ink-600">{s.intro[lang]}</p>
+      <h1 class="mt-2 max-w-[18ch] text-4xl text-green-800 sm:text-5xl">{tr(meta.h1, lang)}</h1>
+      <p class="lead mt-4 max-w-xl text-xl font-medium text-green-700">{s.h1[lang]}</p>
+      <p class="mt-4 max-w-xl text-lg text-ink-600">{s.intro[lang]}</p>
       <div class="mt-8 flex flex-wrap gap-3">
         <a href={whatsappUrl(s.whatsapp[lang])} rel="noopener" class="btn btn-primary min-h-14 px-8 text-base">
           <Icon name="whatsapp" class="size-6 text-gold-200" />
