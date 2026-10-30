@@ -1,6 +1,6 @@
 // JSON-LD builders. LocalBusiness is added by BaseLayout on every page.
 import type { Locale } from '../config/site';
-import { site } from '../config/site';
+import { business } from '../data/business';
 import type { L } from '../i18n/ui';
 
 export const faqSchema = (lang: Locale, items: { q: L; a: L }[]) => ({
@@ -30,6 +30,6 @@ export const serviceSchema = (lang: Locale, name: string, description: string, u
   name,
   description,
   url,
-  areaServed: { '@type': 'City', name: site.city[lang] },
-  provider: { '@type': 'LocalBusiness', name: site.name[lang] },
+  areaServed: { '@type': 'City', name: business.areaServed[lang] },
+  provider: { '@type': 'LocalBusiness', name: business.brand[lang] },
 });

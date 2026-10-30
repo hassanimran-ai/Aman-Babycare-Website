@@ -17,6 +17,7 @@ import Footer from '../components/Footer.astro';
 import StickyWhatsApp from '../components/StickyWhatsApp.astro';
 import CardTilt from '../components/CardTilt.astro';
 import { site, type Locale } from '../config/site';
+import { business } from '../data/business';
 
 interface Props {
   lang: Locale;
@@ -45,16 +46,16 @@ const ogImageUrl = new URL(ogImage.src, Astro.site).href;
 const localBusiness = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
-  name: site.name[lang],
-  alternateName: site.name[lang === 'ar' ? 'en' : 'ar'],
-  slogan: site.tagline[lang],
+  name: business.brand[lang],
+  alternateName: business.brand[lang === 'ar' ? 'en' : 'ar'],
+  slogan: business.tagline[lang],
   url: urlFor(lang),
   image: ogImageUrl,
-  areaServed: { '@type': 'City', name: site.city[lang] },
+  areaServed: { '@type': 'City', name: business.areaServed[lang] },
   address: {
     '@type': 'PostalAddress',
-    addressLocality: site.city.en,
-    addressCountry: site.countryCode,
+    addressLocality: business.areaServed.en,
+    addressCountry: business.countryCode,
   },
 };
 ---
@@ -86,7 +87,7 @@ const localBusiness = {
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content={site.name[lang]} />
+    <meta property="og:site_name" content={business.brand[lang]} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />

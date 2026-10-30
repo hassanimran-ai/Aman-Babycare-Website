@@ -4,7 +4,8 @@
 // REVIEW-LEGAL: a Saudi lawyer should review before site.isLive = true. REVIEW-AR: Arabic is a first draft.
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../Breadcrumbs.astro';
-import { site, whatsappUrl, type Locale } from '../../config/site';
+import { whatsappUrl, type Locale } from '../../config/site';
+import { business } from '../../data/business';
 import { href, ui } from '../../i18n/ui';
 import { breadcrumbSchema } from '../../lib/schema';
 
@@ -30,7 +31,7 @@ const t: { title: string; description: string; h1: string; lead: string; updated
       {
         h: 'من نحن',
         p: [
-          `تشرح هذه السياسة كيف تتعامل ${site.legalName.ar} (باسم «${site.name.ar}»، سجل تجاري رقم ${site.crNumber})، ومقرها ${site.city.ar}، ${site.country.ar}، مع البيانات الشخصية. نحن «جهة التحكم» في هذه البيانات وفق نظام حماية البيانات الشخصية في المملكة العربية السعودية.`,
+          `تشرح هذه السياسة كيف تتعامل ${business.legalName.ar} (باسم «${business.brand.ar}»، سجل تجاري رقم ${business.crNumber})، ومقرها ${business.areaServed.ar}، ${business.country.ar}، مع البيانات الشخصية. نحن «جهة التحكم» في هذه البيانات وفق نظام حماية البيانات الشخصية في المملكة العربية السعودية.`,
         ],
       },
       {
@@ -75,7 +76,7 @@ const t: { title: string; description: string; h1: string; lead: string; updated
           'أن تسحبوا موافقتكم في أي وقت.',
           'أن تقدّموا شكوى إلى الهيئة السعودية للبيانات والذكاء الاصطناعي (سدايا).',
         ],
-        note: `لممارسة أي من هذه الحقوق، راسلونا على واتساب أو على ${site.privacyEmail}، وسنرد خلال المدة التي يحددها النظام.`,
+        note: `لممارسة أي من هذه الحقوق، راسلونا على واتساب أو على ${business.privacyEmail}، وسنرد خلال المدة التي يحددها النظام.`,
       },
       {
         h: 'حماية البيانات',
@@ -92,10 +93,10 @@ const t: { title: string; description: string; h1: string; lead: string; updated
       {
         h: 'التواصل بشأن الخصوصية',
         list: [
-          `الجهة المسؤولة: ${site.legalName.ar}`,
-          `السجل التجاري: ${site.crNumber}`,
-          `البريد الإلكتروني للخصوصية: ${site.privacyEmail}`,
-          `واتساب: ${site.whatsappNumber}`,
+          `الجهة المسؤولة: ${business.legalName.ar}`,
+          `السجل التجاري: ${business.crNumber}`,
+          `البريد الإلكتروني للخصوصية: ${business.privacyEmail}`,
+          `واتساب: ${business.whatsapp}`,
         ],
       },
     ],
@@ -111,7 +112,7 @@ const t: { title: string; description: string; h1: string; lead: string; updated
       {
         h: 'Who we are',
         p: [
-          `This policy explains how ${site.legalName.en} (trading as "${site.name.en}", commercial registration ${site.crNumber}), based in ${site.city.en}, ${site.country.en}, handles personal data. We are the controller of this data under the Saudi Personal Data Protection Law (PDPL).`,
+          `This policy explains how ${business.legalName.en} (trading as "${business.brand.en}", commercial registration ${business.crNumber}), based in ${business.areaServed.en}, ${business.country.en}, handles personal data. We are the controller of this data under the Saudi Personal Data Protection Law (PDPL).`,
         ],
       },
       {
@@ -156,7 +157,7 @@ const t: { title: string; description: string; h1: string; lead: string; updated
           'To withdraw your consent at any time.',
           'To complain to the Saudi Data & AI Authority (SDAIA).',
         ],
-        note: `To use any of these rights, message us on WhatsApp or email ${site.privacyEmail}. We'll reply within the time the law sets.`,
+        note: `To use any of these rights, message us on WhatsApp or email ${business.privacyEmail}. We'll reply within the time the law sets.`,
       },
       {
         h: 'Keeping it safe',
@@ -173,10 +174,10 @@ const t: { title: string; description: string; h1: string; lead: string; updated
       {
         h: 'Privacy contact',
         list: [
-          `Controller: ${site.legalName.en}`,
-          `Commercial registration: ${site.crNumber}`,
-          `Privacy email: ${site.privacyEmail}`,
-          `WhatsApp: ${site.whatsappNumber}`,
+          `Controller: ${business.legalName.en}`,
+          `Commercial registration: ${business.crNumber}`,
+          `Privacy email: ${business.privacyEmail}`,
+          `WhatsApp: ${business.whatsapp}`,
         ],
       },
     ],

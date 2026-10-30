@@ -6,7 +6,7 @@ Goal: rank on Google for Riyadh home-care searches and turn visitors into WhatsA
 Deadline: Saturday Oct 31, 2026, 6 PM. MVP first; mark later work with `// PHASE 2`.
 
 ## Always Do First
-- Read `src/config/site.ts` (all business facts) and this file before any change.
+- Read `src/data/business.ts` (all business facts), `src/config/site.ts` (site settings) and this file before any change.
 - Do not start any design work until the `frontend-design` skill is installed and activated. Invoke it before writing UI code.
 - Check `brand_assets/` for logo, colors, and images. Use real assets over placeholders. Style references live in `brand_assets/references/`.
 - Read the matching rules file in `docs/build/` (index: `docs/build/README.md`) before working on that area: design system, brand/logo, culture & copy, imagery, services, service pages, packages, offers, header, engagement, visual QA, contact details.
@@ -20,8 +20,8 @@ Deadline: Saturday Oct 31, 2026, 6 PM. MVP first; mark later work with `// PHASE
 - Host: Cloudflare Pages.
 
 ## Business Facts (never invent)
-- Every fact comes from `src/config/site.ts`. Unknown values stay as placeholders like `[WHATSAPP_NUMBER]`, `[CR_NUMBER]`, `[ADDRESS]`, `[PRICE]`.
-- Do NOT write: licensed, certified, nurse, nursing, medical, hospital-grade, MOH, 24/7, "500+ families", or any number/credential not in `site.ts`.
+- Every fact comes from `src/data/business.ts`. Unknown values stay as placeholders like `[PHONE]`, `[ADDRESS]`, `[PRICE]`.
+- Do NOT write: licensed, certified, nurse, nursing, medical, hospital-grade, MOH, 24/7, "500+ families", or any number/credential not in `business.ts`.
 - Prices and offers come only from `src/data/packages.ts` and `src/data/offers.ts`. Current prices are client-approved DRAFTS (from a reference site); they must be confirmed before `isLive` is set to true.
 - Allowed trust claim: staff are background-checked.
 - Do NOT create reviews, testimonials, ratings, or star icons. Use an honest "Be among our first families" block instead.
@@ -55,7 +55,7 @@ Newborn & Mother Care (one combined page at /services/newborn-care/, featured fi
 - Warm, respectful, family-first tone.
 
 ## Conversion
-- Sticky WhatsApp button on mobile; prefilled message per page and per language, built from `site.ts`.
+- Sticky WhatsApp button on mobile; prefilled message per page and per language, built from `business.ts`.
 - Above the fold: benefit headline, 3 trust points, one primary CTA.
 - A CTA after every 2–3 sections on long pages.
 - Forms (if any) need a PDPL consent checkbox linking to the privacy page.

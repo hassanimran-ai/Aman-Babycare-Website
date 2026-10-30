@@ -3,7 +3,8 @@ import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
 import Skyline from './Skyline.astro';
 import logoFull from '../assets/logo-full.png';
-import { site, whatsappUrl, isPlaceholder, type Locale } from '../config/site';
+import { whatsappUrl, isPlaceholder, type Locale } from '../config/site';
+import { business } from '../data/business';
 import { services } from '../data/services';
 import { href, ui } from '../i18n/ui';
 
@@ -15,8 +16,8 @@ const { lang, waMessage } = Astro.props;
 const home = href(lang, '');
 const year = new Date().getFullYear();
 const contacts = [
-  !isPlaceholder(site.phoneDisplay) && { label: site.phoneDisplay, url: `tel:${site.phoneDisplay.replace(/\s/g, '')}` },
-  !isPlaceholder(site.email) && { label: site.email, url: `mailto:${site.email}` },
+  !isPlaceholder(business.phone) && { label: business.phone, url: `tel:${business.phone.replace(/\s/g, '')}` },
+  !isPlaceholder(business.email) && { label: business.email, url: `mailto:${business.email}` },
 ].filter(Boolean) as { label: string; url: string }[];
 ---
 
@@ -24,7 +25,7 @@ const contacts = [
   <Skyline class="absolute inset-x-0 -top-px h-16 w-full -translate-y-full text-green-900/15 md:h-24" />
   <div class="container-x grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1.2fr_1fr_0.8fr_1.2fr]">
     <div class="max-w-xs">
-      <a href={home} class="inline-block rounded-3xl bg-cream-100 p-4" aria-label={site.name[lang]}>
+      <a href={home} class="inline-block rounded-3xl bg-cream-100 p-4" aria-label={business.brand[lang]}>
         <Image src={logoFull} alt="" width={140} height={191} class="h-auto w-28" />
       </a>
       <p class="mt-6 text-sm leading-relaxed">{ui.serving[lang]}.</p>
@@ -62,17 +63,17 @@ const contacts = [
         <Icon name="whatsapp" class="size-5" />
         {ui.chatWhatsApp[lang]}
       </a>
-      <p class="mt-4 text-sm" dir="ltr" style="text-align: start">{site.whatsappNumber}</p>
+      <p class="mt-4 text-sm" dir="ltr" style="text-align: start">{business.whatsapp}</p>
       {contacts.map((c) => <a href={c.url} class="mt-1 block text-sm hover:text-cream-50">{c.label}</a>)}
-      <p class="mt-1 text-sm">{site.city[lang]}{lang === 'ar' ? '، ' : ', '}{site.country[lang]}</p>
+      <p class="mt-1 text-sm">{business.areaServed[lang]}{lang === 'ar' ? '، ' : ', '}{business.country[lang]}</p>
     </div>
   </div>
   <div class="border-t border-cream-50/10">
     <div class="container-x flex flex-col gap-2 py-6 pb-24 text-xs text-cream-200/80 sm:flex-row sm:items-center sm:justify-between lg:pb-6">
-      <p>© {year} {site.name[lang]}. {ui.rights[lang]}.</p>
+      <p>© {year} {business.brand[lang]}. {ui.rights[lang]}.</p>
       <p class="flex flex-wrap items-center gap-x-4">
         <a href={href(lang, 'privacy')} class="inline-flex min-h-11 items-center hover:text-cream-50 hover:underline">{ui.nav.privacy[lang]}</a>
-        <span>{site.tagline[lang]}</span>
+        <span>{business.tagline[lang]}</span>
       </p>
     </div>
   </div>

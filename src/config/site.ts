@@ -1,44 +1,11 @@
-// Single source of truth for business facts. Never invent values: unknowns stay as [PLACEHOLDER].
-// Facts below come from the client's logo and reference mock-up (brand_assets/).
+// Site settings. Business facts (name, legal entity, CR, contact, hours) live in src/data/business.ts.
+import { business } from '../data/business';
 
 export type Locale = 'ar' | 'en';
 
 export const site = {
   // While false: noindex,nofollow on every page and robots.txt disallows all.
   isLive: false,
-
-  name: {
-    en: 'Aman Baby Care & Home Services',
-    ar: 'أمان لرعاية المواليد والخدمات المنزلية',
-  },
-  shortName: { en: 'Aman', ar: 'أمان' },
-  // From the logo.
-  tagline: {
-    en: 'Your Comfort, Our Priority',
-    ar: 'راحتكم أولويتنا', // REVIEW-AR
-  },
-
-  city: { en: 'Riyadh', ar: 'الرياض' },
-  country: { en: 'Saudi Arabia', ar: 'المملكة العربية السعودية' },
-  countryCode: 'SA',
-
-  // Any format works: spaces, dashes and "+" are stripped when building links.
-  whatsappNumber: '+966 59 500 2539',
-  phoneDisplay: '[PHONE]',
-  email: '[EMAIL]',
-  address: { en: '[ADDRESS]', ar: '[ADDRESS]' },
-  crNumber: '[CR_NUMBER]',
-  // Privacy policy: the registered legal entity (data controller) and its privacy contact.
-  legalName: { en: '[LEGAL_NAME]', ar: '[LEGAL_NAME]' },
-  privacyEmail: '[PRIVACY_EMAIL]',
-
-  // The only allowed trust claim.
-  trust: {
-    backgroundChecked: {
-      en: 'Background-checked staff',
-      ar: 'فريق عمل خضع للتحقق من الخلفية', // REVIEW-AR
-    },
-  },
 
   // Tag IDs. Empty = that tag never loads. PHASE 2: cookie banner; tags load only after consent.
   analytics: { ga4: '', meta: '', snapchat: '' },
@@ -86,6 +53,6 @@ export function isPlaceholder(value: string): boolean {
 // wa.me link with a prefilled message. Without a real number it opens WhatsApp's contact picker.
 export function whatsappUrl(message: string): string {
   const text = `?text=${encodeURIComponent(message)}`;
-  if (isPlaceholder(site.whatsappNumber)) return `https://wa.me/${text}`;
-  return `https://wa.me/${site.whatsappNumber.replace(/\D/g, '')}${text}`;
+  if (isPlaceholder(business.whatsapp)) return `https://wa.me/${text}`;
+  return `https://wa.me/${business.whatsapp.replace(/\D/g, '')}${text}`;
 }
