@@ -19,6 +19,7 @@ Data: `src/data/offers.ts`. Seasonal offers layer a discount on top of the packa
 - Exactly one offer has `featured: true`. It shows in the announcement bar, the hero card and the offers panel. Switch it by moving the flag.
 - Offers panel layout (client request, Oct 2026): notification-style bars, not big cards. The live (featured) offer is one compact bar with its photo, event, date, text, included services, countdown and CTA; a slim welcome-offer bar follows; then a "Coming soon" row of smaller bars (about half the height) that scrolls sideways at every width.
 - `endsAt` (ISO date) drives the countdown. Once it has passed, the countdown hides itself.
+- `startDate` (ISO date) is when an offer goes live and takes the `featured` flag. Set it before the event: Ramadan 2027 starts on 1 Feb, a week ahead, because hourly-help searches peak just before Ramadan and the Eids.
 - Discounts stay `[DISCOUNT]` until the client sends real numbers.
 - Motifs (SVG, brand colours): crescent for Ramadan & the Eids, palm for Founding/National Day, tag for White Friday, pencil for back to school.
 - No other religious occasions.

@@ -10,6 +10,9 @@ export interface Offer {
   event: L;
   when: L;
   hijri?: boolean; // date depends on moon sighting
+  /** ISO date the offer goes live (move `featured` to it then). Set ahead of the event: hourly-help
+   *  searches peak just before Ramadan and the Eids. */
+  startDate?: string;
   endsAt?: string; // ISO; drives the countdown
   featured?: boolean;
   title: L;
@@ -40,6 +43,8 @@ export const offers: Offer[] = [
     event: { ar: 'رمضان المبارك', en: 'Ramadan' },
     when: { ar: 'فبراير 2027', en: 'February 2027' },
     hijri: true,
+    // Live a week before Ramadan (~8 Feb 2027), not at its start.
+    startDate: '2027-02-01',
     title: { ar: 'رمضان أهدأ: رعاية وقت الإفطار وتنظيف قبل الضيوف', en: 'A calmer Ramadan: iftar-time babysitting and cleaning before guests' },
     text: {
       ar: 'تفرغوا للعبادة والعزائم، ونحن نهتم بالأطفال وقت الإفطار والتراويح، ونجهز البيت لضيوفكم.',
