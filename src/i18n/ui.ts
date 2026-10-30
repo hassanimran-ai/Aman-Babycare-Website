@@ -49,3 +49,6 @@ export const ui = {
 
 /** Western digits with thousands separators in both languages (see docs/build/packages-and-pricing.md). */
 export const money = (n: number) => n.toLocaleString('en-US', { maximumFractionDigits: 2 });
+// Hourly rates: whole numbers stay whole, fractions always show two digits (35.70, not 35.7), as on the reference page.
+export const rate = (n: number) =>
+  n.toLocaleString('en-US', { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 });
