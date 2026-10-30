@@ -4,7 +4,7 @@ import Icon from './Icon.astro';
 import Skyline from './Skyline.astro';
 import logoFull from '../assets/logo-full.png';
 import { whatsappUrl, isPlaceholder, type Locale } from '../config/site';
-import { business } from '../data/business';
+import { business, telUrl } from '../data/business';
 import { services } from '../data/services';
 import { href, ui } from '../i18n/ui';
 
@@ -16,7 +16,6 @@ const { lang, waMessage } = Astro.props;
 const home = href(lang, '');
 const year = new Date().getFullYear();
 const contacts = [
-  !isPlaceholder(business.phone) && { label: business.phone, url: `tel:${business.phone.replace(/\s/g, '')}` },
   !isPlaceholder(business.email) && { label: business.email, url: `mailto:${business.email}` },
 ].filter(Boolean) as { label: string; url: string }[];
 const operator =
@@ -71,7 +70,14 @@ const badge = business.businessSaBadge;
         <Icon name="whatsapp" class="size-5" />
         {ui.chatWhatsApp[lang]}
       </a>
-      <p class="mt-4 text-sm" dir="ltr" style="text-align: start">{business.whatsapp}</p>
+      {
+        !isPlaceholder(business.phone) && (
+          <a href={telUrl()} class="mt-4 flex min-h-11 items-center gap-2 text-sm hover:text-cream-50 hover:underline">
+            <Icon name="phone" class="size-4 text-gold-300" />
+            <span>{ui.callUs[lang]}: <span dir="ltr">{business.phone}</span></span>
+          </a>
+        )
+      }
       {contacts.map((c) => <a href={c.url} class="mt-1 block text-sm hover:text-cream-50">{c.label}</a>)}
       <p class="mt-1 text-sm">{business.areaServed[lang]}{lang === 'ar' ? '، ' : ', '}{business.country[lang]}</p>
     </div>

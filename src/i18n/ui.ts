@@ -21,6 +21,7 @@ export const ui = {
     about: { ar: 'من نحن', en: 'About us' },
     contact: { ar: 'تواصل معنا', en: 'Contact' },
   },
+  callUs: { ar: 'اتصلوا بنا', en: 'Call us' },
   langName: { ar: 'العربية', en: 'English' },
   switchTo: { ar: 'Switch to English', en: 'التبديل إلى العربية' },
   mainNav: { ar: 'التنقل الرئيسي', en: 'Main navigation' },

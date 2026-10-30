@@ -6,7 +6,7 @@ import Breadcrumbs from '../Breadcrumbs.astro';
 import CompanyDetails from '../CompanyDetails.astro';
 import Icon from '../Icon.astro';
 import { isPlaceholder, whatsappUrl, type Locale } from '../../config/site';
-import { business } from '../../data/business';
+import { business, telUrl } from '../../data/business';
 import { href, ui } from '../../i18n/ui';
 import { breadcrumbSchema } from '../../lib/schema';
 
@@ -25,7 +25,7 @@ const t = {
     description: 'تواصلوا مع أمان عبر واتساب لحجز رعاية المواليد والأطفال ومرافقة كبار السن وخدمات البيت في الرياض. ساعات الحجز من 8 صباحاً إلى 8 مساءً.',
     h1: 'تواصل معنا',
     lead: 'أسرع طريقة للوصول إلينا هي واتساب. اكتبوا لنا ما تحتاجونه، ونرد عليكم خلال ساعات الحجز.',
-    waTitle: 'واتساب',
+    waTitle: 'واتساب أو اتصال',
     waText: 'للحجز والأسئلة والمتابعة أثناء الزيارة.',
     bookTitle: 'احجزوا خدمتكم',
     bookText: 'اختاروا الخدمة والتوقيت، ونجهّز لكم رسالة واتساب كاملة بالتفاصيل.',
@@ -38,7 +38,7 @@ const t = {
     description: 'Message Aman on WhatsApp to book newborn care, babysitting, elderly companionship or home help in Riyadh. Booking hours 8am–8pm.',
     h1: 'Contact us',
     lead: 'The quickest way to reach us is WhatsApp. Tell us what you need and we’ll reply during booking hours.',
-    waTitle: 'WhatsApp',
+    waTitle: 'WhatsApp or call',
     waText: 'For bookings, questions and updates during a visit.',
     bookTitle: 'Book your service',
     bookText: 'Pick the service and timing, and we’ll prepare a complete WhatsApp message with the details.',
@@ -49,7 +49,6 @@ const t = {
 }[lang];
 
 const others = [
-  !isPlaceholder(business.phone) && { label: business.phone, url: `tel:${business.phone.replace(/\s/g, '')}` },
   !isPlaceholder(business.email) && { label: business.email, url: `mailto:${business.email}` },
 ].filter(Boolean) as { label: string; url: string }[];
 ---
@@ -71,11 +70,17 @@ const others = [
           <Icon name="clock" class="size-4 text-gold-300" />
           {business.hours.label[lang]}
         </p>
-        <div class="mt-auto pt-6">
+        <div class="mt-auto flex flex-wrap gap-3 pt-6">
           <a href={whatsappUrl(t.message)} rel="noopener" class="btn btn-light">
             <Icon name="whatsapp" class="size-5" />
             {ui.chatWhatsApp[lang]}
           </a>
+          {!isPlaceholder(business.phone) && (
+            <a href={telUrl()} class="btn text-cream-50 ring-1 ring-cream-50/40 hover:bg-cream-50/10" aria-label={`${ui.callUs[lang]}: ${business.phone}`}>
+              <Icon name="phone" class="size-5" />
+              {ui.callUs[lang]}
+            </a>
+          )}
         </div>
       </section>
 

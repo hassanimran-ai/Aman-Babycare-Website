@@ -27,7 +27,7 @@ export const business = {
 
   // Any format works: spaces, dashes and "+" are stripped when building links.
   whatsapp: '+966 59 500 2539',
-  phone: '[PHONE]',
+  phone: '+966 59 500 2539',
   email: '[EMAIL]',
   privacyEmail: '[PRIVACY_EMAIL]',
   address: { en: '[ADDRESS]', ar: '[ADDRESS]' },
@@ -55,3 +55,6 @@ export const business = {
   // business.sa verification badge: shown in the footer only once set.
   businessSaBadge: null as null | { url: string; image: string },
 } as const;
+
+// tel: link built from the phone number ("+966 59 500 2539" → "tel:+966595002539").
+export const telUrl = () => `tel:${business.phone.replace(/[^\d+]/g, '')}`;

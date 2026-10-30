@@ -5,7 +5,7 @@ import Icon from './Icon.astro';
 import GlassRibbon, { type RibbonItem } from './GlassRibbon.astro';
 import logoMark from '../assets/logo-mark.png';
 import { whatsappUrl, type Locale } from '../config/site';
-import { business } from '../data/business';
+import { business, telUrl } from '../data/business';
 import { href, other, ui } from '../i18n/ui';
 
 interface Props {
@@ -81,6 +81,14 @@ const active = path === '' ? 0 : path.startsWith('services') ? 1 : path === 'pac
         title={ui.switchTo[lang]}
       >
         {alt === 'en' ? 'EN' : 'عربي'}
+      </a>
+      <a
+        href={telUrl()}
+        class="hidden min-h-11 items-center gap-2 whitespace-nowrap rounded-full px-3 text-sm font-semibold text-green-700 hover:bg-green-50 active:scale-[0.98] lg:inline-flex"
+        aria-label={`${ui.callUs[lang]}: ${business.phone}`}
+      >
+        <Icon name="phone" class="size-5" />
+        <span class="hidden xl:inline">{ui.callUs[lang]}</span>
       </a>
       <a href={whatsappUrl(waMessage)} class="btn btn-primary hidden min-h-11 whitespace-nowrap px-4 text-sm lg:inline-flex xl:px-6" rel="noopener" aria-label={ui.bookWhatsApp[lang]}>
         <Icon name="whatsapp" class="size-5" />
