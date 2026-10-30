@@ -17,6 +17,7 @@ import { featuredOffer as featured, upcomingOffers } from '../../data/offers';
 import { packages, welcomeOffer } from '../../data/packages';
 import { href, ui } from '../../i18n/ui';
 import { homeFaq } from '../../data/home';
+import { business } from '../../data/business';
 import { hasPhoto } from '../../lib/photos';
 
 interface Props {
@@ -64,7 +65,7 @@ const c = {
     trustTitle: 'تطمئنون قبل أن نصل',
     trustText: 'كل فرد في فريقنا يخضع للتحقق من الخلفية قبل أن يدخل أي بيت. ونسأل عن قواعد بيتكم قبل أول زيارة، ونلتزم بها.',
     trustAlt: 'مقدّمة رعاية في بيت عائلة سعودية',
-    trustPoints: ['التحقق من الخلفية لكل فرد في الفريق', 'نلتزم بقواعد بيتكم وخصوصيتكم', 'تحديثات على واتساب أثناء الزيارة'],
+    trustPoints: ['التحقق من الخلفية لكل فرد في الفريق', `مقدّمو الرعاية يتحدثون ${business.languages.ar}`, 'نلتزم بقواعد بيتكم وخصوصيتكم', 'تحديثات على واتساب أثناء الزيارة'],
     firstTitle: 'كونوا من أوائل عائلاتنا',
     firstText: 'أمان في بداية رحلتها. لا نعرض تقييمات لم نكسبها بعد؛ نفضّل أن نكسب ثقتكم زيارة بعد زيارة.',
     firstCta: 'احجزوا أول زيارة',
@@ -111,7 +112,7 @@ const c = {
     trustTitle: 'Peace of mind before we arrive',
     trustText: 'Everyone on our team is background-checked before they enter any home. We ask about your house rules before the first visit, and we keep them.',
     trustAlt: 'A caregiver in a Saudi family home',
-    trustPoints: ['Background checks for every team member', 'Your house rules and privacy, respected', 'WhatsApp updates during the visit'],
+    trustPoints: ['Background checks for every team member', `Caregivers speak ${business.languages.en}`, 'Your house rules and privacy, respected', 'WhatsApp updates during the visit'],
     firstTitle: 'Be among our first families',
     firstText: "Aman is just beginning. We won't show reviews we haven't earned yet; we'd rather earn your trust one visit at a time.",
     firstCta: 'Book your first visit',

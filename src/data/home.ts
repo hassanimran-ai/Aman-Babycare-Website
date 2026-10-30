@@ -1,6 +1,7 @@
 // Home page FAQ (general questions; service-specific ones live in services.ts).
 // REVIEW-AR: Arabic is a first draft.
 import type { L } from '../i18n/ui';
+import { business } from './business';
 
 export const homeFaq: { q: L; a: L }[] = [
   {
@@ -29,6 +30,13 @@ export const homeFaq: { q: L; a: L }[] = [
     a: {
       ar: 'كل فرد في الفريق يخضع للتحقق من الخلفية قبل العمل مع أي عائلة.',
       en: 'Everyone on the team is background-checked before working with any family.',
+    },
+  },
+  {
+    q: { ar: 'ما اللغات التي يتحدثها مقدّمو الرعاية؟', en: 'What languages do your caregivers speak?' },
+    a: {
+      ar: `مقدّمو الرعاية يتحدثون ${business.languages.ar}.`,
+      en: `Caregivers speak ${business.languages.en}.`,
     },
   },
   {
