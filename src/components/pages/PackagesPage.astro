@@ -29,7 +29,7 @@ const unpriced = services.filter((s) => !['babysitting', 'elderly-companionship'
 const t = {
   ar: {
     title: 'باقات وأسعار رعاية الأطفال والخدمات المنزلية | أمان',
-    description: 'باقات بالساعة والأسبوع والشهر لرعاية الأطفال ومرافقة كبار السن في الرياض، وعروض المواسم، وأداة لحجز خدمتك.',
+    description: 'باقات بالساعة والأسبوع والشهر لرعاية الأطفال ومرافقة كبار السن في الرياض، وعروض المواسم، وأداة لحجز خدمتكم.',
     h1: 'باقات تناسب إيقاع بيتكم',
     lead: 'ساعات قليلة أو خطة شهرية ثابتة. كلما طالت الخطة، قلّ سعر الساعة.',
     draftNote: 'الأسعار المعروضة مبدئية، ونؤكد السعر النهائي معكم على واتساب قبل الحجز.',
@@ -60,7 +60,7 @@ const t = {
 const sections: RibbonItem[] = [
   ...groups.map((g) => ({ label: g.tab[lang], href: `#${g.id}`, section: g.id })),
   // Short English label: "Book Your Service" wraps to three lines in the phone ribbon.
-  { label: lang === 'ar' ? 'احجزي خدمتك' : 'Book now', href: '#booking', section: 'booking' },
+  { label: lang === 'ar' ? 'احجزوا خدمتكم' : 'Book now', href: '#booking', section: 'booking' },
 ];
 const planMsg = lang === 'ar' ? 'السلام عليكم، أرغب بخطة رعاية مخصصة.' : "Hello, I'd like a personalised care plan.";
 ---

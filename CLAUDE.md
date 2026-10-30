@@ -47,6 +47,7 @@ Newborn & Mother Care (one combined page at /services/newborn-care/, featured fi
 - Use logical utilities only (`ms-`, `me-`, `ps-`, `pe-`, `start-`, `end-`, `text-start`). Never hard-code left/right.
 - Flip directional icons (arrows, chevrons) in RTL.
 - Arabic copy: natural Saudi-friendly Modern Standard Arabic, not word-for-word translation. Mark any machine-translated text with `<!-- REVIEW-AR -->`.
+- Address visitors in the respectful plural (احجزوا، اسألونا); no singular imperatives. Use «مقدّم/ة الرعاية» or «فريق الرعاية» where the caregiver's gender is not specific.
 - The language toggle links to the same page in the other language. No splash screen, no auto-redirect, no Google Translate.
 
 ## Culture & Imagery

@@ -15,14 +15,14 @@ export const homeFaq: { q: L; a: L }[] = [
   {
     q: { ar: 'كيف أحجز؟', en: 'How do I book?' },
     a: {
-      ar: 'كل الحجوزات عبر واتساب: أخبرونا بالخدمة والموعد، ونؤكد لكم مقدّمة الرعاية والسعر.',
+      ar: 'كل الحجوزات عبر واتساب: أخبرونا بالخدمة والموعد، ونؤكد لكم فريق الرعاية والسعر.',
       en: 'All bookings happen on WhatsApp: tell us the service and time, and we confirm the caregiver and price.',
     },
   },
   {
-    q: { ar: 'هل يمكن لمقدّمة رعاية واحدة تقديم أكثر من خدمة؟', en: 'Can one caregiver do more than one service?' },
+    q: { ar: 'هل يمكن لشخص واحد من فريق الرعاية تقديم أكثر من خدمة؟', en: 'Can one caregiver do more than one service?' },
     a: {
-      ar: 'نعم، هذا ما يميز أمان. يمكن جمع رعاية الأطفال مع ترتيب البيت مثلاً، حسب حجم العمل. اختاروا خدماتكم في «احجزي خدمتك» لتروا ذلك.',
+      ar: 'نعم، هذا ما يميز أمان. يمكن جمع رعاية الأطفال مع ترتيب البيت مثلاً، حسب حجم العمل. اختاروا خدماتكم في «احجزوا خدمتكم» لتروا ذلك.',
       en: 'Yes, that is what makes Aman different. For example, babysitting can be combined with light housework, depending on the workload. Pick your services in Book Your Service to see how.',
     },
   },

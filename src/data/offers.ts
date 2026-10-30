@@ -109,7 +109,7 @@ export const offers: Offer[] = [
     when: { ar: '23 سبتمبر', en: '23 September' },
     title: { ar: 'خطة أسبوعية لرعاية الأطفال بمناسبة اليوم الوطني', en: 'A National Day weekly babysitting plan' },
     text: {
-      ar: 'أسبوع كامل من الرعاية بنفس مقدّمة الرعاية، بسعر خاص للمناسبة.',
+      ar: 'أسبوع كامل من الرعاية مع الشخص نفسه من فريق الرعاية، بسعر خاص للمناسبة.',
       en: 'A full week of care with the same caregiver, at a special price for the occasion.',
     },
     services: ['babysitting'],

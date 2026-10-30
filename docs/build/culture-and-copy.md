@@ -8,6 +8,8 @@ Warm, respectful, calm, confident. Plain words. Speak to the family ("your home"
 
 ## Arabic first
 - Write the Arabic first in natural, Saudi-friendly Modern Standard Arabic, then the English. Never translate word for word.
+- Address visitors in the respectful plural (احجزوا، اسألونا، بيتكم), never a masculine or feminine singular imperative (احجز، احجزي، اسألنا).
+- When the caregiver's gender is not specific, write «مقدّم/ة الرعاية», «فريق الرعاية» or «شخص واحد من فريق الرعاية», not «مقدّمة رعاية». Photo alt text describes the person actually shown.
 - Mark Arabic that needs a native check with `REVIEW-AR` (a comment next to the string).
 - Islamic courtesy where natural (e.g. «بإذن الله») in moderation. No religious claims.
 

@@ -2,7 +2,7 @@
 // "Book Your Service": pick one or more services (each expands to its timing, package and extras),
 // review "Your Package", then a short form builds a booking request and opens it in WhatsApp.
 // Config: src/data/booking.ts. Nothing is stored: every field lives in memory until the visitor sends it.
-// REVIEW-AR: Arabic follows the client's feminine address and is a first draft.
+// REVIEW-AR: Arabic uses the respectful plural address and is a first draft.
 import Icon from './Icon.astro';
 import { whatsappUrl, type Locale } from '../config/site';
 import {
@@ -27,18 +27,18 @@ const { lang } = Astro.props;
 
 const t = {
   ar: {
-    title: 'احجزي خدمتك',
-    text: 'اختاري خدمة أو أكثر، وحددي التوقيت والباقة لكل خدمة. مقدّمة رعاية واحدة يمكنها أن تجمع لكِ أكثر من خدمة.',
+    title: 'احجزوا خدمتكم',
+    text: 'اختاروا خدمة أو أكثر، وحددوا التوقيت والباقة لكل خدمة. يمكن لشخص واحد من فريق الرعاية أن يجمع لكم أكثر من خدمة.',
     often: 'كم مرة؟',
-    oftenHint: 'يُطبَّق على كل الخدمات المختارة، ويمكنك تغييره لكل خدمة.',
+    oftenHint: 'يُطبَّق على كل الخدمات المختارة، ويمكنكم تغييره لكل خدمة.',
     services: 'الخدمات',
     selected: 'مختارة',
     timing: 'التوقيت',
     plan: 'الباقة',
     hrsDay: 'ساعة يومياً',
     from: 'من',
-    yourPkg: 'باقتك',
-    empty: 'لم تختاري أي خدمة بعد. اختاري خدمة واحدة على الأقل لتظهر هنا.',
+    yourPkg: 'باقتكم',
+    empty: 'لم تختاروا أي خدمة بعد. اختاروا خدمة واحدة على الأقل لتظهر هنا.',
     estimate: 'التقدير يبدأ من',
     priceWa: 'السعر يُؤكَّد عبر واتساب',
     priceShort: 'السعر عبر واتساب',
@@ -46,10 +46,10 @@ const t = {
     edit: 'تعديل',
     remove: 'إزالة',
     toggle: 'عرض التفاصيل',
-    bookNow: 'احجزي الآن',
-    noscript: 'لإكمال الحجز، راسلينا مباشرة على واتساب.',
+    bookNow: 'احجزوا الآن',
+    noscript: 'لإكمال الحجز، راسلونا مباشرة على واتساب.',
     formTitle: 'طلب الحجز',
-    formIntro: 'بعض التفاصيل لنجهّز طلبك. رقمك يصلنا من واتساب، والعنوان نأخذه في المحادثة.',
+    formIntro: 'بعض التفاصيل لنجهّز طلبكم. رقمكم يصلنا من واتساب، والعنوان نأخذه في المحادثة.',
     name: 'الاسم الأول',
     district: 'الحي',
     districtHint: 'مثال: الملقا',
@@ -69,10 +69,10 @@ const t = {
     notes: 'ملاحظات',
     consentA: 'أوافق على إرسال هذه التفاصيل عبر واتساب وفق',
     consentLink: 'سياسة الخصوصية',
-    submit: 'أرسلي طلب الحجز عبر واتساب',
+    submit: 'أرسلوا طلب الحجز عبر واتساب',
     close: 'إغلاق',
     errorsTitle: 'يرجى تصحيح ما يلي:',
-    doneTitle: 'تم تجهيز طلبك',
+    doneTitle: 'تم تجهيز طلبكم',
     doneText: 'سنؤكد التوفر والسعر عبر واتساب.',
     doneAgain: 'فتح واتساب مرة أخرى',
   },
@@ -210,15 +210,15 @@ const config = {
   errors:
     lang === 'ar'
       ? {
-          name: 'اكتبي اسمك الأول.',
-          district: 'اكتبي اسم الحي.',
-          preference: 'اختاري تفضيل مقدّم الرعاية.',
-          date: 'اختاري تاريخ البدء.',
-          datePast: 'اختاري تاريخاً من اليوم فصاعداً.',
-          time: 'اختاري وقت البدء.',
-          age: 'أدخلي العمر بالأرقام.',
-          mobility: 'اختاري حالة الحركة.',
-          pets: 'اختاري نوع الحيوان.',
+          name: 'اكتبوا الاسم الأول.',
+          district: 'اكتبوا اسم الحي.',
+          preference: 'اختاروا تفضيل مقدّم الرعاية.',
+          date: 'اختاروا تاريخ البدء.',
+          datePast: 'اختاروا تاريخاً من اليوم فصاعداً.',
+          time: 'اختاروا وقت البدء.',
+          age: 'أدخلوا العمر بالأرقام.',
+          mobility: 'اختاروا حالة الحركة.',
+          pets: 'اختاروا نوع الحيوان.',
           consent: 'يلزم الموافقة لإرسال الطلب.',
         }
       : {

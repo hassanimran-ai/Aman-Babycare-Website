@@ -41,7 +41,7 @@ export const services: ServiceContent[] = [
     },
     h1: { ar: 'أسابيعكم الأولى مع المولود، بهدوء وطمأنينة', en: 'Your first weeks with baby, calmer and well rested' },
     intro: {
-      ar: 'الأسابيع الأولى بعد الولادة جميلة ومتعبة معاً. مقدّمة رعاية هادئة تساعدكم في العناية اليومية بالمولود، وتخفف عن الأم أعباء البيت، لترتاح وتستقبل أهلها براحة بال.',
+      ar: 'الأسابيع الأولى بعد الولادة جميلة ومتعبة معاً. فريق رعاية هادئ يساعدكم في العناية اليومية بالمولود، ويخفف عن الأم أعباء البيت، لترتاح وتستقبل أهلها براحة بال.',
       en: "The first weeks after birth are beautiful and exhausting. A calm caregiver helps with your baby's daily care and takes the housework off mum's hands, so she can rest and welcome family with peace of mind.",
     },
     subservices: [
@@ -105,13 +105,13 @@ export const services: ServiceContent[] = [
     meta: {
       title: { ar: 'رعاية الأطفال في المنزل بالرياض | أمان', en: 'Babysitting at Home in Riyadh | Aman' },
       description: {
-        ar: 'جليسة أطفال في بيتك بالرياض، بالساعة أو بخطة أسبوعية أو شهرية. فريق خضع للتحقق من الخلفية. احجز عبر واتساب.',
+        ar: 'جليسة أطفال في بيتكم بالرياض، بالساعة أو بخطة أسبوعية أو شهرية. فريق خضع للتحقق من الخلفية. احجزوا عبر واتساب.',
         en: 'A babysitter in your Riyadh home, by the hour, weekly or monthly. Background-checked staff. Book on WhatsApp.',
       },
     },
     h1: { ar: 'أطفالكم في أمان، وأنتم مطمئنون', en: 'Your children are safe, and you can breathe' },
     intro: {
-      ar: 'لمشوار عاجل أو دوام طويل أو مناسبة عائلية: مقدّمة رعاية هادئة تلعب وتقرأ وتطعم أطفالكم، وتلتزم بقواعد بيتكم كما هي.',
+      ar: 'لمشوار عاجل أو دوام طويل أو مناسبة عائلية: شخص هادئ من فريق الرعاية يلعب مع أطفالكم ويقرأ لهم ويطعمهم، ويلتزم بقواعد بيتكم كما هي.',
       en: "For a quick errand, a long work day or a family occasion: a calm caregiver who plays, reads and feeds your children, and keeps your house rules exactly as they are.",
     },
     visit: [
@@ -136,14 +136,14 @@ export const services: ServiceContent[] = [
     faq: [
       {
         q: { ar: 'ما الأعمار التي ترعونها؟', en: 'What ages do you look after?' },
-        a: { ar: 'أخبرونا بأعمار أطفالكم عند الحجز لنرشح لكم مقدّمة الرعاية المناسبة.', en: "Tell us your children's ages when you book, and we'll match the right caregiver." },
+        a: { ar: 'أخبرونا بأعمار أطفالكم عند الحجز لنرشّح لكم الشخص المناسب من فريق الرعاية.', en: "Tell us your children's ages when you book, and we'll match the right caregiver." },
       },
       {
         q: { ar: 'هل يمكن الحجز لساعات قليلة؟', en: 'Can I book for just a few hours?' },
         a: { ar: 'نعم، يوجد حجز بالساعة، وخطط أسبوعية وشهرية لمن يحتاج رعاية منتظمة.', en: 'Yes. There is hourly booking, plus weekly and monthly plans for regular care.' } },
       {
         q: { ar: 'هل تبقى نفس الجليسة كل مرة؟', en: 'Will we have the same sitter each time?' },
-        a: { ar: 'في الخطط الأسبوعية والشهرية نحرص على نفس مقدّمة الرعاية ليعتاد عليها الأطفال.', en: 'On weekly and monthly plans we keep the same caregiver so your children can settle.' } },
+        a: { ar: 'في الخطط الأسبوعية والشهرية نحرص على أن يبقى الشخص نفسه من فريق الرعاية ليعتاد عليه الأطفال.', en: 'On weekly and monthly plans we keep the same caregiver so your children can settle.' } },
     ],
     whatsapp: { ar: 'السلام عليكم، أرغب بحجز رعاية أطفال.', en: 'Hello, I would like to book babysitting.' },
   },
@@ -156,7 +156,7 @@ export const services: ServiceContent[] = [
     meta: {
       title: { ar: 'مرافقة كبار السن في المنزل بالرياض | أمان', en: 'Elderly Companionship at Home in Riyadh | Aman' },
       description: {
-        ar: 'صحبة ومساعدة يومية لوالديكم في البيت بالرياض: حديث، مشي، وجبات، ومرافقة للمواعيد. احجز يوماً أو خطة شهرية عبر واتساب.',
+        ar: 'صحبة ومساعدة يومية لوالديكم في البيت بالرياض: حديث، مشي، وجبات، ومرافقة للمواعيد. احجزوا يوماً أو خطة شهرية عبر واتساب.',
         en: 'Company and daily help for your parents at home in Riyadh: conversation, walks, meals and rides to appointments. Book a day or a monthly plan on WhatsApp.',
       },
     },
@@ -207,7 +207,7 @@ export const services: ServiceContent[] = [
     meta: {
       title: { ar: 'تنظيف المنازل في الرياض | أمان', en: 'Home Cleaning in Riyadh | Aman' },
       description: {
-        ar: 'تنظيف منزلي دوري أو قبل الضيوف والمناسبات في الرياض. فريق خضع للتحقق من الخلفية. احجز عبر واتساب.',
+        ar: 'تنظيف منزلي دوري أو قبل الضيوف والمناسبات في الرياض. فريق خضع للتحقق من الخلفية. احجزوا عبر واتساب.',
         en: 'Regular home cleaning or a refresh before guests and occasions in Riyadh. Background-checked staff. Book on WhatsApp.',
       },
     },
@@ -245,7 +245,7 @@ export const services: ServiceContent[] = [
         a: { ar: 'نعم، احجزوا مبكراً قبل رمضان والأعياد لأن المواعيد تمتلئ.', en: 'Yes. Book early before Ramadan and Eid, when slots fill up.' } },
       {
         q: { ar: 'هل يمكن أن تنظف وتجالس الأطفال في نفس الزيارة؟', en: 'Can one visit cover cleaning and babysitting?' },
-        a: { ar: 'يمكن جمع الخدمتين لمقدّمة رعاية واحدة حسب حجم البيت وعمر الأطفال؛ نتفق على التفاصيل معكم.', en: "One caregiver can combine both, depending on the size of the home and the children's ages. We'll agree the details with you." } },
+        a: { ar: 'يمكن أن يجمع شخص واحد من فريق الرعاية الخدمتين حسب حجم البيت وعمر الأطفال؛ نتفق على التفاصيل معكم.', en: "One caregiver can combine both, depending on the size of the home and the children's ages. We'll agree the details with you." } },
     ],
     whatsapp: { ar: 'السلام عليكم، أرغب بحجز تنظيف للمنزل.', en: 'Hello, I would like to book home cleaning.' },
   },
@@ -258,7 +258,7 @@ export const services: ServiceContent[] = [
     meta: {
       title: { ar: 'المشتريات والمساعدة الشخصية في الرياض | أمان', en: 'Errands & Personal Assistance in Riyadh | Aman' },
       description: {
-        ar: 'مقاضي البيت، استلام الطلبات، والمشاوير الصغيرة في الرياض. وفّروا وقتكم لعائلتكم. احجز عبر واتساب.',
+        ar: 'مقاضي البيت، استلام الطلبات، والمشاوير الصغيرة في الرياض. وفّروا وقتكم لعائلتكم. احجزوا عبر واتساب.',
         en: 'Groceries, collecting orders and small errands in Riyadh. Save your time for your family. Book on WhatsApp.',
       },
     },
@@ -308,7 +308,7 @@ export const services: ServiceContent[] = [
     meta: {
       title: { ar: 'توصيل الأطفال والعائلة في الرياض | أمان', en: 'School & Family Pick-up and Drop-off in Riyadh | Aman' },
       description: {
-        ar: 'توصيل واستقبال الأطفال من المدرسة والنادي، ومرافقة الوالدين للمواعيد في الرياض. فريق خضع للتحقق. احجز عبر واتساب.',
+        ar: 'توصيل واستقبال الأطفال من المدرسة والنادي، ومرافقة الوالدين للمواعيد في الرياض. فريق خضع للتحقق. احجزوا عبر واتساب.',
         en: 'School and club pick-ups for children, and rides to appointments for parents in Riyadh. Background-checked staff. Book on WhatsApp.',
       },
     },
@@ -344,7 +344,7 @@ export const services: ServiceContent[] = [
         q: { ar: 'كيف أعرف أن طفلي وصل؟', en: 'How do I know my child has arrived?' },
         a: { ar: 'نرسل لكم رسالة على واتساب عند الاستلام وعند التسليم.', en: 'We message you on WhatsApp at pick-up and at hand-over.' } },
       {
-        q: { ar: 'هل يمكن أن تبقى مقدمة الرعاية مع الطفل بعد التوصيل؟', en: 'Can the caregiver stay with my child after the ride?' },
+        q: { ar: 'هل يمكن أن يبقى مقدّم/ة الرعاية مع الطفل بعد التوصيل؟', en: 'Can the caregiver stay with my child after the ride?' },
         a: { ar: 'نعم، يمكن جمع التوصيل مع رعاية الأطفال في البيت حتى عودتكم.', en: 'Yes. Combine the ride with babysitting at home until you are back.' } },
     ],
     whatsapp: { ar: 'السلام عليكم، أرغب بحجز خدمة التوصيل والاستقبال.', en: 'Hello, I would like to book pick-up and drop-off.' },
@@ -354,17 +354,17 @@ export const services: ServiceContent[] = [
     tier: 'more',
     icon: 'paw',
     name: { ar: 'رعاية الكلاب والقطط', en: 'Dog & Cat Sitting' },
-    card: { ar: 'طعام ولعب ونظافة لحيوانك الأليف في بيته', en: 'Meals, play and a clean litter box, in their own home' },
+    card: { ar: 'طعام ولعب ونظافة لحيوانكم الأليف في بيته', en: 'Meals, play and a clean litter box, in their own home' },
     meta: {
       title: { ar: 'رعاية القطط والكلاب في المنزل بالرياض | أمان', en: 'Cat & Dog Sitting at Home in Riyadh | Aman' },
       description: {
-        ar: 'مسافرون أو مشغولون؟ نزور قطتك أو كلبك في البيت للإطعام واللعب والتنظيف ونرسل لكم صوراً. احجز عبر واتساب في الرياض.',
+        ar: 'مسافرون أو مشغولون؟ نزور قطتكم أو كلبكم في البيت للإطعام واللعب والتنظيف ونرسل لكم صوراً. احجزوا عبر واتساب في الرياض.',
         en: 'Travelling or busy? We visit your cat or dog at home to feed, play and clean up, and send you photos. Book on WhatsApp in Riyadh.',
       },
     },
-    h1: { ar: 'قطتك وكلبك في بيتهم، وأنتم مطمئنون', en: 'Your cat or dog stays home, and you stay at ease' },
+    h1: { ar: 'قطتكم وكلبكم في بيتهما، وأنتم مطمئنون', en: 'Your cat or dog stays home, and you stay at ease' },
     intro: {
-      ar: 'السفر أو أيام العمل الطويلة لا تعني أن يقضي حيوانك الأليف يومه وحيداً. نزوره في بيته، نحافظ على روتينه، ونطمئنكم عليه بالصور.',
+      ar: 'السفر أو أيام العمل الطويلة لا تعني أن يقضي حيوانكم الأليف يومه وحيداً. نزوره في بيته، نحافظ على روتينه، ونطمئنكم عليه بالصور.',
       en: "A trip or a long working day doesn't have to mean a lonely day for your pet. We visit them at home, keep their routine, and keep you posted with photos.",
     },
     visit: [
