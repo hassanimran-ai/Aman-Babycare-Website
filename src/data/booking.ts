@@ -9,13 +9,14 @@ import { packages } from './packages';
 export type Timing = 'hourly' | 'half-day' | 'full-day' | 'day-shift' | 'night' | '24-hours' | 'stay-in';
 export type Plan = 'once' | 'weekly' | 'monthly';
 
-// hoursPerDay: null = not confirmed yet, shown as [HOURS_PER_DAY].
-export const timings: Record<Timing, { label: L; hoursPerDay: number | null }> = {
+// hoursPerDay: null = not confirmed yet; the hours line is then left out.
+// window: fixed shift hours, shown under the label in place of "12 hrs/day".
+export const timings: Record<Timing, { label: L; hoursPerDay: number | null; window?: L }> = {
   hourly: { label: { ar: 'بالساعة', en: 'Hourly' }, hoursPerDay: null },
   'half-day': { label: { ar: 'نصف يوم', en: 'Half day' }, hoursPerDay: null }, // TODO: client to confirm hours
   'full-day': { label: { ar: 'يوم كامل', en: 'Full day' }, hoursPerDay: null }, // TODO: client to confirm hours
-  'day-shift': { label: { ar: 'مناوبة نهارية 8ص–8م', en: 'Day shift 8am–8pm' }, hoursPerDay: 12 },
-  night: { label: { ar: 'مناوبة ليلية 8م–8ص', en: 'Night shift 8pm–8am' }, hoursPerDay: 12 },
+  'day-shift': { label: { ar: 'مناوبة نهارية', en: 'Day shift' }, hoursPerDay: 12, window: { ar: '8ص–8م', en: '8am–8pm' } },
+  night: { label: { ar: 'مناوبة ليلية', en: 'Night shift' }, hoursPerDay: 12, window: { ar: '8م–8ص', en: '8pm–8am' } },
   '24-hours': { label: { ar: '24 ساعة', en: '24 hours' }, hoursPerDay: 24 },
   'stay-in': { label: { ar: 'إقامة', en: 'Live-in' }, hoursPerDay: 12 }, // from the stay-in package name
 };
@@ -157,7 +158,7 @@ export const bookingServices: BookingService[] = [
 
 // "From" prices: each entry points at a package in packages.ts, so a price is only ever edited there.
 // DRAFT mapping: confirm with the client which timing each package covers. Anything not listed is
-// unknown and shows [PRICE] / "Price confirmed on WhatsApp".
+// unknown and shows "Price on WhatsApp".
 const priceMap: { service: string; timing: Timing; plan: Plan; packageId: string }[] = [
   { service: 'babysitting', timing: 'hourly', plan: 'once', packageId: 'hourly-babysitting' },
   { service: 'babysitting', timing: 'day-shift', plan: 'weekly', packageId: 'weekly-5' },

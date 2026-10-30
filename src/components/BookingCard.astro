@@ -41,6 +41,7 @@ const t = {
     empty: 'لم تختاري أي خدمة بعد. اختاري خدمة واحدة على الأقل لتظهر هنا.',
     estimate: 'التقدير يبدأ من',
     priceWa: 'السعر يُؤكَّد عبر واتساب',
+    priceShort: 'السعر عبر واتساب',
     note: 'التقدير مبدئي وقد يتغير حسب التفاصيل',
     edit: 'تعديل',
     remove: 'إزالة',
@@ -90,6 +91,7 @@ const t = {
     empty: "You haven't chosen a service yet. Pick at least one and it will appear here.",
     estimate: 'Estimated from',
     priceWa: 'Price confirmed on WhatsApp',
+    priceShort: 'Price on WhatsApp',
     note: 'Estimate only; final price confirmed on WhatsApp.',
     edit: 'Edit',
     remove: 'Remove',
@@ -132,7 +134,7 @@ const config = {
   sar: ui.sar[lang],
   base: whatsappUrl('').replace(/\?text=$/, ''),
   prices: priceTable,
-  timings: Object.fromEntries(Object.entries(timings).map(([id, v]) => [id, { label: v.label[lang], hours: v.hoursPerDay }])),
+  timings: Object.fromEntries(Object.entries(timings).map(([id, v]) => [id, { label: v.label[lang], hours: v.hoursPerDay, window: v.window?.[lang] }])),
   plans: Object.fromEntries(Object.entries(plans).map(([id, v]) => [id, v[lang]])),
   services: Object.fromEntries(
     bookingServices.map((s) => [
@@ -157,6 +159,7 @@ const config = {
     hrsDay: t.hrsDay,
     estimate: t.estimate,
     priceWa: t.priceWa,
+    priceShort: t.priceShort,
     remove: t.remove,
     edit: t.edit,
     childAge: t.childAge,
@@ -234,15 +237,18 @@ const config = {
 
 // Arabic puts the currency after the number, English before it.
 const sar = (n: number) => (lang === 'ar' ? `${money(n)} ${ui.sar.ar}` : `${ui.sar.en} ${money(n)}`);
+// Combinations without a package price say so in words; raw placeholders never reach the page.
 const priceLabel = (id: string, timing: string, plan: string) => {
   const p = priceTable[`${id}|${timing}|${plan}`];
-  return p ? `${t.from} ${sar(p)}` : '[PRICE]';
+  return p ? `${t.from} ${sar(p)}` : t.priceShort;
 };
 const hoursLabel = (timing: keyof typeof timings) => {
-  // "24 hours" already says how long it is.
+  // "24 hours" already says how long it is; unconfirmed hours show nothing.
   if (timing === 'hourly' || timing === '24-hours') return '';
+  const w = timings[timing].window;
+  if (w) return w[lang];
   const h = timings[timing].hoursPerDay;
-  return h ? `${h} ${t.hrsDay}` : '[HOURS_PER_DAY]';
+  return h ? `${h} ${t.hrsDay}` : '';
 };
 const chip =
   'flex min-h-11 cursor-pointer flex-col items-start justify-center rounded-2xl bg-cream-100 px-3 py-1.5 text-sm ring-1 ring-green-700/10 transition-transform duration-200 hover:bg-green-50 active:scale-[0.98] has-[:checked]:bg-green-700 has-[:checked]:text-cream-50 has-[:checked]:ring-green-700 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-gold-500';
@@ -556,7 +562,7 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
     sar: string;
     base: string;
     prices: Record<string, number | null>;
-    timings: Record<string, { label: string; hours: number | null }>;
+    timings: Record<string, { label: string; hours: number | null; window?: string }>;
     plans: Record<string, string>;
     services: Record<string, { name: string; extras: Extra[] }>;
     startTimes: Record<string, string>;
@@ -635,7 +641,7 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
       const timing = checked(li, '[data-timing]');
       $$('[data-price-for]', li).forEach((el) => {
         const p = cfg.prices[`${li.dataset.svc}|${timing}|${el.dataset.priceFor}`];
-        el.textContent = p ? `${cfg.t.from} ${sarFor(cfg.lang, cfg.sar, p)}` : '[PRICE]';
+        el.textContent = p ? `${cfg.t.from} ${sarFor(cfg.lang, cfg.sar, p)}` : cfg.t.priceShort;
       });
     };
 
@@ -650,7 +656,8 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
     const describe = (p: Picked) => {
       const s = cfg.services[p.id];
       const tm = cfg.timings[p.timing];
-      const parts = [tm.label + (tm.hours && p.timing !== '24-hours' ? ` (${tm.hours} ${cfg.t.hrsDay})` : ''), cfg.plans[p.plan]];
+      const when = tm.window ?? (tm.hours && p.timing !== '24-hours' ? `${tm.hours} ${cfg.t.hrsDay}` : '');
+      const parts = [tm.label + (when ? ` (${when})` : ''), cfg.plans[p.plan]];
       s.extras.forEach((e) => {
         const v = p.extras[e.id];
         if (e.kind === 'count') v && parts.push(`${e.label}: ${v}`); // "Dogs: 0" adds nothing

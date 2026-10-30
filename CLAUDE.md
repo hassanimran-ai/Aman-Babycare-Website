@@ -20,7 +20,7 @@ Deadline: Saturday Oct 31, 2026, 6 PM. MVP first; mark later work with `// PHASE
 - Host: Cloudflare Pages.
 
 ## Business Facts (never invent)
-- Every fact comes from `src/data/business.ts`. Unknown values stay as placeholders like `[PHONE]`, `[ADDRESS]`, `[PRICE]`.
+- Every fact comes from `src/data/business.ts`. Unknown values stay as placeholders like `[PHONE]`, `[ADDRESS]`, `[PRICE]` in the data, but are never rendered raw: hide the line or show words such as "Price on WhatsApp".
 - Do NOT write: licensed, certified, nurse, nursing, medical, hospital-grade, MOH, 24/7, "500+ families", or any number/credential not in `business.ts`.
 - Prices and offers come only from `src/data/packages.ts` and `src/data/offers.ts`. Current prices are client-approved DRAFTS (from a reference site); they must be confirmed before `isLive` is set to true.
 - Allowed trust claim: staff are background-checked.
