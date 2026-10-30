@@ -1,0 +1,118 @@
+---
+// About Aman: who we are, what we do, how we work, and the registered company details.
+// Only facts from business.ts and services.ts; no new claims. REVIEW-AR: Arabic is a first draft.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../Breadcrumbs.astro';
+import CompanyDetails from '../CompanyDetails.astro';
+import CtaBand from '../CtaBand.astro';
+import Icon from '../Icon.astro';
+import type { Locale } from '../../config/site';
+import { business } from '../../data/business';
+import { services } from '../../data/services';
+import { href, ui } from '../../i18n/ui';
+import { breadcrumbSchema } from '../../lib/schema';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const crumbs = [
+  { name: ui.nav.home[lang], url: href(lang, '') },
+  { name: ui.nav.about[lang], url: href(lang, 'about') },
+];
+
+const t = {
+  ar: {
+    title: 'من نحن | أمان لرعاية المواليد والخدمات المنزلية',
+    description: 'أمان شركة سعودية في الرياض تقدّم رعاية المواليد والأطفال ومرافقة كبار السن وخدمات البيت، بفريق خضع للتحقق من الخلفية.',
+    h1: 'عن أمان',
+    lead: 'بدأنا أمان لأن العائلة في الرياض تحتاج أحياناً يداً إضافية في البيت: في الأسابيع الأولى بعد الولادة، أو في يوم عمل طويل، أو حين يحتاج الوالدان صحبة. نريد أن تكون هذه اليد قريبة وموثوقة وسهلة الحجز.',
+    whatTitle: 'ما نقدّمه',
+    whatText: 'مقدّمة رعاية واحدة يمكنها أن تجمع أكثر من خدمة في الزيارة نفسها، فتختارون ما يحتاجه بيتكم وتدفعون مقابل زيارة واحدة.',
+    packagesLink: 'اطّلعوا على الباقات والأسعار',
+    howTitle: 'كيف نعمل',
+    how: [
+      'كل فرد في فريقنا يخضع للتحقق من الخلفية قبل أن يدخل أي بيت.',
+      `مقدّمو الرعاية يتحدثون ${business.languages.ar}.`,
+      'نسأل عن قواعد بيتكم وعاداتكم قبل الزيارة الأولى، ونلتزم بها.',
+      'الحجز والمتابعة عبر واتساب، من دون تطبيقات أو حسابات.',
+    ],
+    ctaTitle: 'هل تريدون أن نتعارف؟',
+    ctaText: 'أخبرونا عن بيتكم وما تحتاجونه، ونقترح عليكم الترتيب المناسب.',
+    ctaMessage: 'السلام عليكم، أرغب بمعرفة المزيد عن أمان.',
+  },
+  en: {
+    title: 'About Aman | Aman Babycare & Home Services',
+    description: 'Aman is a Riyadh company offering newborn care, babysitting, elderly companionship and home help, with background-checked staff.',
+    h1: 'About Aman',
+    lead: 'We started Aman because families in Riyadh sometimes need an extra pair of hands at home: in the first weeks with a newborn, on a long working day, or when parents would welcome some company. We want that help to be close, trustworthy and easy to book.',
+    whatTitle: 'What we do',
+    whatText: 'One caregiver can combine several services in the same visit, so you choose what your home needs and book a single visit for it.',
+    packagesLink: 'See packages and prices',
+    howTitle: 'How we work',
+    how: [
+      'Everyone on our team is background-checked before they enter any home.',
+      `Our caregivers speak ${business.languages.en}.`,
+      'We ask about your house rules and routines before the first visit, and we keep them.',
+      'You book and stay in touch on WhatsApp, with no apps or accounts.',
+    ],
+    ctaTitle: 'Shall we get to know each other?',
+    ctaText: 'Tell us about your home and what you need, and we’ll suggest the right arrangement.',
+    ctaMessage: "Hello, I'd like to know more about Aman.",
+  },
+}[lang];
+---
+
+<BaseLayout lang={lang} title={t.title} description={t.description} path="about" schema={[breadcrumbSchema(crumbs, Astro.site)]} waMessage={t.ctaMessage}>
+  <Breadcrumbs lang={lang} items={crumbs} />
+  <article class="container-x pb-16 pt-8 md:pb-24">
+    <div class="max-w-3xl">
+      <h1 class="text-4xl text-green-800 sm:text-5xl">{t.h1}</h1>
+      <p class="mt-6 text-lg text-ink-600">{t.lead}</p>
+
+      <section class="mt-12 border-t border-gold-500/20 pt-8">
+        <h2 class="text-2xl text-green-800">{t.whatTitle}</h2>
+        <p class="mt-4 text-ink-700">{t.whatText}</p>
+        <ul class="mt-6 grid gap-2 sm:grid-cols-2">
+          {
+            services.map((s) => (
+              <li>
+                <a
+                  href={href(lang, `services/${s.slug}`)}
+                  class="flex min-h-11 items-center gap-3 rounded-2xl px-3 py-2 text-green-800 transition-colors hover:bg-cream-50 active:scale-[0.98]"
+                >
+                  <Icon name={s.icon} class="size-5 shrink-0 text-gold-700" />
+                  {s.name[lang]}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <a href={href(lang, 'packages')} class="btn btn-ghost mt-6">
+          {t.packagesLink}
+          <Icon name="arrow" class="size-5" flip />
+        </a>
+      </section>
+
+      <section class="mt-12 border-t border-gold-500/20 pt-8">
+        <h2 class="text-2xl text-green-800">{t.howTitle}</h2>
+        <ul class="mt-4 grid gap-3">
+          {
+            t.how.map((item) => (
+              <li class="flex items-start gap-3 text-ink-700">
+                <Icon name="check" class="mt-1 size-5 shrink-0 text-green-700" />
+                <span>{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <div class="mt-12">
+        <CompanyDetails lang={lang} />
+      </div>
+    </div>
+  </article>
+  <CtaBand lang={lang} title={t.ctaTitle} text={t.ctaText} message={t.ctaMessage} secondary={{ label: ui.nav.contact[lang], url: href(lang, 'contact') }} />
+  <div class="pb-16 md:pb-24"></div>
+</BaseLayout>

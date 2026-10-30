@@ -1,0 +1,115 @@
+---
+// Contact: WhatsApp first, booking hours, Book Your Service, then the registered company details.
+// Phone and email appear only once set in business.ts. REVIEW-AR: Arabic is a first draft.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../Breadcrumbs.astro';
+import CompanyDetails from '../CompanyDetails.astro';
+import Icon from '../Icon.astro';
+import { isPlaceholder, whatsappUrl, type Locale } from '../../config/site';
+import { business } from '../../data/business';
+import { href, ui } from '../../i18n/ui';
+import { breadcrumbSchema } from '../../lib/schema';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const crumbs = [
+  { name: ui.nav.home[lang], url: href(lang, '') },
+  { name: ui.nav.contact[lang], url: href(lang, 'contact') },
+];
+
+const t = {
+  ar: {
+    title: 'تواصل معنا | أمان لرعاية المواليد والخدمات المنزلية',
+    description: 'تواصلوا مع أمان عبر واتساب لحجز رعاية المواليد والأطفال ومرافقة كبار السن وخدمات البيت في الرياض. ساعات الحجز من 8 صباحاً إلى 8 مساءً.',
+    h1: 'تواصل معنا',
+    lead: 'أسرع طريقة للوصول إلينا هي واتساب. اكتبوا لنا ما تحتاجونه، ونرد عليكم خلال ساعات الحجز.',
+    waTitle: 'واتساب',
+    waText: 'للحجز والأسئلة والمتابعة أثناء الزيارة.',
+    bookTitle: 'احجزوا خدمتكم',
+    bookText: 'اختاروا الخدمة والتوقيت، ونجهّز لكم رسالة واتساب كاملة بالتفاصيل.',
+    bookCta: 'احجز خدمتك',
+    otherTitle: 'طرق أخرى',
+    message: 'السلام عليكم، أرغب بالتواصل مع أمان.',
+  },
+  en: {
+    title: 'Contact Aman | Aman Babycare & Home Services',
+    description: 'Message Aman on WhatsApp to book newborn care, babysitting, elderly companionship or home help in Riyadh. Booking hours 8am–8pm.',
+    h1: 'Contact us',
+    lead: 'The quickest way to reach us is WhatsApp. Tell us what you need and we’ll reply during booking hours.',
+    waTitle: 'WhatsApp',
+    waText: 'For bookings, questions and updates during a visit.',
+    bookTitle: 'Book your service',
+    bookText: 'Pick the service and timing, and we’ll prepare a complete WhatsApp message with the details.',
+    bookCta: 'Book Your Service',
+    otherTitle: 'Other ways to reach us',
+    message: "Hello, I'd like to get in touch with Aman.",
+  },
+}[lang];
+
+const others = [
+  !isPlaceholder(business.phone) && { label: business.phone, url: `tel:${business.phone.replace(/\s/g, '')}` },
+  !isPlaceholder(business.email) && { label: business.email, url: `mailto:${business.email}` },
+].filter(Boolean) as { label: string; url: string }[];
+---
+
+<BaseLayout lang={lang} title={t.title} description={t.description} path="contact" schema={[breadcrumbSchema(crumbs, Astro.site)]} waMessage={t.message}>
+  <Breadcrumbs lang={lang} items={crumbs} />
+  <article class="container-x pb-24 pt-8 md:pb-32">
+    <div class="max-w-3xl">
+      <h1 class="text-4xl text-green-800 sm:text-5xl">{t.h1}</h1>
+      <p class="mt-6 text-lg text-ink-600">{t.lead}</p>
+    </div>
+
+    <div class="mt-12 grid max-w-5xl gap-6 md:grid-cols-2">
+      <section class="flex flex-col rounded-3xl bg-green-800 p-6 text-cream-100 shadow-card md:p-8">
+        <h2 class="text-2xl text-cream-50">{t.waTitle}</h2>
+        <p class="mt-3 text-cream-200">{t.waText}</p>
+        <p class="mt-6 text-xl font-semibold text-cream-50"><span dir="ltr">{business.whatsapp}</span></p>
+        <p class="mt-2 flex items-center gap-2 text-sm text-cream-200">
+          <Icon name="clock" class="size-4 text-gold-300" />
+          {business.hours.label[lang]}
+        </p>
+        <div class="mt-auto pt-6">
+          <a href={whatsappUrl(t.message)} rel="noopener" class="btn btn-light">
+            <Icon name="whatsapp" class="size-5" />
+            {ui.chatWhatsApp[lang]}
+          </a>
+        </div>
+      </section>
+
+      <section class="flex flex-col rounded-3xl bg-cream-50 p-6 shadow-card ring-1 ring-gold-500/15 md:p-8">
+        <h2 class="text-2xl text-green-800">{t.bookTitle}</h2>
+        <p class="mt-3 text-ink-600">{t.bookText}</p>
+        <div class="mt-auto pt-6">
+          <a href={`${href(lang, 'packages')}#booking`} class="btn btn-primary">
+            <Icon name="calendar" class="size-5" />
+            {t.bookCta}
+          </a>
+        </div>
+      </section>
+    </div>
+
+    {
+      others.length > 0 && (
+        <section class="mt-12 max-w-3xl">
+          <h2 class="text-2xl text-green-800">{t.otherTitle}</h2>
+          <ul class="mt-4 grid gap-2">
+            {others.map((o) => (
+              <li>
+                <a href={o.url} class="inline-flex min-h-11 items-center text-green-700 hover:underline" dir="ltr">
+                  {o.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <div class="mt-6 max-w-5xl">
+      <CompanyDetails lang={lang} />
+    </div>
+  </article>
+</BaseLayout>

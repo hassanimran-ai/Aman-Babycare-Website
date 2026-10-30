@@ -1,0 +1,62 @@
+---
+// Registered company facts, from business.ts. Used on the About and Contact pages. REVIEW-AR
+import type { Locale } from '../config/site';
+import { isPlaceholder } from '../config/site';
+import { business } from '../data/business';
+
+interface Props {
+  lang: Locale;
+  headingLevel?: 'h2' | 'h3';
+}
+const { lang, headingLevel: H = 'h2' } = Astro.props;
+const t = {
+  ar: {
+    title: 'بيانات الشركة',
+    legal: 'الاسم القانوني',
+    cr: 'السجل التجاري',
+    area: 'نطاق الخدمة',
+    areaValue: `جميع أحياء ${business.areaServed.ar}`,
+    hours: 'ساعات الحجز',
+    hoursValue: '8 صباحاً – 8 مساءً',
+    languages: 'لغات مقدّمي الرعاية',
+    address: 'العنوان',
+  },
+  en: {
+    title: 'Company details',
+    legal: 'Legal name',
+    cr: 'Commercial registration (CR)',
+    area: 'Area served',
+    areaValue: `All of ${business.areaServed.en}`,
+    hours: 'Booking hours',
+    hoursValue: '8am–8pm',
+    languages: 'Caregiver languages',
+    address: 'Address',
+  },
+}[lang];
+
+const rows = [
+  { label: t.legal, value: business.legalName[lang] },
+  { label: t.cr, value: business.crNumber },
+  { label: t.area, value: t.areaValue },
+  { label: t.hours, value: t.hoursValue },
+  { label: t.languages, value: business.languages[lang] },
+  // The address shows only once it is set.
+  !isPlaceholder(business.address[lang]) && { label: t.address, value: business.address[lang] },
+].filter(Boolean) as { label: string; value: string }[];
+---
+
+<section class="rounded-3xl bg-cream-50 p-6 shadow-card ring-1 ring-gold-500/15 md:p-8">
+  <H class="text-2xl text-green-800">{t.title}</H>
+  <dl class="mt-6 grid gap-4 sm:grid-cols-[minmax(0,14rem)_1fr] sm:gap-x-8">
+    {
+      rows.map((r) => (
+        <>
+          <dt class="text-sm text-ink-500 sm:border-b sm:border-green-700/10 sm:pb-4 sm:pt-0.5">{r.label}</dt>
+          <dd class="-mt-3 border-b border-green-700/10 pb-4 font-semibold text-green-800 sm:mt-0">
+            {r.value}
+          </dd>
+        </>
+      ))
+    }
+  </dl>
+</section>

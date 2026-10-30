@@ -18,6 +18,8 @@ export const ui = {
     faq: { ar: 'الأسئلة الشائعة', en: 'FAQ' },
     faqShort: { ar: 'الأسئلة', en: 'FAQ' }, // nav ribbon, where space is tight
     privacy: { ar: 'سياسة الخصوصية', en: 'Privacy policy' },
+    about: { ar: 'من نحن', en: 'About us' },
+    contact: { ar: 'تواصل معنا', en: 'Contact' },
   },
   langName: { ar: 'العربية', en: 'English' },
   switchTo: { ar: 'Switch to English', en: 'التبديل إلى العربية' },
