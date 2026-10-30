@@ -30,13 +30,15 @@ interface Props {
   path: string;
   /** False for pages without a language pair (404): skips canonical + hreflang. */
   alternates?: boolean;
+  /** The 404 page: noindex, and no JSON-LD at all. */
+  notFound?: boolean;
   /** Extra JSON-LD objects (Service, FAQPage, BreadcrumbList). */
   schema?: object[];
   /** Prefilled WhatsApp message for this page's buttons. */
   waMessage?: string;
 }
 
-const { lang, title, description, path, alternates = true, schema = [] } = Astro.props;
+const { lang, title, description, path, alternates = true, notFound = false, schema = [] } = Astro.props;
 const waMessage =
   Astro.props.waMessage ?? (lang === 'ar' ? 'السلام عليكم، أرغب بالاستفسار عن خدمات أمان.' : "Hello, I'd like to ask about Aman's services.");
 const dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -60,7 +62,7 @@ const localBusiness = {
   legalName: business.legalName[lang],
   identifier: { '@type': 'PropertyValue', propertyID: 'CR', value: business.crNumber },
   slogan: business.tagline[lang],
-  url: urlFor(lang),
+  url: new URL(getRelativeLocaleUrl(lang, ''), Astro.site).href,
   image: ogImageUrl,
   logo: logoUrl,
   telephone: telUrl().replace('tel:', ''),
@@ -82,7 +84,7 @@ const webSite = {
   '@id': websiteId,
   name: business.brand[lang],
   alternateName: business.brand[lang === 'ar' ? 'en' : 'ar'],
-  url: urlFor(lang),
+  url: new URL(getRelativeLocaleUrl(lang, ''), Astro.site).href,
   inLanguage: lang === 'ar' ? 'ar-SA' : 'en',
   publisher: { '@id': businessId },
 };
@@ -96,7 +98,7 @@ const webSite = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#FBF7F0" />
-    {!site.isLive && <meta name="robots" content="noindex, nofollow" />}
+    {!site.isLive ? <meta name="robots" content="noindex, nofollow" /> : notFound && <meta name="robots" content="noindex" />}
 
     {
       alternates && (
@@ -128,7 +130,7 @@ const webSite = {
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
 
-    {[localBusiness, ...(path === '' ? [webSite] : []), ...schema].map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
+    {(notFound ? [] : [localBusiness, ...(path === '' ? [webSite] : []), ...schema]).map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
     <slot name="head" />
   </head>
   <body class="flex min-h-dvh flex-col bg-cream-100 text-ink-900 antialiased">

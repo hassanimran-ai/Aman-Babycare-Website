@@ -74,7 +74,7 @@ const active = path === '' ? 0 : path.startsWith('services') ? 1 : path === 'off
 
     <div class="ms-auto flex items-center gap-2 lg:ms-0">
       <a
-        href={href(alt, path)}
+        href={href(alt, path === '404' ? '' : path)}
         hreflang={alt}
         lang={alt}
         class="flex min-h-11 items-center rounded-full px-3 text-sm font-semibold text-green-700 hover:bg-green-50 active:scale-[0.98]"
