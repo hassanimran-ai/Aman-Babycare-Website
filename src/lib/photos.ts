@@ -13,7 +13,9 @@ const meta: Record<string, { alt: L; focus?: string }> = {
     focus: '42% 50%',
   },
   'newborn-care': {
-    alt: { ar: 'مقدّمة رعاية بالحجاب تحمل مولوداً ملفوفاً بقماط أبيض بجانب أمه المرتاحة', en: 'A caregiver in a hijab holding a swaddled newborn beside the resting mother' },
+    alt: { ar: 'مقدّمة رعاية بالحجاب تحمل مولوداً نائماً في قماطه بجانب أمه المرتاحة على الأريكة', en: 'A caregiver in a hijab holding a sleeping, swaddled newborn beside the resting mother on the sofa' },
+    // Near-square photo in wide frames: keep both faces and the baby in view.
+    focus: '50% 45%',
   },
   babysitting: {
     alt: { ar: 'مقدّمة رعاية تبني بيتاً من المكعبات الخشبية مع طفل صغير يضحك', en: 'A caregiver building a wooden block house with a laughing toddler' },
