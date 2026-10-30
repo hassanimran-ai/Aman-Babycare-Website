@@ -5,7 +5,19 @@
 // REVIEW-AR: Arabic follows the client's feminine address and is a first draft.
 import Icon from './Icon.astro';
 import { whatsappUrl, type Locale } from '../config/site';
-import { bookingServices, caregiverLanguages, DISTRICTS, mobility, petTypes, plans, priceTable, startTimes, timings } from '../data/booking';
+import {
+  bookingServices,
+  caregiverPreferences,
+  caregiverTypes,
+  DEFAULT_CAREGIVER_TYPE,
+  mobility,
+  petTypes,
+  plans,
+  priceTable,
+  startTimes,
+  timings,
+} from '../data/booking';
+import { business } from '../data/business';
 import { href, money, ui } from '../i18n/ui';
 
 interface Props {
@@ -39,8 +51,7 @@ const t = {
     formIntro: 'بعض التفاصيل لنجهّز طلبك. رقمك يصلنا من واتساب، والعنوان نأخذه في المحادثة.',
     name: 'الاسم الأول',
     district: 'الحي',
-    districtPick: 'اختاري الحي',
-    districtOther: 'اسم الحي',
+    districtHint: 'مثال: الملقا',
     date: 'تاريخ البدء',
     time: 'وقت البدء المفضّل',
     ages: 'أعمار الأطفال',
@@ -50,7 +61,9 @@ const t = {
     elderAge: 'العمر',
     mobility: 'الحركة',
     pets: 'نوع الحيوان',
-    language: 'لغة مقدّمة الرعاية المفضّلة',
+    preference: 'تفضيل مقدّم الرعاية',
+    type: 'نوع مقدّم الرعاية',
+    languagesNote: `مقدّمو الرعاية يتحدثون ${business.languages.ar}.`,
     optional: 'اختياري',
     notes: 'ملاحظات',
     consentA: 'أوافق على إرسال هذه التفاصيل عبر واتساب وفق',
@@ -87,8 +100,7 @@ const t = {
     formIntro: "A few details to prepare your request. WhatsApp gives us your number, and we'll take the address in the chat.",
     name: 'First name',
     district: 'District',
-    districtPick: 'Choose your district',
-    districtOther: 'District name',
+    districtHint: 'e.g. Al Malqa',
     date: 'Start date',
     time: 'Preferred start time',
     ages: "Children's ages",
@@ -98,7 +110,9 @@ const t = {
     elderAge: 'Age',
     mobility: 'Mobility',
     pets: 'Pet type',
-    language: 'Preferred caregiver language',
+    preference: 'Caregiver preference',
+    type: 'Caregiver type',
+    languagesNote: `Caregivers speak ${business.languages.en}.`,
     optional: 'optional',
     notes: 'Notes',
     consentA: 'I agree to send these details via WhatsApp per the',
@@ -133,9 +147,9 @@ const config = {
       },
     ]),
   ),
-  districts: Object.fromEntries(DISTRICTS.map((d) => [d.id, d.label[lang]])),
   startTimes: Object.fromEntries(startTimes.map((d) => [d.id, d.label[lang]])),
-  languages: Object.fromEntries(caregiverLanguages.map((d) => [d.id, d.label[lang]])),
+  preferences: Object.fromEntries(caregiverPreferences.map((d) => [d.id, d.label[lang]])),
+  types: Object.fromEntries(caregiverTypes.map((d) => [d.id, d.label[lang]])),
   mobility: Object.fromEntries(mobility.map((d) => [d.id, d.label[lang]])),
   pets: Object.fromEntries(petTypes.map((d) => [d.id, d.label[lang]])),
   t: {
@@ -164,7 +178,8 @@ const config = {
           elderAge: 'عمر كبير السن',
           mobility: 'الحركة',
           pets: 'الحيوانات',
-          language: 'لغة مقدّمة الرعاية',
+          preference: 'تفضيل مقدّم الرعاية',
+          type: 'نوع مقدّم الرعاية',
           notes: 'ملاحظات',
           estimate: 'التقدير المبدئي: يبدأ من',
           estimateWa: 'التقدير المبدئي: السعر يُؤكَّد عبر واتساب',
@@ -183,7 +198,8 @@ const config = {
           elderAge: 'Age of the person',
           mobility: 'Mobility',
           pets: 'Pets',
-          language: 'Caregiver language',
+          preference: 'Caregiver preference',
+          type: 'Caregiver type',
           notes: 'Notes',
           estimate: 'Estimate: from',
           estimateWa: 'Estimate: price confirmed on WhatsApp',
@@ -192,8 +208,8 @@ const config = {
     lang === 'ar'
       ? {
           name: 'اكتبي اسمك الأول.',
-          district: 'اختاري الحي.',
-          districtOther: 'اكتبي اسم الحي.',
+          district: 'اكتبي اسم الحي.',
+          preference: 'اختاري تفضيل مقدّم الرعاية.',
           date: 'اختاري تاريخ البدء.',
           datePast: 'اختاري تاريخاً من اليوم فصاعداً.',
           time: 'اختاري وقت البدء.',
@@ -204,8 +220,8 @@ const config = {
         }
       : {
           name: 'Enter your first name.',
-          district: 'Choose your district.',
-          districtOther: 'Enter the district name.',
+          district: 'Enter your district.',
+          preference: 'Choose a caregiver preference.',
           date: 'Choose a start date.',
           datePast: 'Choose today or a later date.',
           time: 'Choose a start time.',
@@ -223,7 +239,8 @@ const priceLabel = (id: string, timing: string, plan: string) => {
   return p ? `${t.from} ${sar(p)}` : '[PRICE]';
 };
 const hoursLabel = (timing: keyof typeof timings) => {
-  if (timing === 'hourly') return '';
+  // "24 hours" already says how long it is.
+  if (timing === 'hourly' || timing === '24-hours') return '';
   const h = timings[timing].hoursPerDay;
   return h ? `${h} ${t.hrsDay}` : '[HOURS_PER_DAY]';
 };
@@ -399,16 +416,8 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
 
       <div>
         <label for="bk-district" class="text-sm font-medium text-green-800">{t.district}</label>
-        <select id="bk-district" name="district" class={field} aria-describedby="bk-district-err">
-          <option value="">{t.districtPick}</option>
-          {DISTRICTS.map((d) => <option value={d.id}>{d.label[lang]}</option>)}
-        </select>
+        <input id="bk-district" name="district" type="text" maxlength="40" required placeholder={t.districtHint} class:list={[field, 'placeholder:text-ink-500']} aria-describedby="bk-district-err" />
         <p id="bk-district-err" class={err} hidden></p>
-        <div class="mt-3" hidden data-other-wrap>
-          <label for="bk-district-other" class="text-sm font-medium text-green-800">{t.districtOther}</label>
-          <input id="bk-district-other" name="districtOther" type="text" maxlength="40" class={field} aria-describedby="bk-district-other-err" />
-          <p id="bk-district-other-err" class={err} hidden></p>
-        </div>
       </div>
 
       <div>
@@ -471,18 +480,32 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
         <p id="bk-pets-err" class={err} hidden></p>
       </fieldset>
 
-      <fieldset>
-        <legend class="text-sm font-medium text-green-800">
-          {t.language} <span class="font-normal text-ink-500">({t.optional})</span>
-        </legend>
+      <fieldset id="bk-pref" aria-describedby="bk-pref-err">
+        <legend class="text-sm font-medium text-green-800">{t.preference}</legend>
         <div class="mt-2 grid grid-cols-3 gap-2">
-          {caregiverLanguages.map((l, i) => (
+          {caregiverPreferences.map((p) => (
             <label class={chip}>
-              <input type="radio" name="language" value={l.id} class="sr-only" checked={i === 0} />
-              <span class="font-medium">{l.label[lang]}</span>
+              <input type="radio" name="preference" value={p.id} class="sr-only" required />
+              <span class="font-medium">{p.label[lang]}</span>
             </label>
           ))}
         </div>
+        <p id="bk-pref-err" class={err} hidden></p>
+      </fieldset>
+
+      <fieldset>
+        <legend class="text-sm font-medium text-green-800">
+          {t.type} <span class="font-normal text-ink-500">({t.optional})</span>
+        </legend>
+        <div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {caregiverTypes.map((c) => (
+            <label class={chip}>
+              <input type="radio" name="caregiverType" value={c.id} class="sr-only" checked={c.id === DEFAULT_CAREGIVER_TYPE} />
+              <span class="font-medium">{c.label[lang]}</span>
+            </label>
+          ))}
+        </div>
+        <p class="mt-2 text-sm text-ink-600">{t.languagesNote}</p>
       </fieldset>
 
       <div>
@@ -536,9 +559,9 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
     timings: Record<string, { label: string; hours: number | null }>;
     plans: Record<string, string>;
     services: Record<string, { name: string; extras: Extra[] }>;
-    districts: Record<string, string>;
     startTimes: Record<string, string>;
-    languages: Record<string, string>;
+    preferences: Record<string, string>;
+    types: Record<string, string>;
     mobility: Record<string, string>;
     pets: Record<string, string>;
     t: Record<string, string>;
@@ -557,7 +580,8 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
     elderAge?: number;
     mobility?: string;
     pets?: string[];
-    language: string;
+    preference: string;
+    caregiverType: string;
     notes: string;
     estimate: number | null;
   };
@@ -626,7 +650,7 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
     const describe = (p: Picked) => {
       const s = cfg.services[p.id];
       const tm = cfg.timings[p.timing];
-      const parts = [tm.label + (tm.hours ? ` (${tm.hours} ${cfg.t.hrsDay})` : ''), cfg.plans[p.plan]];
+      const parts = [tm.label + (tm.hours && p.timing !== '24-hours' ? ` (${tm.hours} ${cfg.t.hrsDay})` : ''), cfg.plans[p.plan]];
       s.extras.forEach((e) => {
         const v = p.extras[e.id];
         if (e.kind === 'count') v && parts.push(`${e.label}: ${v}`); // "Dogs: 0" adds nothing
@@ -751,7 +775,7 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
     const form = $<HTMLFormElement>('[data-form]');
     const done = $('[data-done]');
     const errorsBox = $('[data-errors]');
-    const district = $<HTMLSelectElement>('#bk-district');
+    const district = $<HTMLInputElement>('#bk-district');
     const date = $<HTMLInputElement>('#bk-date');
     const notes = $<HTMLTextAreaElement>('#bk-notes');
 
@@ -811,7 +835,6 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
       $('[data-book]').focus();
     });
 
-    district.addEventListener('change', () => ($('[data-other-wrap]').hidden = district.value !== 'other'));
     notes.addEventListener('input', () => ($('[data-notes-count]').textContent = `${notes.value.length} / 300`));
 
     // ---------- Validation ----------
@@ -830,8 +853,7 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
       $$('[id$="-err"]', form).forEach((p) => fieldError(p.id.replace(/-err$/, ''), ''));
 
       if (!$<HTMLInputElement>('#bk-name').value.trim()) add('bk-name', cfg.errors.name);
-      if (!district.value) add('bk-district', cfg.errors.district);
-      else if (district.value === 'other' && !$<HTMLInputElement>('#bk-district-other').value.trim()) add('bk-district-other', cfg.errors.districtOther);
+      if (!district.value.trim()) add('bk-district', cfg.errors.district);
       if (!date.value) add('bk-date', cfg.errors.date);
       else if (date.value < today()) add('bk-date', cfg.errors.datePast);
       if (!checked(form, 'input[name=time]')) add('bk-time', cfg.errors.time, 'bk-time input');
@@ -844,6 +866,7 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
         if (!checked(form, 'input[name=mobility]')) add('bk-mobility', cfg.errors.mobility, 'bk-mobility input');
       }
       if (has('pet-sitting') && !$$<HTMLInputElement>('input[name=pet]:checked').length) add('bk-pets', cfg.errors.pets, 'bk-pets input');
+      if (!checked(form, 'input[name=preference]')) add('bk-pref', cfg.errors.preference, 'bk-pref input');
       if (!$<HTMLInputElement>('#bk-consent').checked) add('bk-consent', cfg.errors.consent);
 
       errors.forEach((e) => fieldError(e.id, e.msg));
@@ -877,14 +900,15 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
         lang: cfg.lang,
         services: list,
         name: $<HTMLInputElement>('#bk-name').value.trim(),
-        district: district.value === 'other' ? $<HTMLInputElement>('#bk-district-other').value.trim() : cfg.districts[district.value],
+        district: district.value.trim(),
         date: date.value,
         time: checked(form, 'input[name=time]'),
         ages: $$<HTMLInputElement>('[data-ages] input').map((i) => ({ kind: i.dataset.kind as 'child' | 'baby', value: Number(i.value) })),
         elderAge: elderly ? Number($<HTMLInputElement>('#bk-elder-age').value) : undefined,
         mobility: elderly ? checked(form, 'input[name=mobility]') : undefined,
         pets: has('pet-sitting') ? $$<HTMLInputElement>('input[name=pet]:checked').map((i) => i.value) : undefined,
-        language: checked(form, 'input[name=language]'),
+        preference: checked(form, 'input[name=preference]'),
+        caregiverType: checked(form, 'input[name=caregiverType]'),
         notes: notes.value.trim(),
         estimate: estimate(list),
       };
@@ -900,7 +924,7 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
       if (babies.length) lines.push(`${m.babies}: ${babies.join('، ')}`);
       if (p.elderAge != null) lines.push(`${m.elderAge}: ${p.elderAge}`, `${m.mobility}: ${cfg.mobility[p.mobility!]}`);
       if (p.pets) lines.push(`${m.pets}: ${p.pets.map((x) => cfg.pets[x]).join('، ')}`);
-      lines.push(`${m.language}: ${cfg.languages[p.language]}`);
+      lines.push(`${m.preference}: ${cfg.preferences[p.preference]}`, `${m.type}: ${cfg.types[p.caregiverType]}`);
       if (p.notes) lines.push(`${m.notes}: ${p.notes}`);
       lines.push('', p.estimate == null ? m.estimateWa : `${m.estimate} ${sarFor(cfg.lang, cfg.sar, p.estimate)}`);
       // English lists use commas.

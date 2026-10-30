@@ -6,7 +6,7 @@ import type { L } from '../i18n/ui';
 import type { IconName } from '../components/icons';
 import { packages } from './packages';
 
-export type Timing = 'hourly' | 'half-day' | 'full-day' | 'night' | 'stay-in';
+export type Timing = 'hourly' | 'half-day' | 'full-day' | 'day-shift' | 'night' | '24-hours' | 'stay-in';
 export type Plan = 'once' | 'weekly' | 'monthly';
 
 // hoursPerDay: null = not confirmed yet, shown as [HOURS_PER_DAY].
@@ -14,9 +14,14 @@ export const timings: Record<Timing, { label: L; hoursPerDay: number | null }> =
   hourly: { label: { ar: 'بالساعة', en: 'Hourly' }, hoursPerDay: null },
   'half-day': { label: { ar: 'نصف يوم', en: 'Half day' }, hoursPerDay: null }, // TODO: client to confirm hours
   'full-day': { label: { ar: 'يوم كامل', en: 'Full day' }, hoursPerDay: null }, // TODO: client to confirm hours
-  night: { label: { ar: 'مناوبة ليلية', en: 'Night shift' }, hoursPerDay: null }, // TODO: client to confirm hours
-  'stay-in': { label: { ar: 'إقامة', en: 'Stay-in' }, hoursPerDay: 12 }, // from the stay-in package name
+  'day-shift': { label: { ar: 'مناوبة نهارية 8ص–8م', en: 'Day shift 8am–8pm' }, hoursPerDay: 12 },
+  night: { label: { ar: 'مناوبة ليلية 8م–8ص', en: 'Night shift 8pm–8am' }, hoursPerDay: 12 },
+  '24-hours': { label: { ar: '24 ساعة', en: '24 hours' }, hoursPerDay: 24 },
+  'stay-in': { label: { ar: 'إقامة', en: 'Live-in' }, hoursPerDay: 12 }, // from the stay-in package name
 };
+
+// Childcare, newborn and elderly services share these client-confirmed timings.
+const careTimings: Timing[] = ['hourly', 'day-shift', 'night', '24-hours', 'stay-in'];
 
 export const plans: Record<Plan, L> = {
   once: { ar: 'مرة واحدة', en: 'One-time' },
@@ -49,7 +54,7 @@ export const bookingServices: BookingService[] = [
     page: 'newborn-care',
     name: { ar: 'رعاية المواليد', en: 'Newborn Care' },
     icon: 'baby',
-    timings: ['hourly', 'half-day', 'full-day', 'night', 'stay-in'],
+    timings: careTimings,
     plans: allPlans,
     extras: [children({ ar: 'عدد المواليد', en: 'Number of babies' })],
   },
@@ -58,7 +63,7 @@ export const bookingServices: BookingService[] = [
     page: 'babysitting',
     name: { ar: 'رعاية الأطفال', en: 'Babysitting' },
     icon: 'child',
-    timings: ['hourly', 'half-day', 'full-day', 'night', 'stay-in'],
+    timings: careTimings,
     plans: allPlans,
     extras: [children({ ar: 'عدد الأطفال', en: 'Number of children' })],
   },
@@ -67,7 +72,7 @@ export const bookingServices: BookingService[] = [
     page: 'newborn-care',
     name: { ar: 'دعم الأم والطفل', en: 'Mother & Baby Support' },
     icon: 'mother',
-    timings: ['hourly', 'half-day', 'full-day', 'night'],
+    timings: careTimings,
     plans: allPlans,
     extras: [],
   },
@@ -95,7 +100,7 @@ export const bookingServices: BookingService[] = [
     page: 'elderly-companionship',
     name: { ar: 'مرافقة كبار السن', en: 'Elderly Companionship' },
     icon: 'elder',
-    timings: ['hourly', 'half-day', 'full-day', 'night', 'stay-in'],
+    timings: careTimings,
     plans: allPlans,
     extras: [],
   },
@@ -155,11 +160,11 @@ export const bookingServices: BookingService[] = [
 // unknown and shows [PRICE] / "Price confirmed on WhatsApp".
 const priceMap: { service: string; timing: Timing; plan: Plan; packageId: string }[] = [
   { service: 'babysitting', timing: 'hourly', plan: 'once', packageId: 'hourly-babysitting' },
-  { service: 'babysitting', timing: 'full-day', plan: 'weekly', packageId: 'weekly-5' },
-  { service: 'babysitting', timing: 'full-day', plan: 'monthly', packageId: 'monthly-5' },
+  { service: 'babysitting', timing: 'day-shift', plan: 'weekly', packageId: 'weekly-5' },
+  { service: 'babysitting', timing: 'day-shift', plan: 'monthly', packageId: 'monthly-5' },
   { service: 'babysitting', timing: 'stay-in', plan: 'monthly', packageId: 'stay-in' },
-  { service: 'elderly-companionship', timing: 'full-day', plan: 'once', packageId: 'daily-elderly' },
-  { service: 'elderly-companionship', timing: 'full-day', plan: 'monthly', packageId: 'elderly-5' },
+  { service: 'elderly-companionship', timing: 'day-shift', plan: 'once', packageId: 'daily-elderly' },
+  { service: 'elderly-companionship', timing: 'day-shift', plan: 'monthly', packageId: 'elderly-5' },
 ];
 
 export const fromPrice = (service: string, timing: Timing, plan: Plan): number | null => {
@@ -172,19 +177,6 @@ export const priceTable = Object.fromEntries(
   bookingServices.flatMap((s) => s.timings.flatMap((t) => s.plans.map((p) => [`${s.id}|${t}|${p}`, fromPrice(s.id, t, p)]))),
 );
 
-// PLACEHOLDER: confirm the districts Aman serves. "other" reveals a text field.
-export const DISTRICTS: { id: string; label: L }[] = [
-  { id: 'al-malqa', label: { ar: 'الملقا', en: 'Al Malqa' } },
-  { id: 'al-yasmin', label: { ar: 'الياسمين', en: 'Al Yasmin' } },
-  { id: 'al-narjis', label: { ar: 'النرجس', en: 'Al Narjis' } },
-  { id: 'hittin', label: { ar: 'حطين', en: 'Hittin' } },
-  { id: 'al-sahafa', label: { ar: 'الصحافة', en: 'Al Sahafa' } },
-  { id: 'al-olaya', label: { ar: 'العليا', en: 'Al Olaya' } },
-  { id: 'al-nakheel', label: { ar: 'النخيل', en: 'Al Nakheel' } },
-  { id: 'al-rawdah', label: { ar: 'الروضة', en: 'Al Rawdah' } },
-  { id: 'other', label: { ar: 'حي آخر', en: 'Other' } },
-];
-
 export const startTimes: { id: string; label: L }[] = [
   { id: 'morning', label: { ar: 'صباحاً', en: 'Morning' } },
   { id: 'afternoon', label: { ar: 'بعد الظهر', en: 'Afternoon' } },
@@ -192,11 +184,21 @@ export const startTimes: { id: string; label: L }[] = [
   { id: 'night', label: { ar: 'ليلاً', en: 'Night' } },
 ];
 
-export const caregiverLanguages: { id: string; label: L }[] = [
-  { id: 'either', label: { ar: 'أي لغة', en: 'Either' } },
-  { id: 'arabic', label: { ar: 'العربية', en: 'Arabic' } },
-  { id: 'english', label: { ar: 'الإنجليزية', en: 'English' } },
+// Required; nothing pre-selected.
+export const caregiverPreferences: { id: string; label: L }[] = [
+  { id: 'female', label: { ar: 'أنثى', en: 'Female' } },
+  { id: 'male', label: { ar: 'ذكر', en: 'Male' } },
+  { id: 'none', label: { ar: 'لا يهم', en: 'No preference' } },
 ];
+
+// Labels are editable here. Never add nursing or medical roles.
+export const caregiverTypes: { id: string; label: L }[] = [
+  { id: 'nanny', label: { ar: 'مربية', en: 'Nanny' } },
+  { id: 'housekeeper', label: { ar: 'عاملة منزلية', en: 'Housekeeper' } },
+  { id: 'companion', label: { ar: 'مرافِقة', en: 'Companion' } },
+  { id: 'any', label: { ar: 'أي نوع', en: 'Any' } },
+];
+export const DEFAULT_CAREGIVER_TYPE = 'any';
 
 export const mobility: { id: string; label: L }[] = [
   { id: 'independent', label: { ar: 'يتحرك باستقلالية', en: 'Independent' } },
