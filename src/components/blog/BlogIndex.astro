@@ -1,0 +1,45 @@
+---
+// Blog index. Built only once at least one post is published (see src/pages/blog/[...index].astro).
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../Breadcrumbs.astro';
+import Icon from '../Icon.astro';
+import type { Locale } from '../../config/site';
+import { href, ui } from '../../i18n/ui';
+import { breadcrumbSchema } from '../../lib/schema';
+import { postMeta, type Post } from '../../lib/blog';
+
+interface Props {
+  lang: Locale;
+  posts: Post[];
+}
+const { lang, posts } = Astro.props;
+// REVIEW-AR
+const t = {
+  ar: { name: 'المدونة', title: 'مدونة أمان: نصائح للبيت والعائلة في الرياض | أمان', description: 'مقالات عملية عن رعاية المولود، واختيار المربية، والمساعدة المنزلية بالساعة أو بالشهر في الرياض.', h1: 'نصائح للبيت والعائلة في الرياض' },
+  en: { name: 'Blog', title: 'Aman Blog: Home and Family Tips in Riyadh | Aman', description: 'Practical articles on newborn care, choosing a nanny, and hourly or monthly home help in Riyadh.', h1: 'Home and family tips in Riyadh' },
+}[lang];
+const crumbs = [
+  { name: ui.nav.home[lang], url: href(lang, '') },
+  { name: t.name, url: href(lang, 'blog') },
+];
+---
+
+<BaseLayout lang={lang} title={t.title} description={t.description} path="blog" schema={[breadcrumbSchema(crumbs, Astro.site)]}>
+  <Breadcrumbs lang={lang} items={crumbs} />
+  <section class="container-x pb-32 pt-8 md:pb-40">
+    <h1 class="text-4xl text-green-800 sm:text-5xl">{t.h1}</h1>
+    <ul class="mt-10 grid gap-6 md:grid-cols-2">
+      {
+        posts.map((p) => (
+          <li>
+            <a href={href(lang, `blog/${p.data.slug}`)} class="group flex h-full flex-col rounded-3xl bg-cream-50 p-6 shadow-soft ring-1 ring-green-700/5 transition-transform duration-300 hover:-translate-y-1 active:scale-[0.99]">
+              <h2 class="text-xl text-green-800 group-hover:underline">{postMeta(p).title}</h2>
+              <p class="mt-2 text-ink-600">{postMeta(p).description}</p>
+              <Icon name="arrow" class="mt-auto size-5 pt-4 text-gold-700" flip />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>

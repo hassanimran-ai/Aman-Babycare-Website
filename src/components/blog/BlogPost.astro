@@ -1,0 +1,75 @@
+---
+// One blog post: breadcrumbs, the article, links to its related services, a WhatsApp CTA.
+// Schema: Article + BreadcrumbList (LocalBusiness comes from the layout). No medical advice in posts.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../Breadcrumbs.astro';
+import CtaBand from '../CtaBand.astro';
+import ServiceCard from '../ServiceCard.astro';
+import { render } from 'astro:content';
+import type { Locale } from '../../config/site';
+import { serviceBySlug } from '../../data/services';
+import { business } from '../../data/business';
+import { href, ui } from '../../i18n/ui';
+import { breadcrumbSchema, businessId } from '../../lib/schema';
+import { postMeta, type Post } from '../../lib/blog';
+
+interface Props {
+  lang: Locale;
+  post: Post;
+}
+const { lang, post } = Astro.props;
+const meta = postMeta(post);
+const path = `blog/${post.data.slug}`;
+const url = new URL(href(lang, path), Astro.site).href;
+const blogName = { ar: 'المدونة', en: 'Blog' }[lang];
+const crumbs = [
+  { name: ui.nav.home[lang], url: href(lang, '') },
+  { name: blogName, url: href(lang, 'blog') },
+  { name: meta.title, url: href(lang, path) },
+];
+const { Content } = await render(post);
+const related = post.data.relatedServices.map(serviceBySlug);
+const article = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: meta.title,
+  description: meta.description,
+  datePublished: (post.data.publishDate ?? post.data.date).toISOString(),
+  inLanguage: lang === 'ar' ? 'ar-SA' : 'en',
+  mainEntityOfPage: url,
+  author: { '@id': businessId(Astro.site) },
+  publisher: { '@id': businessId(Astro.site) },
+};
+const t = {
+  ar: { related: 'خدمات ذكرناها في المقال', ctaTitle: 'تحتاجون يداً في البيت؟', ctaText: 'أرسلوا لنا ما تحتاجونه على واتساب، ونرتب لكم الباقي.' },
+  en: { related: 'Services mentioned in this article', ctaTitle: 'Need a hand at home?', ctaText: "Tell us what you need on WhatsApp, and we'll arrange the rest." },
+}[lang];
+---
+
+<BaseLayout lang={lang} title={meta.title} description={meta.description} path={path} schema={[article, breadcrumbSchema(crumbs, Astro.site)]}>
+  <Breadcrumbs lang={lang} items={crumbs} />
+  <article class="container-x max-w-3xl pb-16 pt-8 md:pb-24">
+    <h1 class="text-4xl text-green-800 sm:text-5xl">{meta.title}</h1>
+    <p class="mt-4 text-sm text-ink-500">
+      <time datetime={(post.data.publishDate ?? post.data.date).toISOString()}>
+        {(post.data.publishDate ?? post.data.date).toLocaleDateString(lang === 'ar' ? 'ar-SA-u-nu-latn' : 'en-GB', { dateStyle: 'long' })}
+      </time>
+      · {business.shortName[lang]}
+    </p>
+    <div class="mt-8 text-lg text-ink-700 [&_a]:font-semibold [&_a]:text-gold-800 [&_a]:underline [&_h2]:mt-12 [&_h2]:text-2xl [&_h2]:text-green-800 [&_h3]:mt-8 [&_h3]:text-xl [&_h3]:text-green-800 [&_li]:mt-2 [&_ol]:mt-4 [&_ol]:list-decimal [&_ol]:ps-6 [&_p]:mt-4 [&_ul]:mt-4 [&_ul]:list-disc [&_ul]:ps-6">
+      <Content />
+    </div>
+  </article>
+
+  <section class="bg-cream-200/60 py-16 md:py-24">
+    <div class="container-x">
+      <h2 class="text-3xl text-green-800">{t.related}</h2>
+      <ul class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {related.map((s) => <li><ServiceCard lang={lang} service={s} /></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} tone="dark" title={t.ctaTitle} text={t.ctaText} message={lang === 'ar' ? `السلام عليكم، قرأت مقال «${meta.title}» وأرغب بالاستفسار.` : `Hello, I read "${meta.title}" and have a question.`} />
+  <div class="h-24 md:h-28" aria-hidden="true"></div>
+</BaseLayout>

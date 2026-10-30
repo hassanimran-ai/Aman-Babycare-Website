@@ -7,6 +7,7 @@ import { whatsappUrl, isPlaceholder, type Locale } from '../config/site';
 import { business, telUrl } from '../data/business';
 import { services } from '../data/services';
 import { href, ui } from '../i18n/ui';
+import { publishedPosts } from '../lib/blog';
 
 interface Props {
   lang: Locale;
@@ -24,6 +25,8 @@ const operator =
     : `${business.shortBrand.en} — operated by ${business.legalName.en} — CR: ${business.crNumber}`;
 // business.sa verification badge: nothing renders until it is set in business.ts.
 const badge = business.businessSaBadge;
+// The blog link appears once a post is published (until then there is no /blog/ page).
+const hasBlog = (await publishedPosts(lang)).length > 0;
 ---
 
 <footer class="relative mt-auto bg-green-900 text-cream-200">
@@ -59,6 +62,7 @@ const badge = business.businessSaBadge;
         <li><a href={href(lang, 'packages')} class="inline-flex min-h-11 items-center hover:text-cream-50 hover:underline">{ui.nav.packages[lang]}</a></li>
         <li><a href={href(lang, 'offers')} class="inline-flex min-h-11 items-center hover:text-cream-50 hover:underline">{ui.nav.offers[lang]}</a></li>
         <li><a href={`${home}#faq`} class="inline-flex min-h-11 items-center hover:text-cream-50 hover:underline">{ui.nav.faq[lang]}</a></li>
+        {hasBlog && <li><a href={href(lang, 'blog')} class="inline-flex min-h-11 items-center hover:text-cream-50 hover:underline">{lang === 'ar' ? 'المدونة' : 'Blog'}</a></li>}
         <li><a href={href(lang, 'about')} class="inline-flex min-h-11 items-center hover:text-cream-50 hover:underline">{ui.nav.about[lang]}</a></li>
         <li><a href={href(lang, 'contact')} class="inline-flex min-h-11 items-center hover:text-cream-50 hover:underline">{ui.nav.contact[lang]}</a></li>
       </ul>
