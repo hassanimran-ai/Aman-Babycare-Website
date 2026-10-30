@@ -24,7 +24,7 @@ Deadline: Saturday Oct 31, 2026, 6 PM. MVP first; mark later work with `// PHASE
 - Do NOT write: licensed, certified, nurse, nursing, medical, hospital-grade, MOH, 24/7, "500+ families", or any number/credential not in `business.ts`.
 - Prices and offers come only from `src/data/packages.ts` and `src/data/offers.ts`. Current prices are client-approved DRAFTS (from a reference site); they must be confirmed before `isLive` is set to true.
 - Allowed trust claim: staff are background-checked.
-- Do NOT create reviews, testimonials, ratings, or star icons. Use an honest "Be among our first families" block instead.
+- Never invent reviews, testimonials, ratings, or star icons. Only real, consented reviews go in `src/data/reviews.ts`; the Reviews section shows once 3+ have `consent: true`. Until then the honest "Be among our first families" block carries the page.
 - No Review or AggregateRating schema.
 
 ## Services (one caregiver can combine several; sold as bundles)

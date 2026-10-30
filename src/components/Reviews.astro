@@ -1,0 +1,40 @@
+---
+// Families' own words, from src/data/reviews.ts. Renders nothing until there are at least 3 consented
+// reviews. No stars, ratings or schema.
+import type { Locale } from '../config/site';
+import { MIN_REVIEWS, publishableReviews } from '../data/reviews';
+import { services } from '../data/services';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const list = publishableReviews();
+const title = lang === 'ar' ? 'بكلمات عائلاتنا' : 'In our families’ words';
+const serviceName = (slug: string) => services.find((s) => s.slug === slug)?.name[lang] ?? '';
+const formatDate = (d: string) =>
+  new Intl.DateTimeFormat(lang === 'ar' ? 'ar-SA-u-nu-latn-ca-gregory' : 'en-GB', { month: 'long', year: 'numeric' }).format(new Date(d));
+---
+
+{
+  list.length >= MIN_REVIEWS && (
+    <section class="container-x py-16 md:py-24" aria-labelledby="reviews-title">
+      <h2 id="reviews-title" class="text-3xl text-green-800 md:text-4xl">
+        {title}
+      </h2>
+      <ul class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {list.map((r) => (
+          <li class="flex flex-col rounded-3xl bg-cream-50 p-6 shadow-card ring-1 ring-gold-500/15">
+            <blockquote class="flex-1 text-ink-700">
+              <p>{r.text}</p>
+            </blockquote>
+            <p class="mt-6 font-semibold text-green-800">{r.name}</p>
+            <p class="text-sm text-ink-500">
+              {[r.district, serviceName(r.service), formatDate(r.date)].filter(Boolean).join(lang === 'ar' ? '، ' : ', ')}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}

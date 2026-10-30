@@ -11,6 +11,7 @@ import PackageCard from '../PackageCard.astro';
 import BookingCard from '../BookingCard.astro';
 import CtaBand from '../CtaBand.astro';
 import FAQ from '../FAQ.astro';
+import Reviews from '../Reviews.astro';
 import { whatsappUrl, type Locale } from '../../config/site';
 import { coreServices, featuredServices, moreServices, serviceBySlug } from '../../data/services';
 import { featuredOffer as featured, upcomingOffers } from '../../data/offers';
@@ -448,6 +449,9 @@ const welcomeMsg = lang === 'ar' ? `السلام عليكم، أرغب بـ${wel
     </div>
   </div>
 </section>
+
+<!-- Reviews: renders nothing until 3+ consented reviews exist in src/data/reviews.ts -->
+<Reviews lang={lang} />
 
 <!-- Closing -->
 <section class="pb-32 pt-20 text-center md:pb-40">
