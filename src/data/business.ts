@@ -10,6 +10,8 @@ export const business = {
     ar: 'أمان لرعاية المواليد والخدمات المنزلية',
   },
   shortName: { en: 'Aman', ar: 'أمان' },
+  // Footer operator line.
+  shortBrand: { en: 'Aman Babycare', ar: 'أمان لرعاية المواليد' },
   // From the logo.
   tagline: {
     en: 'Your Comfort, Our Priority',

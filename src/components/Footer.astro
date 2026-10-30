@@ -19,6 +19,12 @@ const contacts = [
   !isPlaceholder(business.phone) && { label: business.phone, url: `tel:${business.phone.replace(/\s/g, '')}` },
   !isPlaceholder(business.email) && { label: business.email, url: `mailto:${business.email}` },
 ].filter(Boolean) as { label: string; url: string }[];
+const operator =
+  lang === 'ar'
+    ? `${business.shortBrand.ar} — تشغيل ${business.legalName.ar} — السجل التجاري: ${business.crNumber}`
+    : `${business.shortBrand.en} — operated by ${business.legalName.en} — CR: ${business.crNumber}`;
+// business.sa verification badge: nothing renders until it is set in business.ts.
+const badge = business.businessSaBadge;
 ---
 
 <footer class="relative mt-auto bg-green-900 text-cream-200">
@@ -70,7 +76,17 @@ const contacts = [
   </div>
   <div class="border-t border-cream-50/10">
     <div class="container-x flex flex-col gap-2 py-6 pb-24 text-xs text-cream-200/80 sm:flex-row sm:items-center sm:justify-between lg:pb-6">
-      <p>© {year} {business.brand[lang]}. {ui.rights[lang]}.</p>
+      <div class="grid gap-1">
+        <p>© {year} {business.brand[lang]}. {ui.rights[lang]}.</p>
+        <p>{operator}</p>
+        {
+          badge && (
+            <a href={badge.url} rel="noopener" class="mt-2 inline-flex min-h-11 items-center">
+              <img src={badge.image} alt={lang === 'ar' ? 'موثّق في المركز السعودي للأعمال' : 'Verified on the Saudi Business Center'} class="h-12 w-auto" loading="lazy" />
+            </a>
+          )
+        }
+      </div>
       <p class="flex flex-wrap items-center gap-x-4">
         <a href={href(lang, 'privacy')} class="inline-flex min-h-11 items-center hover:text-cream-50 hover:underline">{ui.nav.privacy[lang]}</a>
         <span>{business.tagline[lang]}</span>
