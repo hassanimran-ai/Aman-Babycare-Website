@@ -4,7 +4,7 @@
 // REVIEW-LEGAL: a Saudi lawyer should review before site.isLive = true. REVIEW-AR: Arabic is a first draft.
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../Breadcrumbs.astro';
-import { whatsappUrl, type Locale } from '../../config/site';
+import { isPlaceholder, whatsappUrl, type Locale } from '../../config/site';
 import { business } from '../../data/business';
 import { href, ui } from '../../i18n/ui';
 import { breadcrumbSchema } from '../../lib/schema';
@@ -17,7 +17,9 @@ const crumbs = [
   { name: ui.nav.home[lang], url: href(lang, '') },
   { name: ui.nav.privacy[lang], url: href(lang, 'privacy') },
 ];
-const updated = lang === 'ar' ? '30 أكتوبر 2026' : '30 October 2026';
+// The privacy email appears only once it's set in business.ts; until then requests go via WhatsApp.
+const privacyEmail = isPlaceholder(business.privacyEmail) ? null : business.privacyEmail;
+const updated = lang === 'ar' ? '30 أكتوبر 2026' : '30 October 2026'; // REVIEW-LEGAL: retention wording is general until the client sets a period
 
 type Block = { h: string; p?: string[]; list?: string[]; note?: string };
 const t: { title: string; description: string; h1: string; lead: string; updatedLabel: string; blocks: Block[]; contactCta: string } = {
@@ -63,7 +65,7 @@ const t: { title: string; description: string; h1: string; lead: string; updated
       {
         h: 'مدة الاحتفاظ',
         p: [
-          'نحتفظ ببياناتكم ما دامت لازمة للغرض الذي جُمعت له: محادثات الحجز وتفاصيل الرعاية لمدة [RETENTION_PERIOD] بعد آخر حجز، والفواتير للمدة التي يحددها النظام. بعد ذلك نحذفها أو نجعلها غير قابلة لتحديد هويتكم.',
+          'نحتفظ ببياناتكم ما دامت لازمة للغرض الذي جُمعت له: محادثات الحجز وتفاصيل الرعاية للمدة اللازمة لتقديم الخدمة ووفق ما يقتضيه النظام، والفواتير للمدة التي يحددها النظام. بعد ذلك نحذفها أو نجعلها غير قابلة لتحديد هويتكم.',
         ],
       },
       {
@@ -76,7 +78,7 @@ const t: { title: string; description: string; h1: string; lead: string; updated
           'أن تسحبوا موافقتكم في أي وقت.',
           'أن تقدّموا شكوى إلى الهيئة السعودية للبيانات والذكاء الاصطناعي (سدايا).',
         ],
-        note: `لممارسة أي من هذه الحقوق، راسلونا على واتساب أو على ${business.privacyEmail}، وسنرد خلال المدة التي يحددها النظام.`,
+        note: `لممارسة أي من هذه الحقوق، راسلونا على واتساب${privacyEmail ? ` أو على ${privacyEmail}` : ''}، وسنرد خلال المدة التي يحددها النظام.`,
       },
       {
         h: 'حماية البيانات',
@@ -95,7 +97,7 @@ const t: { title: string; description: string; h1: string; lead: string; updated
         list: [
           `جهة التحكم في البيانات: ${business.legalName.ar} / ${business.legalName.en}`,
           `السجل التجاري: ${business.crNumber}`,
-          `البريد الإلكتروني للخصوصية: ${business.privacyEmail}`,
+          ...(privacyEmail ? [`البريد الإلكتروني للخصوصية: ${privacyEmail}`] : []),
           `واتساب: ${business.whatsapp}`,
         ],
       },
@@ -144,7 +146,7 @@ const t: { title: string; description: string; h1: string; lead: string; updated
       {
         h: 'How long we keep it',
         p: [
-          'We keep your data only as long as its purpose needs: booking conversations and care details for [RETENTION_PERIOD] after your last booking, and invoices for as long as the law requires. After that we delete it or make it anonymous.',
+          'We keep your data only as long as its purpose needs: booking conversations and care details for as long as needed to provide the service and as Saudi law requires, and invoices for as long as the law requires. After that we delete it or make it anonymous.',
         ],
       },
       {
@@ -157,7 +159,7 @@ const t: { title: string; description: string; h1: string; lead: string; updated
           'To withdraw your consent at any time.',
           'To complain to the Saudi Data & AI Authority (SDAIA).',
         ],
-        note: `To use any of these rights, message us on WhatsApp or email ${business.privacyEmail}. We'll reply within the time the law sets.`,
+        note: `To use any of these rights, message us on WhatsApp${privacyEmail ? ` or email ${privacyEmail}` : ''}. We'll reply within the time the law sets.`,
       },
       {
         h: 'Keeping it safe',
@@ -176,7 +178,7 @@ const t: { title: string; description: string; h1: string; lead: string; updated
         list: [
           `Data controller: ${business.legalName.ar} / ${business.legalName.en}`,
           `Commercial registration (CR): ${business.crNumber}`,
-          `Privacy email: ${business.privacyEmail}`,
+          ...(privacyEmail ? [`Privacy email: ${privacyEmail}`] : []),
           `WhatsApp: ${business.whatsapp}`,
         ],
       },
