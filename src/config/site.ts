@@ -4,8 +4,9 @@ import { business } from '../data/business';
 export type Locale = 'ar' | 'en';
 
 export const site = {
-  // While false: noindex,nofollow on every page and robots.txt disallows all.
-  isLive: false,
+  // PUBLIC_INDEXING=true on the production build only. Anything else (staging, previews, local) keeps
+  // noindex,nofollow on every page and a robots.txt that disallows all.
+  isLive: import.meta.env.PUBLIC_INDEXING === 'true',
 
   // Tag IDs. Empty = that tag never loads. PHASE 2: cookie banner; tags load only after consent.
   analytics: { ga4: '', meta: '', snapchat: '' },

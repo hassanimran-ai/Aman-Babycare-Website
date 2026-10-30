@@ -21,6 +21,8 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
+      // 404 never listed. Disabled pages (40-day package) and draft posts are never built, so never listed.
+      filter: (page) => !new URL(page).pathname.startsWith('/404'),
       i18n: {
         defaultLocale: 'ar',
         locales: { ar: 'ar-SA', en: 'en' },
