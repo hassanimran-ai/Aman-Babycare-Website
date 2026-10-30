@@ -89,6 +89,9 @@ const halalas = (sarAmount: number) => Math.round(sarAmount * 100);
 
 const fmt = (n: number, decimals = 0) =>
   n.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+/** Rates: whole numbers stay whole (45), fractions show two digits (39.29). */
+export const formatRate = (halalas: number, lang: Lang) => formatSar(halalas, lang, halalas % 100 === 0 ? 0 : 2);
+
 /** "SAR 5,143" / "5,143 ر.س" from halalas; Western digits in both languages. */
 export const formatSar = (amount: number, lang: Lang, decimals = 0) =>
   lang === 'ar' ? `${fmt(amount / 100, decimals)} ر.س` : `SAR ${fmt(amount / 100, decimals)}`;
@@ -311,8 +314,8 @@ export function priceLine(sel: Selection, cfg: PricingConfig = defaultConfig): L
     lineTotal,
     missing: [],
     basisText: {
-      ar: `${formatSar(rate, 'ar', 2)} ${perUnit.ar}${perDay.ar} × ${arDays(days)}${adj('ar')}`,
-      en: `${formatSar(rate, 'en', 2)}${perUnit.en}${perDay.en} × ${days} day${days === 1 ? '' : 's'}${adj('en')}`,
+      ar: `${formatRate(rate, 'ar')} ${perUnit.ar}${perDay.ar} × ${arDays(days)}${adj('ar')}`,
+      en: `${formatRate(rate, 'en')}${perUnit.en}${perDay.en} × ${days} day${days === 1 ? '' : 's'}${adj('en')}`,
     },
   };
 }

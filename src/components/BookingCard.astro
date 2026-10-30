@@ -1,51 +1,40 @@
 ---
-// "Book Your Service": pick one or more services (each expands to its timing, package and extras),
-// review "Your Package", then a short form builds a booking request and opens it in WhatsApp.
-// Config: src/data/booking.ts. Nothing is stored: every field lives in memory until the visitor sends it.
-// REVIEW-AR: Arabic uses the respectful plural address and is a first draft.
+// "Book Your Service": pick services, answer one question per screen for each, review "Your Package"
+// (itemised, with an estimated total), then a short form builds a booking request and opens it in WhatsApp.
+// Config: src/data/booking.ts (questions), src/data/pricing.ts (prices/rules), src/lib/pricing.ts (engine).
+// Nothing is stored: every answer lives in memory until the visitor sends it.
+// REVIEW-AR: Arabic is a first draft, in the respectful plural address.
 import Icon from './Icon.astro';
 import { whatsappUrl, type Locale } from '../config/site';
-import {
-  bookingServices,
-  caregiverPreferences,
-  caregiverTypes,
-  DEFAULT_CAREGIVER_TYPE,
-  mobility,
-  petTypes,
-  plans,
-  priceTable,
-  startTimes,
-  timings,
-} from '../data/booking';
+import { bookingServices, caregiverPreferences, caregiverTypes, DEFAULT_CAREGIVER_TYPE, startTimes } from '../data/booking';
 import { business } from '../data/business';
-import { href, money, ui } from '../i18n/ui';
+import { packagesMissingHours, PRICE_LIST_STATUS } from '../data/pricing';
+import { href } from '../i18n/ui';
 
 interface Props {
   lang: Locale;
 }
 const { lang } = Astro.props;
 
+// Build-log flag: reference packages without hours can't be matched exactly (or give a rate) until the client confirms them.
+const g = globalThis as { __amanPricingLogged?: boolean };
+if (packagesMissingHours.length && !g.__amanPricingLogged) {
+  g.__amanPricingLogged = true;
+  console.log(`[pricing] TODO(client) hoursPerDay missing (no exact package match): ${packagesMissingHours.join(', ')}`);
+}
+
 const t = {
   ar: {
     title: 'احجزوا خدمتكم',
-    text: 'اختاروا خدمة أو أكثر، وحددوا التوقيت والباقة لكل خدمة. يمكن لشخص واحد من فريق الرعاية أن يجمع لكم أكثر من خدمة.',
-    often: 'كم مرة؟',
-    oftenHint: 'يُطبَّق على كل الخدمات المختارة، ويمكنكم تغييره لكل خدمة.',
-    services: 'الخدمات',
-    selected: 'مختارة',
-    timing: 'التوقيت',
-    plan: 'الباقة',
-    hrsDay: 'ساعة يومياً',
-    from: 'من',
+    text: 'اختاروا خدمة أو أكثر، ثم أجيبوا عن أسئلة قصيرة لكل خدمة، سؤالاً واحداً في كل مرة. يمكن لشخص واحد من فريق الرعاية أن يجمع لكم أكثر من خدمة.',
+    pickTitle: 'ما الخدمات التي تحتاجونها؟',
+    pickHint: 'يمكنكم اختيار أكثر من خدمة.',
+    continue: 'متابعة',
+    doneTitle: 'باقتكم جاهزة',
+    doneText: 'راجعوا الملخّص، ثم أرسلوا طلب الحجز عبر واتساب، أو أضيفوا خدمة أخرى.',
+    addMore: 'إضافة خدمة أخرى',
     yourPkg: 'باقتكم',
-    empty: 'لم تختاروا أي خدمة بعد. اختاروا خدمة واحدة على الأقل لتظهر هنا.',
-    estimate: 'التقدير يبدأ من',
-    priceWa: 'السعر يُؤكَّد عبر واتساب',
-    priceShort: 'السعر عبر واتساب',
-    note: 'التقدير مبدئي وقد يتغير حسب التفاصيل',
-    edit: 'تعديل',
-    remove: 'إزالة',
-    toggle: 'عرض التفاصيل',
+    empty: 'لم تضيفوا أي خدمة بعد. اختاروا خدمة وأجيبوا عن أسئلتها لتظهر هنا.',
     bookNow: 'احجزوا الآن',
     noscript: 'لإكمال الحجز، راسلونا مباشرة على واتساب.',
     formTitle: 'طلب الحجز',
@@ -55,13 +44,6 @@ const t = {
     districtHint: 'مثال: الملقا',
     date: 'تاريخ البدء',
     time: 'وقت البدء المفضّل',
-    ages: 'أعمار الأطفال',
-    childAge: 'عمر الطفل {n} (بالسنوات)',
-    babyAge: 'عمر المولود {n} (بالأسابيع)',
-    elder: 'عن الشخص الذي سنرافقه',
-    elderAge: 'العمر',
-    mobility: 'الحركة',
-    pets: 'نوع الحيوان',
     preference: 'تفضيل مقدّم الرعاية',
     type: 'نوع مقدّم الرعاية',
     languagesNote: `مقدّمو الرعاية يتحدثون ${business.languages.ar}.`,
@@ -72,30 +54,21 @@ const t = {
     submit: 'أرسلوا طلب الحجز عبر واتساب',
     close: 'إغلاق',
     errorsTitle: 'يرجى تصحيح ما يلي:',
-    doneTitle: 'تم تجهيز طلبكم',
-    doneText: 'سنؤكد التوفر والسعر عبر واتساب.',
-    doneAgain: 'فتح واتساب مرة أخرى',
+    sentTitle: 'تم تجهيز طلبكم',
+    sentText: 'سنؤكد التوفر والسعر عبر واتساب.',
+    sentAgain: 'فتح واتساب مرة أخرى',
   },
   en: {
     title: 'Book Your Service',
-    text: 'Pick one or more services and set the timing and package for each. One caregiver can combine several services for you.',
-    often: 'How often?',
-    oftenHint: 'Applies to every selected service; you can still change it per service.',
-    services: 'Services',
-    selected: 'selected',
-    timing: 'Timing',
-    plan: 'Package',
-    hrsDay: 'hrs/day',
-    from: 'from',
+    text: 'Pick one or more services, then answer a few short questions for each, one at a time. One person from our care team can combine several services for you.',
+    pickTitle: 'Which services do you need?',
+    pickHint: 'You can pick more than one.',
+    continue: 'Continue',
+    doneTitle: 'Your package is ready',
+    doneText: 'Check the summary, then send your booking request on WhatsApp, or add another service.',
+    addMore: 'Add another service',
     yourPkg: 'Your Package',
-    empty: "You haven't chosen a service yet. Pick at least one and it will appear here.",
-    estimate: 'Estimated from',
-    priceWa: 'Price confirmed on WhatsApp',
-    priceShort: 'Price on WhatsApp',
-    note: 'Estimate only; final price confirmed on WhatsApp.',
-    edit: 'Edit',
-    remove: 'Remove',
-    toggle: 'Show details',
+    empty: "You haven't added a service yet. Pick one and answer its questions to see it here.",
     bookNow: 'Book Now',
     noscript: 'To finish your booking request, message us directly on WhatsApp.',
     formTitle: 'Booking request',
@@ -105,13 +78,6 @@ const t = {
     districtHint: 'e.g. Al Malqa',
     date: 'Start date',
     time: 'Preferred start time',
-    ages: "Children's ages",
-    childAge: 'Child {n} age (years)',
-    babyAge: 'Baby {n} age (weeks)',
-    elder: "About the person we'll keep company",
-    elderAge: 'Age',
-    mobility: 'Mobility',
-    pets: 'Pet type',
     preference: 'Caregiver preference',
     type: 'Caregiver type',
     languagesNote: `Caregivers speak ${business.languages.en}.`,
@@ -122,90 +88,121 @@ const t = {
     submit: 'Send booking request via WhatsApp',
     close: 'Close',
     errorsTitle: 'Please fix the following:',
-    doneTitle: 'Your request is ready',
-    doneText: "We'll confirm availability and price on WhatsApp.",
-    doneAgain: 'Open WhatsApp again',
+    sentTitle: 'Your request is ready',
+    sentText: "We'll confirm availability and price on WhatsApp.",
+    sentAgain: 'Open WhatsApp again',
   },
 }[lang];
 
-// Strings and data for the browser script (labels in this page's language only).
+// Strings for the browser script (this page's language only).
 const config = {
   lang,
-  sar: ui.sar[lang],
+  draft: PRICE_LIST_STATUS === 'draft',
   base: whatsappUrl('').replace(/\?text=$/, ''),
-  prices: priceTable,
-  timings: Object.fromEntries(Object.entries(timings).map(([id, v]) => [id, { label: v.label[lang], hours: v.hoursPerDay, window: v.window?.[lang] }])),
-  plans: Object.fromEntries(Object.entries(plans).map(([id, v]) => [id, v[lang]])),
-  services: Object.fromEntries(
-    bookingServices.map((s) => [
-      s.id,
-      {
-        name: s.name[lang],
-        extras: s.extras.map((e) =>
-          e.kind === 'count'
-            ? { id: e.id, kind: e.kind, label: e.label[lang] }
-            : { id: e.id, kind: e.kind, label: e.label[lang], options: Object.fromEntries(e.options.map((o) => [o.id, o.label[lang]])) },
-        ),
-      },
-    ]),
-  ),
   startTimes: Object.fromEntries(startTimes.map((d) => [d.id, d.label[lang]])),
   preferences: Object.fromEntries(caregiverPreferences.map((d) => [d.id, d.label[lang]])),
   types: Object.fromEntries(caregiverTypes.map((d) => [d.id, d.label[lang]])),
-  mobility: Object.fromEntries(mobility.map((d) => [d.id, d.label[lang]])),
-  pets: Object.fromEntries(petTypes.map((d) => [d.id, d.label[lang]])),
-  t: {
-    from: t.from,
-    hrsDay: t.hrsDay,
-    estimate: t.estimate,
-    priceWa: t.priceWa,
-    priceShort: t.priceShort,
-    remove: t.remove,
-    edit: t.edit,
-    childAge: t.childAge,
-    babyAge: t.babyAge,
-  },
+  t:
+    lang === 'ar'
+      ? {
+          stepOf: 'الخطوة {x} من {y}',
+          back: 'رجوع',
+          next: 'التالي',
+          tierQ: 'ما نوع الباقة؟',
+          fromRate: 'من {rate} للساعة',
+          timingQ: 'ما التوقيت المناسب؟',
+          hoursQ: 'كم ساعة في اليوم؟',
+          scheduleQ: 'ما الجدول المناسب؟',
+          once: { days: 'كم يوماً؟', visits: 'كم زيارة؟', trips: 'كم يوماً من المشاوير؟' },
+          perWeek: { days: 'كم يوماً في الأسبوع؟', visits: 'كم زيارة في الأسبوع؟', trips: 'كم مشواراً في الأسبوع؟' },
+          weeksQ: 'لكم أسبوع؟',
+          monthsQ: 'لكم شهر؟',
+          petsQ: 'ما الحيوانات التي سنرعاها؟',
+          dogs: 'الكلاب',
+          cats: 'القطط',
+          otherPet: 'حيوان آخر',
+          otherHint: 'مثال: أرنب',
+          fewer: 'إنقاص',
+          more: 'زيادة',
+          reviewQ: 'ملخّص الخدمة',
+          calc: 'طريقة الحساب',
+          add: 'أضيفوا إلى باقتي',
+          update: 'حدّثوا باقتي',
+          priceWa: 'السعر عبر واتساب',
+          unpricedNote: 'نؤكد سعر هذه الخدمة معكم عبر واتساب.',
+          edit: 'تعديل',
+          remove: 'إزالة',
+          subtotal: 'المجموع الفرعي',
+          vat: 'ضريبة القيمة المضافة',
+          total: 'الإجمالي التقديري',
+          disclaimer: 'تقدير مبني على قائمة أسعارنا الحالية؛ نؤكد السعر النهائي عبر واتساب قبل الحجز.',
+          draftNote: 'أسعار مبدئية',
+          view: 'عرض',
+        }
+      : {
+          stepOf: 'Step {x} of {y}',
+          back: 'Back',
+          next: 'Next',
+          tierQ: 'Which package?',
+          fromRate: 'from {rate}/hr',
+          timingQ: 'Which timing suits you?',
+          hoursQ: 'How many hours a day?',
+          scheduleQ: 'Which schedule?',
+          once: { days: 'How many days?', visits: 'How many visits?', trips: 'How many days of trips?' },
+          perWeek: { days: 'Days per week', visits: 'Visits per week', trips: 'Trips per week' },
+          weeksQ: 'For how many weeks?',
+          monthsQ: 'For how many months?',
+          petsQ: 'Which pets will we look after?',
+          dogs: 'Dogs',
+          cats: 'Cats',
+          otherPet: 'Other pet',
+          otherHint: 'e.g. a rabbit',
+          fewer: 'Fewer',
+          more: 'More',
+          reviewQ: 'Service summary',
+          calc: 'How we worked it out',
+          add: 'Add to my package',
+          update: 'Update my package',
+          priceWa: 'Price on WhatsApp',
+          unpricedNote: "We'll confirm this service's price with you on WhatsApp.",
+          edit: 'Edit',
+          remove: 'Remove',
+          subtotal: 'Subtotal',
+          vat: 'VAT',
+          total: 'Estimated total',
+          disclaimer: 'Estimate based on our current price list; we confirm the final price on WhatsApp before booking.',
+          draftNote: 'Draft prices',
+          view: 'View',
+        },
   msg:
     lang === 'ar'
       ? {
           hello: 'السلام عليكم',
           header: 'طلب حجز',
+          total: 'الإجمالي التقديري',
+          totalWa: 'الإجمالي: يُؤكَّد عبر واتساب',
+          draft: '(أسعار مبدئية، يُؤكَّد السعر النهائي عبر واتساب)',
           name: 'الاسم',
           district: 'الحي',
           date: 'تاريخ البدء',
           time: 'وقت البدء',
-          ages: 'أعمار الأطفال',
-          years: 'سنوات',
-          weeks: 'أسابيع',
-          babies: 'أعمار المواليد',
-          elderAge: 'عمر كبير السن',
-          mobility: 'الحركة',
-          pets: 'الحيوانات',
           preference: 'تفضيل مقدّم الرعاية',
           type: 'نوع مقدّم الرعاية',
           notes: 'ملاحظات',
-          estimate: 'التقدير المبدئي: يبدأ من',
-          estimateWa: 'التقدير المبدئي: السعر يُؤكَّد عبر واتساب',
         }
       : {
           hello: 'Hello',
           header: 'Booking request',
+          total: 'Estimated total',
+          totalWa: 'Total: to be confirmed on WhatsApp',
+          draft: '(draft prices; final price confirmed on WhatsApp)',
           name: 'Name',
           district: 'District',
           date: 'Start date',
           time: 'Start time',
-          ages: "Children's ages",
-          years: 'years',
-          weeks: 'weeks',
-          babies: "Babies' ages",
-          elderAge: 'Age of the person',
-          mobility: 'Mobility',
-          pets: 'Pets',
           preference: 'Caregiver preference',
           type: 'Caregiver type',
           notes: 'Notes',
-          estimate: 'Estimate: from',
-          estimateWa: 'Estimate: price confirmed on WhatsApp',
         },
   errors:
     lang === 'ar'
@@ -216,9 +213,6 @@ const config = {
           date: 'اختاروا تاريخ البدء.',
           datePast: 'اختاروا تاريخاً من اليوم فصاعداً.',
           time: 'اختاروا وقت البدء.',
-          age: 'أدخلوا العمر بالأرقام.',
-          mobility: 'اختاروا حالة الحركة.',
-          pets: 'اختاروا نوع الحيوان.',
           consent: 'يلزم الموافقة لإرسال الطلب.',
         }
       : {
@@ -228,30 +222,12 @@ const config = {
           date: 'Choose a start date.',
           datePast: 'Choose today or a later date.',
           time: 'Choose a start time.',
-          age: 'Enter the age as a number.',
-          mobility: 'Choose a mobility option.',
-          pets: 'Choose at least one pet type.',
           consent: 'Your agreement is needed to send the request.',
         },
 };
 
-// Arabic puts the currency after the number, English before it.
-const sar = (n: number) => (lang === 'ar' ? `${money(n)} ${ui.sar.ar}` : `${ui.sar.en} ${money(n)}`);
-// Combinations without a package price say so in words; raw placeholders never reach the page.
-const priceLabel = (id: string, timing: string, plan: string) => {
-  const p = priceTable[`${id}|${timing}|${plan}`];
-  return p ? `${t.from} ${sar(p)}` : t.priceShort;
-};
-const hoursLabel = (timing: keyof typeof timings) => {
-  // "24 hours" already says how long it is; unconfirmed hours show nothing.
-  if (timing === 'hourly' || timing === '24-hours') return '';
-  const w = timings[timing].window;
-  if (w) return w[lang];
-  const h = timings[timing].hoursPerDay;
-  return h ? `${h} ${t.hrsDay}` : '';
-};
 const chip =
-  'flex min-h-11 cursor-pointer flex-col items-start justify-center rounded-2xl bg-cream-100 px-3 py-1.5 text-sm ring-1 ring-green-700/10 transition-transform duration-200 hover:bg-green-50 active:scale-[0.98] has-[:checked]:bg-green-700 has-[:checked]:text-cream-50 has-[:checked]:ring-green-700 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-gold-500';
+  'flex min-h-11 cursor-pointer flex-col items-start justify-center rounded-2xl bg-cream-100 px-3 py-2 text-sm ring-1 ring-green-700/10 transition-transform duration-200 hover:bg-green-50 active:scale-[0.98] has-[:checked]:bg-green-700 has-[:checked]:text-cream-50 has-[:checked]:ring-green-700 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-gold-500';
 const field = 'mt-1 block min-h-11 w-full rounded-xl bg-cream-50 px-3 text-ink-900 ring-1 ring-green-700/20 focus:outline-2 focus:outline-gold-500 aria-[invalid=true]:ring-2 aria-[invalid=true]:ring-pink-700';
 const err = 'mt-1 text-sm font-medium text-pink-800';
 ---
@@ -263,129 +239,61 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
       <h2 class="text-3xl text-cream-50">{t.title}</h2>
       <p class="mt-3 max-w-lg text-cream-200">{t.text}</p>
 
-      <fieldset class="mt-8">
-        <legend class="text-sm font-semibold text-gold-300">{t.often}</legend>
-        <p class="mt-1 text-xs text-cream-200/80">{t.oftenHint}</p>
-        <div class="mt-3 flex flex-wrap gap-2">
-          {
-            Object.entries(plans).map(([id, label], i) => (
-              <label class="flex min-h-11 cursor-pointer items-center rounded-full px-5 ring-1 ring-cream-50/20 transition-transform duration-200 hover:bg-cream-50/10 active:scale-[0.98] has-[:checked]:bg-gold-500 has-[:checked]:text-green-950 has-[:checked]:ring-gold-500 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-gold-300">
-                <input type="radio" name="bk-often" value={id} class="sr-only" checked={i === 0} data-often />
-                {label[lang]}
-              </label>
-            ))
-          }
-        </div>
-      </fieldset>
-
-      <h3 class="mt-8 text-sm font-semibold text-gold-300" id="bk-services-label">{t.services}</h3>
-      <ul class="mt-3 grid gap-2" aria-labelledby="bk-services-label">
-        {
-          bookingServices.map((s) => (
-            <li data-svc={s.id} class="scroll-mt-32 rounded-2xl ring-1 ring-cream-50/10 has-[[aria-expanded=true]]:bg-cream-50 has-[[aria-expanded=true]]:text-ink-900">
-              <button
-                type="button"
-                id={`bk-${s.id}`}
-                aria-expanded="false"
-                aria-controls={`bk-${s.id}-panel`}
-                data-toggle
-                class="group flex min-h-14 w-full items-center gap-3 rounded-2xl px-4 text-start transition-transform duration-200 hover:bg-cream-50/10 active:scale-[0.99] aria-expanded:hover:bg-transparent"
-              >
-                <Icon name={s.icon} class="size-5 shrink-0 text-gold-300 group-aria-expanded:text-gold-700" />
-                <span class="font-medium group-aria-expanded:text-green-800">{s.name[lang]}</span>
-                <span class="sr-only" data-selected-label hidden>
-                  ({t.selected})
-                </span>
-                <span class="ms-auto flex size-6 shrink-0 items-center justify-center rounded-full ring-1 ring-cream-50/40 group-aria-expanded:bg-green-700 group-aria-expanded:ring-green-700">
-                  <Icon name="check" class="size-4 text-cream-50 opacity-0 group-aria-expanded:opacity-100" stroke={2.4} />
-                </span>
-              </button>
-              <div id={`bk-${s.id}-panel`} role="group" aria-labelledby={`bk-${s.id}`} hidden class="bk-panel grid gap-5 px-4 pb-5 pt-1">
-                <fieldset>
-                  <legend class="text-xs font-semibold text-gold-800">{t.timing}</legend>
-                  <div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
-                    {s.timings.map((tm, i) => (
-                      <label class={chip}>
-                        <input type="radio" name={`${s.id}-timing`} value={tm} class="sr-only" checked={i === 0} data-timing />
-                        <span class="font-medium">{timings[tm].label[lang]}</span>
-                        {hoursLabel(tm) && <span class="text-xs opacity-80">{hoursLabel(tm)}</span>}
-                      </label>
-                    ))}
-                  </div>
-                </fieldset>
-                <fieldset>
-                  <legend class="text-xs font-semibold text-gold-800">{t.plan}</legend>
-                  <div class="mt-2 grid grid-cols-3 gap-2">
-                    {s.plans.map((pl, i) => (
-                      <label class={chip}>
-                        <input type="radio" name={`${s.id}-plan`} value={pl} class="sr-only" checked={i === 0} data-plan />
-                        <span class="font-medium">{plans[pl][lang]}</span>
-                        <span class="text-xs tabular-nums opacity-80" data-price-for={pl}>
-                          {priceLabel(s.id, s.timings[0], pl)}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </fieldset>
-                {s.extras.map((e) =>
-                  e.kind === 'count' ? (
-                    <div class="flex items-center justify-between gap-4" role="group" aria-labelledby={`bk-${s.id}-${e.id}-label`}>
-                      <span id={`bk-${s.id}-${e.id}-label`} class="text-sm font-medium text-green-800">
-                        {e.label[lang]}
-                      </span>
-                      <span class="flex items-center gap-1" data-count={e.id} data-min={e.min} data-max={e.max}>
-                        <button type="button" data-step="-1" class="flex size-11 items-center justify-center rounded-full bg-cream-100 text-xl text-green-800 ring-1 ring-green-700/15 hover:bg-green-50 active:scale-95 disabled:opacity-40" aria-label={`${e.label[lang]} −1`}>
-                          −
-                        </button>
-                        <output class="w-8 text-center font-semibold tabular-nums" aria-live="polite">
-                          {e.default}
-                        </output>
-                        <button type="button" data-step="1" class="flex size-11 items-center justify-center rounded-full bg-cream-100 text-xl text-green-800 ring-1 ring-green-700/15 hover:bg-green-50 active:scale-95 disabled:opacity-40" aria-label={`${e.label[lang]} +1`}>
-                          +
-                        </button>
-                      </span>
-                    </div>
-                  ) : (
-                    <fieldset>
-                      <legend class="text-xs font-semibold text-gold-800">{e.label[lang]}</legend>
-                      <div class="mt-2 grid grid-cols-2 gap-2">
-                        {e.options.map((o, i) => (
-                          <label class={chip}>
-                            <input type="radio" name={`${s.id}-${e.id}`} value={o.id} class="sr-only" checked={i === 0} data-choice={e.id} />
-                            <span class="font-medium">{o.label[lang]}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </fieldset>
-                  ),
-                )}
-              </div>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-
-    <!-- Your Package: sticky on desktop, collapsible at the bottom on phones. -->
-    <aside class="rounded-3xl bg-cream-50 p-5 text-ink-900 shadow-float lg:sticky lg:top-28 md:p-6" aria-labelledby="bk-pkg-title">
-      <div class="flex items-center justify-between gap-3">
-        <h3 id="bk-pkg-title" class="flex items-center gap-2 text-xl text-green-800">
-          <Icon name="gift" class="size-5 text-gold-700" />
-          {t.yourPkg}
-          <span class="rounded-full bg-green-50 px-2 text-sm tabular-nums text-green-700" data-count-badge>0</span>
-        </h3>
-        <button type="button" class="flex size-11 items-center justify-center rounded-full text-green-800 hover:bg-green-50 active:scale-95 lg:hidden" aria-expanded="true" aria-controls="bk-pkg-body" aria-label={t.toggle} data-pkg-toggle>
-          <Icon name="chevron" class="size-5 rotate-90 transition-transform duration-200 [[aria-expanded=false]>&]:-rotate-90" />
+      <!-- 1. Choose services -->
+      <div class="mt-8" data-screen="services">
+        <fieldset>
+          <legend>
+            <h3 class="text-xl text-cream-50 outline-none" tabindex="-1" data-heading>{t.pickTitle}</h3>
+          </legend>
+          <p class="mt-1 text-sm text-cream-200/80">{t.pickHint}</p>
+          <div class="mt-4 grid gap-2 sm:grid-cols-2">
+            {
+              bookingServices.map((s) => (
+                <label class="group flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl px-4 ring-1 ring-cream-50/15 transition-transform duration-200 hover:bg-cream-50/10 active:scale-[0.99] has-[:checked]:bg-cream-50 has-[:checked]:text-green-900 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-gold-300">
+                  <input type="checkbox" value={s.id} class="sr-only" data-pick />
+                  <Icon name={s.icon} class="size-5 shrink-0 text-gold-300 group-has-[:checked]:text-gold-700" />
+                  <span class="font-medium">{s.name[lang]}</span>
+                  <span class="ms-auto flex size-6 shrink-0 items-center justify-center rounded-full ring-1 ring-cream-50/40 group-has-[:checked]:bg-green-700 group-has-[:checked]:ring-green-700">
+                    <Icon name="check" class="size-4 text-cream-50 opacity-0 group-has-[:checked]:opacity-100" stroke={2.4} />
+                  </span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+        <button type="button" class="btn btn-light mt-6 disabled:pointer-events-none disabled:opacity-50" disabled data-start>
+          {t.continue}
+          <Icon name="arrow" class="size-5" flip />
         </button>
       </div>
-      <div id="bk-pkg-body" class="mt-4">
-        <p class="rounded-2xl bg-cream-100 p-4 text-sm text-ink-600" data-empty>{t.empty}</p>
-        <ul class="grid gap-2" data-summary></ul>
+
+      <!-- 2. One question per screen (rendered by the script) -->
+      <div class="bk-panel mt-8 rounded-3xl bg-cream-50 p-5 text-ink-900 md:p-6" hidden data-screen="step"></div>
+
+      <!-- 3. Package ready -->
+      <div class="bk-panel mt-8 rounded-3xl bg-cream-50 p-5 text-ink-900 md:p-6" hidden data-screen="done">
+        <h3 class="text-2xl text-green-800 outline-none" tabindex="-1" data-heading>{t.doneTitle}</h3>
+        <p class="mt-2 text-ink-600">{t.doneText}</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <button type="button" class="btn btn-primary" data-book>
+            <Icon name="calendar" class="size-5" />
+            {t.bookNow}
+          </button>
+          <button type="button" class="btn btn-ghost" data-add-more>{t.addMore}</button>
+        </div>
       </div>
-      <div class="mt-4 border-t border-green-700/10 pt-4" data-estimate-box hidden>
-        <p class="font-semibold text-green-800" data-estimate aria-live="polite"></p>
-        <p class="mt-1 text-xs text-ink-500">{t.note}</p>
-      </div>
+    </div>
+
+    <!-- Your Package: sticky on desktop -->
+    <aside id="bk-summary" class="scroll-mt-32 rounded-3xl bg-cream-50 p-5 text-ink-900 shadow-float lg:sticky lg:top-28 md:p-6" aria-labelledby="bk-pkg-title">
+      <h3 id="bk-pkg-title" class="flex items-center gap-2 text-xl text-green-800">
+        <Icon name="gift" class="size-5 text-gold-700" />
+        {t.yourPkg}
+        <span class="rounded-full bg-green-50 px-2 text-sm tabular-nums text-green-700" data-count-badge>0</span>
+      </h3>
+      <p class="mt-4 rounded-2xl bg-cream-100 p-4 text-sm text-ink-600" data-empty>{t.empty}</p>
+      <ul class="mt-4 grid gap-2" data-summary></ul>
+      <div class="mt-4 border-t border-green-700/10 pt-4" hidden data-totals aria-live="polite"></div>
       <button type="button" class="btn btn-primary mt-5 w-full disabled:pointer-events-none disabled:opacity-50" disabled data-book>
         <Icon name="calendar" class="size-5" />
         {t.bookNow}
@@ -396,6 +304,17 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
         </p>
       </noscript>
     </aside>
+  </div>
+
+  <!-- Phones: a mini bar at the bottom of the card, above the floating WhatsApp button. -->
+  <div class="sticky bottom-[5.5rem] z-20 mt-6 lg:hidden" hidden data-minibar>
+    <a href="#bk-summary" class="flex min-h-12 items-center justify-between gap-3 rounded-full bg-cream-50 px-5 text-sm font-semibold text-green-800 shadow-float active:scale-[0.98]">
+      <span class="tabular-nums" data-minibar-text></span>
+      <span class="flex items-center gap-1 text-gold-700">
+        {config.t.view}
+        <Icon name="chevron" class="size-4" flip />
+      </span>
+    </a>
   </div>
 
   <!-- Booking request form: bottom sheet on phones, modal on desktop (native dialog: focus trap + Esc). -->
@@ -443,47 +362,6 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
           ))}
         </div>
         <p id="bk-time-err" class={err} hidden></p>
-      </fieldset>
-
-      <fieldset hidden data-cond="ages">
-        <legend class="text-sm font-medium text-green-800">{t.ages}</legend>
-        <div class="mt-2 grid gap-3 sm:grid-cols-2" data-ages></div>
-      </fieldset>
-
-      <fieldset hidden data-cond="elderly">
-        <legend class="text-sm font-medium text-green-800">{t.elder}</legend>
-        <div class="mt-2 grid gap-4">
-          <div>
-            <label for="bk-elder-age" class="text-sm text-ink-700">{t.elderAge}</label>
-            <input id="bk-elder-age" name="elderAge" type="number" inputmode="numeric" min="1" max="120" class={field} aria-describedby="bk-elder-age-err" />
-            <p id="bk-elder-age-err" class={err} hidden></p>
-          </div>
-          <fieldset id="bk-mobility" aria-describedby="bk-mobility-err">
-            <legend class="text-sm text-ink-700">{t.mobility}</legend>
-            <div class="mt-2 grid grid-cols-2 gap-2">
-              {mobility.map((m) => (
-                <label class={chip}>
-                  <input type="radio" name="mobility" value={m.id} class="sr-only" />
-                  <span class="font-medium">{m.label[lang]}</span>
-                </label>
-              ))}
-            </div>
-            <p id="bk-mobility-err" class={err} hidden></p>
-          </fieldset>
-        </div>
-      </fieldset>
-
-      <fieldset id="bk-pets" hidden data-cond="pets" aria-describedby="bk-pets-err">
-        <legend class="text-sm font-medium text-green-800">{t.pets}</legend>
-        <div class="mt-2 grid grid-cols-3 gap-2">
-          {petTypes.map((p) => (
-            <label class={chip}>
-              <input type="checkbox" name="pet" value={p.id} class="sr-only" />
-              <span class="font-medium">{p.label[lang]}</span>
-            </label>
-          ))}
-        </div>
-        <p id="bk-pets-err" class={err} hidden></p>
       </fieldset>
 
       <fieldset id="bk-pref" aria-describedby="bk-pref-err">
@@ -538,15 +416,15 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
       </button>
     </form>
 
-    <div class="grid justify-items-center gap-4 px-5 pb-8 pt-6 text-center" hidden data-done>
+    <div class="grid justify-items-center gap-4 px-5 pb-8 pt-6 text-center" hidden data-sent>
       <span class="flex size-16 items-center justify-center rounded-full bg-green-50 text-green-700">
         <Icon name="check" class="size-8" stroke={2} />
       </span>
-      <h3 class="text-2xl text-green-800" tabindex="-1" data-done-title>{t.doneTitle}</h3>
-      <p class="text-ink-600">{t.doneText}</p>
+      <h3 class="text-2xl text-green-800" tabindex="-1" data-sent-title>{t.sentTitle}</h3>
+      <p class="text-ink-600">{t.sentText}</p>
       <a href="#" target="_blank" rel="noopener" class="btn btn-primary" data-again>
         <Icon name="whatsapp" class="size-5" />
-        {t.doneAgain}
+        {t.sentAgain}
       </a>
       <button type="button" class="btn btn-ghost" data-close>{t.close}</button>
     </div>
@@ -555,41 +433,34 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
 
 <script>
   import { track } from '../lib/analytics';
+  import { bookingServices, PET_LIMITS, tiers, type Answers, type BookingService } from '../data/booking';
+  import { TIMINGS } from '../data/pricing';
+  import { hourOptions, isComplete, isValid, scheduleOptions, specText, stepsFor, tidy, toSelection, type Screen } from '../lib/booking';
+  import { effectiveRate, formatRate, formatSar, priceLine, total, type Line } from '../lib/pricing';
 
-  type Extra = { id: string; kind: 'count' | 'choice'; label: string; options?: Record<string, string> };
+  type Lang = 'ar' | 'en';
   type Config = {
-    lang: 'ar' | 'en';
-    sar: string;
+    lang: Lang;
+    draft: boolean;
     base: string;
-    prices: Record<string, number | null>;
-    timings: Record<string, { label: string; hours: number | null; window?: string }>;
-    plans: Record<string, string>;
-    services: Record<string, { name: string; extras: Extra[] }>;
     startTimes: Record<string, string>;
     preferences: Record<string, string>;
     types: Record<string, string>;
-    mobility: Record<string, string>;
-    pets: Record<string, string>;
-    t: Record<string, string>;
+    t: Record<string, string> & { once: Record<string, string>; perWeek: Record<string, string> };
     msg: Record<string, string>;
     errors: Record<string, string>;
   };
-  type Picked = { id: string; timing: string; plan: string; extras: Record<string, string | number> };
   export type BookingPayload = {
     lang: string;
-    services: Picked[];
+    lines: { service: string; spec: string; price: number | null }[];
+    total: number | null;
     name: string;
     district: string;
     date: string;
     time: string;
-    ages: { kind: 'child' | 'baby'; value: number }[];
-    elderAge?: number;
-    mobility?: string;
-    pets?: string[];
     preference: string;
     caregiverType: string;
     notes: string;
-    estimate: number | null;
   };
 
   /**
@@ -598,253 +469,379 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
    */
   async function submitBooking(_payload: BookingPayload): Promise<void> {}
 
-  const money = (n: number) => n.toLocaleString('en-US', { maximumFractionDigits: 2 });
-  const sarFor = (lang: string, sar: string, n: number) => (lang === 'ar' ? `${money(n)} ${sar}` : `${sar} ${money(n)}`);
-  // Today in Riyadh as YYYY-MM-DD.
+  const MAX_MESSAGE = 1500;
+  const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
   const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Riyadh' }).format(new Date());
+  const arCount = (k: number, one: string, two: string, few: string, many: string) =>
+    k === 1 ? one : k === 2 ? two : k <= 10 ? `${k} ${few}` : `${k} ${many}`;
+  const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const range = (a: number, b: number) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
+
+  const chip =
+    'flex min-h-11 cursor-pointer flex-col items-start justify-center rounded-2xl bg-cream-100 px-3 py-2 text-sm ring-1 ring-green-700/10 transition-transform duration-200 hover:bg-green-50 active:scale-[0.98] has-[:checked]:bg-green-700 has-[:checked]:text-cream-50 has-[:checked]:ring-green-700 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-gold-500';
 
   document.querySelectorAll<HTMLElement>('[data-booking]').forEach((root) => {
     const cfg: Config = JSON.parse(root.querySelector('[data-booking-config]')!.textContent!);
+    const { lang, t } = cfg;
     const $ = <T extends Element = HTMLElement>(sel: string, el: ParentNode = root) => el.querySelector<T>(sel)!;
     const $$ = <T extends Element = HTMLElement>(sel: string, el: ParentNode = root) => [...el.querySelectorAll<T>(sel)];
-    const items = $$('[data-svc]');
-    const item = (id: string) => items.find((li) => li.dataset.svc === id)!;
-    const isOn = (li: HTMLElement) => $('[data-toggle]', li).getAttribute('aria-expanded') === 'true';
-    const checked = (li: ParentNode, sel: string) => $<HTMLInputElement>(`${sel}:checked`, li)?.value ?? '';
+    const svcById = (id: string) => bookingServices.find((s) => s.id === id)!;
+    const sar = (halalas: number, decimals = 0) => formatSar(halalas, lang, decimals);
 
-    // ---------- Service selection ----------
-    const read = (li: HTMLElement): Picked => {
-      const extras: Picked['extras'] = {};
-      $$('[data-count]', li).forEach((c) => (extras[c.dataset.count!] = Number($('output', c).textContent)));
-      $$<HTMLInputElement>('[data-choice]:checked', li).forEach((r) => (extras[r.dataset.choice!] = r.value));
-      return { id: li.dataset.svc!, timing: checked(li, '[data-timing]'), plan: checked(li, '[data-plan]'), extras };
+    // ---------- State (memory only) ----------
+    const answers: Record<string, Answers> = {};
+    const added: string[] = []; // services in "Your Package", in the order they were added
+    let current: string | null = null;
+    let idx = 0;
+
+    const screens = { services: $('[data-screen=services]'), step: $('[data-screen=step]'), done: $('[data-screen=done]') };
+    const show = (name: keyof typeof screens, focus = true) => {
+      Object.entries(screens).forEach(([k, el]) => (el.hidden = k !== name));
+      // Focus the new screen's heading so keyboard and screen-reader users land on the question.
+      if (focus) requestAnimationFrame(() => $('[data-heading]', screens[name]).focus());
     };
-    const picked = () => items.filter(isOn).map(read);
-    const priceOf = (p: Picked) => cfg.prices[`${p.id}|${p.timing}|${p.plan}`] ?? null;
+    const picks = () => $$<HTMLInputElement>('[data-pick]');
+    const picked = () => picks().filter((p) => p.checked).map((p) => p.value);
+    const nextPending = () => picked().find((id) => !added.includes(id));
 
-    const setOn = (li: HTMLElement, on: boolean) => {
-      const btn = $('[data-toggle]', li);
-      btn.setAttribute('aria-expanded', String(on));
-      $('[data-selected-label]', li).hidden = !on;
-      $(`#${btn.getAttribute('aria-controls')}`).hidden = !on;
-      if (on) {
-        // A newly selected service takes the "How often" choice.
-        const often = checked(root, '[data-often]');
-        const r = $<HTMLInputElement>(`[data-plan][value="${often}"]`, li);
-        if (r) r.checked = true;
-        track('booking_service_select', { service: li.dataset.svc!, package: checked(li, '[data-plan]') });
+    // ---------- Pricing ----------
+    const lineFor = (id: string): Line => priceLine(toSelection(svcById(id), answers[id]));
+    const priceText = (l: Line) => (l.priced && l.lineTotal != null ? sar(l.lineTotal) : t.priceWa);
+
+    // ---------- One question per screen ----------
+    const options = (name: string, opts: { value: string; label: string; hint?: string; checked: boolean }[], cols: string, type = 'radio') =>
+      `<div class="mt-4 grid gap-2 ${cols}">${opts
+        .map(
+          (o) =>
+            `<label class="${chip}"><input type="${type}" name="${name}" value="${esc(o.value)}" class="sr-only"${o.checked ? ' checked' : ''} /><span class="font-medium">${esc(o.label)}</span>${o.hint ? `<span class="text-xs opacity-80">${esc(o.hint)}</span>` : ''}</label>`,
+        )
+        .join('')}</div>`;
+    const heading = (text: string) => `<h3 class="text-xl text-green-800 outline-none" tabindex="-1" data-heading>${esc(text)}</h3>`;
+    const legend = (text: string) => `<legend class="w-full">${heading(text)}</legend>`;
+    const nums = (list: number[], value: unknown) => list.map((k) => ({ value: String(k), label: String(k), checked: value === k }));
+    const stepper = (key: string, label: string, value: number, max: number) =>
+      `<div class="flex items-center justify-between gap-4" role="group" aria-labelledby="bk-${key}-l"><span id="bk-${key}-l" class="font-medium text-green-800">${esc(label)}</span><span class="flex items-center gap-1" data-stepper="${key}" data-max="${max}"><button type="button" data-step="-1" class="flex size-11 items-center justify-center rounded-full bg-cream-100 text-xl text-green-800 ring-1 ring-green-700/15 hover:bg-green-50 active:scale-95 disabled:opacity-40" aria-label="${esc(`${label}: ${t.fewer}`)}">−</button><output class="w-8 text-center font-semibold tabular-nums" aria-live="polite">${value}</output><button type="button" data-step="1" class="flex size-11 items-center justify-center rounded-full bg-cream-100 text-xl text-green-800 ring-1 ring-green-700/15 hover:bg-green-50 active:scale-95 disabled:opacity-40" aria-label="${esc(`${label}: ${t.more}`)}">+</button></span></div>`;
+
+    // Returns the screen's markup and whether a tap on a single choice moves straight on.
+    function screenBody(svc: BookingService, s: Screen, a: Answers): { html: string; auto: boolean } {
+      switch (s.kind) {
+        case 'count':
+          return { html: `<fieldset>${legend(s.step.label[lang])}${options(s.step.key, nums(range(s.step.min, s.step.max), a[s.step.key]), 'grid-cols-3 sm:grid-cols-5')}</fieldset>`, auto: true };
+        case 'age': {
+          const q = s.total > 1 ? s.step.labelN[lang].replace('{n}', String(s.index + 1)) : s.step.label[lang];
+          const cur = (a[s.step.key] as string[] | undefined)?.[s.index];
+          return { html: `<fieldset>${legend(q)}${options(`age-${s.index}`, s.step.options.map((o) => ({ value: o.id, label: o.label[lang], checked: cur === o.id })), 'grid-cols-2 sm:grid-cols-3')}</fieldset>`, auto: true };
+        }
+        case 'single':
+          return {
+            html: `<fieldset>${legend(s.step.label[lang])}${options(s.step.key, s.step.options.map((o) => ({ value: o.id, label: o.label[lang], checked: a[s.step.key] === o.id })), 'grid-cols-1 sm:grid-cols-2')}${s.step.note ? `<p class="mt-4 rounded-2xl bg-gold-50 p-3 text-sm text-gold-800">${esc(s.step.note[lang])}</p>` : ''}</fieldset>`,
+            auto: !s.step.note, // let the note be read before moving on
+          };
+        case 'multi': {
+          const cur = (a[s.step.key] as string[] | undefined) ?? [];
+          return { html: `<fieldset>${legend(s.step.label[lang])}${options(s.step.key, s.step.options.map((o) => ({ value: o.id, label: o.label[lang], checked: cur.includes(o.id) })), 'grid-cols-1 sm:grid-cols-2', 'checkbox')}</fieldset>`, auto: false };
+        }
+        case 'timing':
+          return {
+            html: `<fieldset>${legend(t.timingQ)}${options('timing', s.options.map((id) => ({ value: id, label: TIMINGS[id].label[lang], hint: TIMINGS[id].window?.[lang], checked: a.timing === id })), 'grid-cols-2 sm:grid-cols-3')}</fieldset>`,
+            auto: true,
+          };
+        case 'hours':
+          return { html: `<fieldset>${legend(t.hoursQ)}${options('hours', nums(hourOptions(svc.id), a.hours), 'grid-cols-4 sm:grid-cols-6')}</fieldset>`, auto: true };
+        case 'pets':
+          return {
+            html: `<fieldset>${legend(t.petsQ)}<div class="mt-4 grid gap-3">${stepper('dogs', t.dogs, (a.dogs as number) ?? 0, PET_LIMITS.dogs)}${stepper('cats', t.cats, (a.cats as number) ?? 0, PET_LIMITS.cats)}<div><label for="bk-other-pet" class="font-medium text-green-800">${esc(t.otherPet)}</label><input id="bk-other-pet" type="text" maxlength="40" placeholder="${esc(t.otherHint)}" class="mt-1 block min-h-11 w-full rounded-xl bg-cream-50 px-3 text-ink-900 ring-1 ring-green-700/20 placeholder:text-ink-500 focus:outline-2 focus:outline-gold-500" data-other-pet /></div></div></fieldset>`,
+            auto: false,
+          };
+        case 'tier':
+          return {
+            html: `<fieldset>${legend(t.tierQ)}${options(
+              'tier',
+              tiers.map((tr) => {
+                const r = svc.unit === 'trips' ? null : effectiveRate(svc.id, tr.id, a.timing ?? null);
+                return { value: tr.id, label: tr.label[lang], hint: r != null ? t.fromRate.replace('{rate}', formatRate(r, lang)) : undefined, checked: a.tier === tr.id };
+              }),
+              'grid-cols-1 sm:grid-cols-3',
+            )}</fieldset>`,
+            auto: true,
+          };
+        case 'schedule': {
+          if (a.tier === 'oneTime') return { html: `<fieldset>${legend(t.once[svc.unit])}${options('days', nums(scheduleOptions.oneTimeDays, a.days), 'grid-cols-3 sm:grid-cols-6')}</fieldset>`, auto: true };
+          const second =
+            a.tier === 'weekly'
+              ? `<fieldset class="mt-6"><legend class="font-medium text-green-800">${esc(t.weeksQ)}</legend>${options('weeks', nums(scheduleOptions.weeks, a.weeks), 'grid-cols-3')}</fieldset>`
+              : `<fieldset class="mt-6"><legend class="font-medium text-green-800">${esc(t.monthsQ)}</legend>${options('months', nums(scheduleOptions.months, a.months), 'grid-cols-3 sm:grid-cols-6')}</fieldset>`;
+          return {
+            html: `${heading(t.scheduleQ)}<fieldset class="mt-4"><legend class="font-medium text-green-800">${esc(t.perWeek[svc.unit])}</legend>${options('daysPerWeek', nums(scheduleOptions.daysPerWeek, a.daysPerWeek), 'grid-cols-4 sm:grid-cols-7')}</fieldset>${second}`,
+            auto: false,
+          };
+        }
+        case 'review': {
+          const l = lineFor(svc.id);
+          return {
+            html: `${heading(`${t.reviewQ}: ${svc.name[lang]}`)}
+              <p class="mt-3 text-ink-700">${esc(specText(svc, a, lang))}</p>
+              <div class="mt-5 flex items-end justify-between gap-4 border-t border-green-700/10 pt-4">
+                <div>${l.priced ? `<p class="text-xs font-semibold text-gold-800">${esc(t.calc)}</p><p class="mt-1 text-sm text-ink-600">${esc(l.basisText[lang])}</p>` : ''}</div>
+                <p class="shrink-0 text-2xl font-semibold tabular-nums text-green-800">${esc(priceText(l))}</p>
+              </div>
+              ${l.priced ? '' : `<p class="mt-3 text-sm text-ink-600">${esc(t.unpricedNote)}</p>`}`,
+            auto: false,
+          };
+        }
       }
-    };
+    }
 
-    // Plan prices follow the chosen timing.
-    const refreshPrices = (li: HTMLElement) => {
-      const timing = checked(li, '[data-timing]');
-      $$('[data-price-for]', li).forEach((el) => {
-        const p = cfg.prices[`${li.dataset.svc}|${timing}|${el.dataset.priceFor}`];
-        el.textContent = p ? `${cfg.t.from} ${sarFor(cfg.lang, cfg.sar, p)}` : cfg.t.priceShort;
+    let pointer = false; // auto-advance only on taps/clicks; arrow keys just move the choice
+
+    function renderStep() {
+      const svc = svcById(current!);
+      const a = (answers[current!] ??= {});
+      const list = stepsFor(svc, a);
+      idx = Math.min(idx, list.length - 1);
+      const s = list[idx];
+      const { html, auto } = screenBody(svc, s, a);
+      const isLast = s.kind === 'review';
+      screens.step.innerHTML = `
+        <div class="flex items-center justify-between gap-3 text-xs font-semibold text-gold-800">
+          <span>${esc(svc.name[lang])}</span>
+          <span class="tabular-nums">${esc(t.stepOf.replace('{x}', String(idx + 1)).replace('{y}', String(list.length)))}</span>
+        </div>
+        <div class="mt-2 h-1 overflow-hidden rounded-full bg-green-700/10" aria-hidden="true"><div class="h-full rounded-full bg-gold-500" style="width:${((idx + 1) / list.length) * 100}%"></div></div>
+        <div class="mt-5" data-body>${html}</div>
+        <div class="mt-6 flex items-center justify-between gap-3">
+          <button type="button" class="btn btn-ghost min-h-11" data-back>${esc(t.back)}</button>
+          <button type="button" class="btn btn-primary min-h-11 disabled:pointer-events-none disabled:opacity-50" data-next>${esc(isLast ? (added.includes(svc.id) ? t.update : t.add) : t.next)}</button>
+        </div>`;
+      const nextBtn = $<HTMLButtonElement>('[data-next]', screens.step);
+      const sync = () => (nextBtn.disabled = !isValid(s, a));
+      sync();
+
+      const body = $('[data-body]', screens.step);
+      body.addEventListener('pointerdown', () => (pointer = true));
+      body.addEventListener('keydown', () => (pointer = false));
+      body.addEventListener('change', (e) => {
+        const input = e.target as HTMLInputElement;
+        if (input.matches('[data-other-pet]')) return;
+        const key = input.name;
+        if (s.kind === 'multi') {
+          a[key] = $$<HTMLInputElement>(`input[name="${key}"]:checked`, body).map((i) => i.value);
+        } else if (s.kind === 'age') {
+          const arr = [...((a[s.step.key] as string[]) ?? [])];
+          arr[s.index] = input.value;
+          a[s.step.key] = arr;
+        } else {
+          const numeric = s.kind === 'count' || ['hours', 'days', 'daysPerWeek', 'weeks', 'months'].includes(key);
+          a[key] = numeric ? Number(input.value) : input.value;
+        }
+        Object.assign(a, tidy(svc, a));
+        if (a.timing !== 'hourly') delete a.hours;
+        sync();
+        if (auto && pointer && isValid(s, a)) setTimeout(advance, reduced() ? 0 : 160);
+        pointer = false;
       });
-    };
+      $$<HTMLElement>('[data-stepper]', body).forEach((st) => {
+        const key = st.dataset.stepper!;
+        const max = Number(st.dataset.max);
+        const out = $('output', st);
+        const [minus, plus] = $$<HTMLButtonElement>('[data-step]', st);
+        const set = (v: number) => {
+          a[key] = v;
+          out.textContent = String(v);
+          minus.disabled = v <= 0;
+          plus.disabled = v >= max;
+          sync();
+        };
+        set((a[key] as number) ?? 0);
+        [minus, plus].forEach((b) => b.addEventListener('click', () => set(Math.min(max, Math.max(0, ((a[key] as number) ?? 0) + Number(b.dataset.step))))));
+      });
+      const other = body.querySelector<HTMLInputElement>('[data-other-pet]');
+      if (other) {
+        other.value = String(a.otherPet ?? '');
+        other.addEventListener('input', () => {
+          a.otherPet = other.value;
+          sync();
+        });
+      }
+      nextBtn.addEventListener('click', () => (isLast ? addCurrent() : advance()));
+      $('[data-back]', screens.step).addEventListener('click', back);
+      show('step');
+    }
 
-    // "How often" shows the shared plan, or nothing when selected services differ.
-    const syncOften = () => {
-      const plans = new Set(picked().map((p) => p.plan));
-      $$<HTMLInputElement>('[data-often]').forEach((r) => (r.checked = plans.size === 1 && plans.has(r.value)));
-    };
+    function advance() {
+      if (!current) return;
+      const list = stepsFor(svcById(current), answers[current]);
+      if (!isValid(list[idx], answers[current])) return;
+      if (idx < list.length - 1) idx++;
+      renderStep();
+    }
+    function back() {
+      if (idx > 0) {
+        idx--;
+        renderStep();
+      } else {
+        current = null;
+        show('services');
+      }
+    }
+    function configure(id: string) {
+      current = id;
+      idx = 0;
+      renderStep();
+    }
+    function addCurrent() {
+      const id = current!;
+      if (!isComplete(svcById(id), answers[id])) return;
+      if (!added.includes(id)) added.push(id);
+      track('booking_service_select', { service: id, package: answers[id].tier ?? '' });
+      current = null;
+      renderSummary();
+      const pending = nextPending();
+      if (pending) configure(pending);
+      else show('done');
+    }
+    function removeService(id: string) {
+      const i = added.indexOf(id);
+      if (i >= 0) added.splice(i, 1);
+      delete answers[id];
+      const box = picks().find((p) => p.value === id);
+      if (box) box.checked = false;
+      syncStart();
+      renderSummary();
+      if (current === id) {
+        current = null;
+        show(added.length ? 'done' : 'services', false);
+      } else if (!added.length && !current) show('services', false);
+    }
+
+    // ---------- Service picker ----------
+    const startBtn = $<HTMLButtonElement>('[data-start]');
+    const syncStart = () => (startBtn.disabled = picked().length === 0);
+    picks().forEach((p) =>
+      p.addEventListener('change', () => {
+        // Unticking a service that's already in the package takes it out.
+        if (!p.checked && added.includes(p.value)) removeService(p.value);
+        syncStart();
+      }),
+    );
+    startBtn.addEventListener('click', () => {
+      const pending = nextPending();
+      if (pending) configure(pending);
+      else if (added.length) show('done');
+    });
+    $('[data-add-more]').addEventListener('click', () => {
+      current = null;
+      show('services');
+    });
 
     // ---------- Your Package ----------
     const summary = $('[data-summary]');
-    const describe = (p: Picked) => {
-      const s = cfg.services[p.id];
-      const tm = cfg.timings[p.timing];
-      const when = tm.window ?? (tm.hours && p.timing !== '24-hours' ? `${tm.hours} ${cfg.t.hrsDay}` : '');
-      const parts = [tm.label + (when ? ` (${when})` : ''), cfg.plans[p.plan]];
-      s.extras.forEach((e) => {
-        const v = p.extras[e.id];
-        if (e.kind === 'count') v && parts.push(`${e.label}: ${v}`); // "Dogs: 0" adds nothing
-        else parts.push(`${e.label}: ${e.options![v as string]}`);
-      });
-      return parts;
-    };
-    const estimate = (list: Picked[]) => {
-      const prices = list.map(priceOf);
-      return prices.some((p) => p == null) ? null : prices.reduce<number>((a, b) => a + (b ?? 0), 0);
-    };
+    const totalsBox = $('[data-totals]');
+    const servicesWord = (k: number) => (lang === 'ar' ? arCount(k, 'خدمة واحدة', 'خدمتان', 'خدمات', 'خدمة') : `${k} service${k === 1 ? '' : 's'}`);
+    const unpricedText = (k: number) => (lang === 'ar' ? `+ ${servicesWord(k)} يُحدَّد سعرها عبر واتساب` : `+ ${servicesWord(k)} priced on WhatsApp`);
 
-    const render = () => {
-      const list = picked();
+    function renderSummary() {
+      const lines = added.map(lineFor);
       summary.replaceChildren(
-        ...list.map((p) => {
+        ...added.map((id, i) => {
+          const svc = svcById(id);
+          const l = lines[i];
           const li = document.createElement('li');
-          li.className = 'flex items-start gap-2 rounded-2xl bg-cream-100 p-3';
-          const text = document.createElement('div');
-          text.className = 'min-w-0 flex-1';
-          const name = document.createElement('p');
-          name.className = 'font-semibold text-green-800';
-          name.textContent = cfg.services[p.id].name;
-          const detail = document.createElement('p');
-          detail.className = 'text-xs text-ink-600';
-          detail.textContent = describe(p).join(' · ');
-          text.append(name, detail);
-          const edit = document.createElement('button');
-          edit.type = 'button';
-          edit.className = 'min-h-11 shrink-0 rounded-full px-3 text-sm font-semibold text-gold-800 underline-offset-2 hover:underline active:scale-95';
-          edit.textContent = cfg.t.edit;
-          edit.setAttribute('aria-label', `${cfg.t.edit}: ${cfg.services[p.id].name}`);
-          edit.addEventListener('click', () => {
-            const target = item(p.id);
-            target.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
-            $('[data-toggle]', target).focus({ preventScroll: true });
+          li.className = 'rounded-2xl bg-cream-100 p-3';
+          li.innerHTML = `
+            <div class="flex items-start justify-between gap-3">
+              <p class="font-semibold text-green-800">${esc(svc.name[lang])}</p>
+              <p class="shrink-0 tabular-nums ${l.priced ? 'font-semibold text-green-800' : 'text-sm text-ink-600'}">${esc(priceText(l))}</p>
+            </div>
+            <p class="mt-1 text-xs text-ink-700">${esc(specText(svc, answers[id], lang))}</p>
+            ${l.priced ? `<p class="mt-1 text-xs text-ink-500">${esc(l.basisText[lang])}</p>` : ''}
+            <div class="mt-1 flex gap-1">
+              <button type="button" class="min-h-11 rounded-full px-3 text-sm font-semibold text-gold-800 underline-offset-2 hover:underline active:scale-95" data-edit aria-label="${esc(`${t.edit}: ${svc.name[lang]}`)}">${esc(t.edit)}</button>
+              <button type="button" class="min-h-11 rounded-full px-3 text-sm font-semibold text-ink-600 underline-offset-2 hover:text-pink-900 hover:underline active:scale-95" data-remove aria-label="${esc(`${t.remove}: ${svc.name[lang]}`)}">${esc(t.remove)}</button>
+            </div>`;
+          $('[data-edit]', li).addEventListener('click', () => {
+            configure(id);
+            screens.step.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'start' });
           });
-          const remove = document.createElement('button');
-          remove.type = 'button';
-          remove.className = 'flex size-11 shrink-0 items-center justify-center rounded-full text-ink-500 hover:bg-pink-100 hover:text-pink-900 active:scale-95';
-          remove.setAttribute('aria-label', `${cfg.t.remove}: ${cfg.services[p.id].name}`);
-          remove.textContent = '×';
-          remove.style.fontSize = '1.5rem';
-          remove.addEventListener('click', () => {
-            setOn(item(p.id), false);
-            update();
-            $<HTMLButtonElement>('[data-book]').disabled ? $('[data-toggle]', item(p.id)).focus() : $('[data-book]').focus();
+          $('[data-remove]', li).addEventListener('click', () => {
+            removeService(id);
+            (added.length ? $<HTMLButtonElement>('aside [data-book]') : startBtn).focus();
           });
-          li.append(text, edit, remove);
           return li;
         }),
       );
-      $('[data-empty]').hidden = list.length > 0;
-      $('[data-count-badge]').textContent = String(list.length);
-      $('[data-estimate-box]').hidden = list.length === 0;
-      const est = estimate(list);
-      $('[data-estimate]').textContent = est == null ? cfg.t.priceWa : `${cfg.t.estimate}: ${sarFor(cfg.lang, cfg.sar, est)}`;
-      $<HTMLButtonElement>('[data-book]').disabled = list.length === 0;
-    };
-    const update = () => {
-      syncOften();
-      render();
-    };
+      const tot = total(lines);
+      const hasPrice = tot.pricedCount > 0;
+      const rows: string[] = [];
+      if (tot.vat != null && hasPrice) {
+        rows.push(`<div class="flex justify-between gap-3 text-sm text-ink-600"><span>${esc(t.subtotal)}</span><span class="tabular-nums">${esc(sar(tot.subtotal))}</span></div>`);
+        rows.push(`<div class="flex justify-between gap-3 text-sm text-ink-600"><span>${esc(t.vat)}</span><span class="tabular-nums">${esc(sar(tot.vat))}</span></div>`);
+      }
+      rows.push(`<div class="mt-1 flex items-baseline justify-between gap-3 text-lg font-semibold text-green-800"><span>${esc(t.total)}</span><span class="tabular-nums">${esc(hasPrice ? sar(tot.total) : t.priceWa)}</span></div>`);
+      if (tot.unpricedCount && hasPrice) rows.push(`<p class="mt-1 text-sm text-ink-600">${esc(unpricedText(tot.unpricedCount))}</p>`);
+      rows.push(`<p class="mt-3 text-xs text-ink-500">${esc(t.disclaimer)}</p>`);
+      if (cfg.draft) rows.push(`<p class="mt-1 text-xs font-semibold text-gold-800">* ${esc(t.draftNote)}</p>`);
+      totalsBox.innerHTML = rows.join('');
+      totalsBox.hidden = added.length === 0;
+      $('[data-empty]').hidden = added.length > 0;
+      $('[data-count-badge]').textContent = String(added.length);
+      $$<HTMLButtonElement>('[data-book]').forEach((b) => (b.disabled = added.length === 0));
+      minibarWanted = added.length > 0;
+      syncMinibar();
+      $('[data-minibar-text]').textContent = `${servicesWord(added.length)} · ${hasPrice ? sar(tot.total) : t.priceWa}`;
+    }
 
-    items.forEach((li) => {
-      $('[data-toggle]', li).addEventListener('click', () => {
-        setOn(li, !isOn(li));
-        update();
-      });
-      li.addEventListener('change', (e) => {
-        if ((e.target as HTMLElement).matches('[data-timing]')) refreshPrices(li);
-        update();
-      });
-      $$('[data-count]', li).forEach((c) => {
-        const out = $('output', c);
-        const [min, max] = [Number(c.dataset.min), Number(c.dataset.max)];
-        const buttons = $$<HTMLButtonElement>('[data-step]', c);
-        const set = (n: number) => {
-          out.textContent = String(n);
-          buttons[0].disabled = n <= min;
-          buttons[1].disabled = n >= max;
-        };
-        set(Number(out.textContent));
-        buttons.forEach((b) =>
-          b.addEventListener('click', () => {
-            set(Math.min(max, Math.max(min, Number(out.textContent) + Number(b.dataset.step))));
-            update();
-          }),
-        );
-      });
-    });
-
-    $$<HTMLInputElement>('[data-often]').forEach((r) =>
-      r.addEventListener('change', () => {
-        items.filter(isOn).forEach((li) => {
-          const p = $<HTMLInputElement>(`[data-plan][value="${r.value}"]`, li);
-          if (p) p.checked = true;
-        });
-        update();
-      }),
-    );
-
-    // Collapsible "Your Package" on phones.
-    const pkgToggle = $('[data-pkg-toggle]');
-    pkgToggle.addEventListener('click', () => {
-      const open = pkgToggle.getAttribute('aria-expanded') !== 'true';
-      pkgToggle.setAttribute('aria-expanded', String(open));
-      $('#bk-pkg-body').hidden = !open;
-    });
+    // The mini bar steps aside while the summary's total itself is on screen.
+    let minibarWanted = false;
+    let summaryInView = false;
+    const syncMinibar = () => ($('[data-minibar]').hidden = !minibarWanted || summaryInView);
+    new IntersectionObserver(([entry]) => {
+      summaryInView = entry.isIntersecting;
+      syncMinibar();
+    }).observe(totalsBox);
 
     // Deep link from a service page: /packages/?service=babysitting#booking
     const wanted = new URLSearchParams(location.search).get('service');
-    const target = wanted && items.find((li) => li.dataset.svc === wanted);
+    const target = wanted ? picks().find((p) => p.value === wanted) : undefined;
     if (target) {
-      setOn(target, true);
-      requestAnimationFrame(() => $('[data-toggle]', target).focus({ preventScroll: true }));
+      target.checked = true;
+      syncStart();
+      configure(target.value);
     }
-    update();
+    renderSummary();
 
     // ---------- Booking request form ----------
     const dialog = $<HTMLDialogElement>('[data-dialog]');
     const form = $<HTMLFormElement>('[data-form]');
-    const done = $('[data-done]');
+    const sent = $('[data-sent]');
     const errorsBox = $('[data-errors]');
     const district = $<HTMLInputElement>('#bk-district');
     const date = $<HTMLInputElement>('#bk-date');
     const notes = $<HTMLTextAreaElement>('#bk-notes');
+    const checked = (sel: string) => form.querySelector<HTMLInputElement>(`${sel}:checked`)?.value ?? '';
 
-    const has = (id: string) => picked().some((p) => p.id === id);
-    const agesFor = () => {
-      const rows: { kind: 'child' | 'baby'; label: string }[] = [];
-      picked().forEach((p) => {
-        const n = Number(p.extras.children ?? 0);
-        const kind = p.id === 'newborn-care' ? 'baby' : p.id === 'babysitting' ? 'child' : null;
-        if (!kind) return;
-        for (let i = 1; i <= n; i++) rows.push({ kind, label: (kind === 'baby' ? cfg.t.babyAge : cfg.t.childAge).replace('{n}', String(i)) });
-      });
-      return rows;
-    };
-
-    const prepareForm = () => {
+    let opener: HTMLElement | null = null;
+    const open = (e: Event) => {
+      if (!added.length) return;
+      opener = e.currentTarget as HTMLElement;
       date.min = today();
-      // Age rows follow the counts chosen above; values already typed are kept.
-      const wrap = $('[data-ages]');
-      const old = $$<HTMLInputElement>('input', wrap).map((i) => i.value);
-      const rows = agesFor();
-      wrap.replaceChildren(
-        ...rows.map((r, i) => {
-          const div = document.createElement('div');
-          const id = `bk-age-${i}`;
-          div.innerHTML = `<label for="${id}" class="text-sm text-ink-700"></label><input id="${id}" type="number" inputmode="numeric" min="0" max="${r.kind === 'baby' ? 52 : 17}" data-kind="${r.kind}" class="${date.className}" aria-describedby="${id}-err" /><p id="${id}-err" class="${$('#bk-name-err').className}" hidden></p>`;
-          div.querySelector('label')!.textContent = r.label;
-          div.querySelector('input')!.value = old[i] ?? '';
-          return div;
-        }),
-      );
-      $('[data-cond="ages"]').hidden = rows.length === 0;
-      $('[data-cond="elderly"]').hidden = !has('elderly-companionship');
-      $('[data-cond="pets"]').hidden = !has('pet-sitting');
-      const pets = picked().find((p) => p.id === 'pet-sitting');
-      if (pets) {
-        $<HTMLInputElement>('input[name=pet][value=dog]').checked ||= Number(pets.extras.dogs) > 0;
-        $<HTMLInputElement>('input[name=pet][value=cat]').checked ||= Number(pets.extras.cats) > 0;
-      }
-    };
-
-    const open = () => {
-      prepareForm();
       form.hidden = false;
-      done.hidden = true;
+      sent.hidden = true;
       dialog.showModal();
       history.pushState({ booking: true }, '');
-      track('booking_form_open', { services: picked().map((p) => p.id).join(','), packages: picked().map((p) => p.plan).join(',') });
+      track('booking_form_open', { services: added.join(','), packages: added.map((id) => answers[id].tier).join(',') });
     };
-    $('[data-book]').addEventListener('click', open);
+    $$('[data-book]').forEach((b) => b.addEventListener('click', open));
     $$('[data-close]').forEach((b) => b.addEventListener('click', () => dialog.close()));
     dialog.addEventListener('click', (e) => e.target === dialog && dialog.close()); // tap on the backdrop
     // The phone's back button closes the form instead of leaving the page.
     window.addEventListener('popstate', () => dialog.open && dialog.close());
     dialog.addEventListener('close', () => {
       if (history.state?.booking) history.back();
-      $('[data-book]').focus();
+      opener?.focus();
     });
-
     notes.addEventListener('input', () => ($('[data-notes-count]').textContent = `${notes.value.length} / 300`));
 
-    // ---------- Validation ----------
     const fieldError = (id: string, msg: string) => {
       const el = $(`#${id}`);
       const p = $(`#${id}-err`);
@@ -853,38 +850,25 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
       if (el.matches('input, select, textarea')) el.setAttribute('aria-invalid', String(!!msg));
     };
     const validate = () => {
-      // `label` names the field in the summary where the message alone is ambiguous (several ages).
-      const errors: { id: string; focus: string; msg: string; label?: string }[] = [];
-      const add = (id: string, msg: string, focus = id, label?: string) => errors.push({ id, focus, msg, label });
-      const labelOf = (id: string) => $(`label[for="${id}"]`, form)?.textContent?.trim();
+      const errors: { id: string; focus: string; msg: string }[] = [];
+      const add = (id: string, msg: string, focus = id) => errors.push({ id, focus, msg });
       $$('[id$="-err"]', form).forEach((p) => fieldError(p.id.replace(/-err$/, ''), ''));
-
       if (!$<HTMLInputElement>('#bk-name').value.trim()) add('bk-name', cfg.errors.name);
       if (!district.value.trim()) add('bk-district', cfg.errors.district);
       if (!date.value) add('bk-date', cfg.errors.date);
       else if (date.value < today()) add('bk-date', cfg.errors.datePast);
-      if (!checked(form, 'input[name=time]')) add('bk-time', cfg.errors.time, 'bk-time input');
-      $$<HTMLInputElement>('[data-ages] input').forEach((i) => {
-        if (i.value === '' || !i.checkValidity()) add(i.id, cfg.errors.age, i.id, labelOf(i.id));
-      });
-      if (has('elderly-companionship')) {
-        const age = $<HTMLInputElement>('#bk-elder-age');
-        if (age.value === '' || !age.checkValidity()) add('bk-elder-age', cfg.errors.age, 'bk-elder-age', labelOf('bk-elder-age'));
-        if (!checked(form, 'input[name=mobility]')) add('bk-mobility', cfg.errors.mobility, 'bk-mobility input');
-      }
-      if (has('pet-sitting') && !$$<HTMLInputElement>('input[name=pet]:checked').length) add('bk-pets', cfg.errors.pets, 'bk-pets input');
-      if (!checked(form, 'input[name=preference]')) add('bk-pref', cfg.errors.preference, 'bk-pref input');
+      if (!checked('input[name=time]')) add('bk-time', cfg.errors.time, 'bk-time input');
+      if (!checked('input[name=preference]')) add('bk-pref', cfg.errors.preference, 'bk-pref input');
       if (!$<HTMLInputElement>('#bk-consent').checked) add('bk-consent', cfg.errors.consent);
 
       errors.forEach((e) => fieldError(e.id, e.msg));
-      const list = $('ul', errorsBox);
-      list.replaceChildren(
+      $('ul', errorsBox).replaceChildren(
         ...errors.map((e) => {
           const li = document.createElement('li');
           const a = document.createElement('a');
           a.href = `#${e.id}`;
           a.className = 'underline';
-          a.textContent = e.label ? `${e.label}: ${e.msg}` : e.msg;
+          a.textContent = e.msg;
           a.addEventListener('click', (ev) => {
             ev.preventDefault();
             $(`#${e.focus.split(' ')[0]}`).scrollIntoView({ block: 'center' });
@@ -899,43 +883,43 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
       return errors.length === 0;
     };
 
-    // ---------- Message + submit ----------
+    // ---------- WhatsApp message ----------
     const buildPayload = (): BookingPayload => {
-      const list = picked();
-      const elderly = has('elderly-companionship');
+      const lines = added.map(lineFor);
+      const tot = total(lines);
       return {
-        lang: cfg.lang,
-        services: list,
+        lang,
+        lines: added.map((id, i) => ({ service: id, spec: specText(svcById(id), answers[id], lang), price: lines[i].priced ? lines[i].lineTotal : null })),
+        total: tot.pricedCount ? tot.total : null,
         name: $<HTMLInputElement>('#bk-name').value.trim(),
         district: district.value.trim(),
         date: date.value,
-        time: checked(form, 'input[name=time]'),
-        ages: $$<HTMLInputElement>('[data-ages] input').map((i) => ({ kind: i.dataset.kind as 'child' | 'baby', value: Number(i.value) })),
-        elderAge: elderly ? Number($<HTMLInputElement>('#bk-elder-age').value) : undefined,
-        mobility: elderly ? checked(form, 'input[name=mobility]') : undefined,
-        pets: has('pet-sitting') ? $$<HTMLInputElement>('input[name=pet]:checked').map((i) => i.value) : undefined,
-        preference: checked(form, 'input[name=preference]'),
-        caregiverType: checked(form, 'input[name=caregiverType]'),
+        time: checked('input[name=time]'),
+        preference: checked('input[name=preference]'),
+        caregiverType: checked('input[name=caregiverType]'),
         notes: notes.value.trim(),
-        estimate: estimate(list),
       };
     };
+    // A "booking request", never "booked". Specs get shorter (never the prices) to stay under MAX_MESSAGE.
     const buildMessage = (p: BookingPayload) => {
       const m = cfg.msg;
-      const lines = [m.hello, `*${m.header}*`, ''];
-      p.services.forEach((s) => lines.push(`• ${cfg.services[s.id].name}: ${describe(s).join(' · ')}`));
-      lines.push('', `${m.name}: ${p.name}`, `${m.district}: ${p.district}`, `${m.date}: ${p.date}`, `${m.time}: ${cfg.startTimes[p.time]}`);
-      const kids = p.ages.filter((a) => a.kind === 'child').map((a) => `${a.value} ${m.years}`);
-      const babies = p.ages.filter((a) => a.kind === 'baby').map((a) => `${a.value} ${m.weeks}`);
-      if (kids.length) lines.push(`${m.ages}: ${kids.join('، ')}`);
-      if (babies.length) lines.push(`${m.babies}: ${babies.join('، ')}`);
-      if (p.elderAge != null) lines.push(`${m.elderAge}: ${p.elderAge}`, `${m.mobility}: ${cfg.mobility[p.mobility!]}`);
-      if (p.pets) lines.push(`${m.pets}: ${p.pets.map((x) => cfg.pets[x]).join('، ')}`);
-      lines.push(`${m.preference}: ${cfg.preferences[p.preference]}`, `${m.type}: ${cfg.types[p.caregiverType]}`);
-      if (p.notes) lines.push(`${m.notes}: ${p.notes}`);
-      lines.push('', p.estimate == null ? m.estimateWa : `${m.estimate} ${sarFor(cfg.lang, cfg.sar, p.estimate)}`);
-      // English lists use commas.
-      return cfg.lang === 'ar' ? lines.join('\n') : lines.join('\n').replaceAll('، ', ', ');
+      const lines = added.map(lineFor);
+      const tot = total(lines);
+      let text = '';
+      for (const level of [0, 1, 2] as const) {
+        const out = [m.hello, `*${m.header}*`, ''];
+        added.forEach((id, i) => out.push(`• ${svcById(id).name[lang]}: ${specText(svcById(id), answers[id], lang, level)} — ${priceText(lines[i])}`));
+        out.push('', tot.pricedCount ? `*${m.total}: ${sar(tot.total)}*` : m.totalWa);
+        if (tot.vat != null && tot.pricedCount) out.push(`${t.vat}: ${sar(tot.vat)}`);
+        if (tot.unpricedCount && tot.pricedCount) out.push(unpricedText(tot.unpricedCount));
+        if (cfg.draft) out.push(m.draft);
+        out.push('', `${m.name}: ${p.name}`, `${m.district}: ${p.district}`, `${m.date}: ${p.date}`, `${m.time}: ${cfg.startTimes[p.time]}`);
+        out.push(`${m.preference}: ${cfg.preferences[p.preference]}`, `${m.type}: ${cfg.types[p.caregiverType]}`);
+        if (p.notes) out.push(`${m.notes}: ${p.notes}`);
+        text = out.join('\n');
+        if (text.length <= MAX_MESSAGE) break;
+      }
+      return text;
     };
 
     form.addEventListener('submit', (e) => {
@@ -944,14 +928,14 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
       const payload = buildPayload();
       const url = `${cfg.base}?text=${encodeURIComponent(buildMessage(payload))}`;
       submitBooking(payload);
-      track('booking_whatsapp_submit', { services: payload.services.map((s) => s.id).join(','), packages: payload.services.map((s) => s.plan).join(',') });
+      track('booking_whatsapp_submit', { services: added.join(','), packages: added.map((id) => answers[id].tier).join(',') });
       $<HTMLAnchorElement>('[data-again]').href = url;
       const win = window.open(url, '_blank');
       if (win) win.opener = null;
       else location.href = url;
       form.hidden = true;
-      done.hidden = false;
-      $('[data-done-title]').focus();
+      sent.hidden = false;
+      $('[data-sent-title]').focus();
     });
   });
 </script>
