@@ -258,8 +258,8 @@ export const services: ServiceContent[] = [
     meta: {
       title: { ar: 'المشتريات والمساعدة الشخصية في الرياض | أمان', en: 'Errands & Personal Assistance in Riyadh | Aman' },
       description: {
-        ar: 'مقاضي البيت، استلام الطلبات، والمشاوير الصغيرة في الرياض. وفّروا وقتكم لعائلتكم. احجزوا عبر واتساب.',
-        en: 'Groceries, collecting orders and small errands in Riyadh. Save your time for your family. Book on WhatsApp.',
+        ar: 'مقاضي البيت، استلام الطلبات، والمشاوير الصغيرة في الرياض. وقت أكثر لعائلتكم. احجزوا عبر واتساب.',
+        en: 'Groceries, collecting orders and small errands in Riyadh. More time for your family. Book on WhatsApp.',
       },
     },
     h1: { ar: 'قائمة مهامكم، أقصر من اليوم', en: 'Your to-do list, shorter from today' },
