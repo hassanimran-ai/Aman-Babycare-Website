@@ -28,8 +28,8 @@ export const offers: Offer[] = [
     featured: true,
     title: { ar: 'أفضل أسعار السنة على الخطط الشهرية', en: 'Our best prices of the year on monthly plans' },
     text: {
-      ar: 'احجزوا أي خطة شهرية لرعاية الأطفال أو مرافقة كبار السن خلال الجمعة البيضاء، واحصلوا على خصم إضافي.',
-      en: 'Book any monthly babysitting or elderly companionship plan during White Friday and get an extra discount.',
+      ar: 'احجزوا أي خطة شهرية لرعاية الأطفال أو مرافقة كبار السن خلال الجمعة البيضاء بأفضل أسعار السنة.',
+      en: 'Book any monthly babysitting or elderly companionship plan during White Friday at our best prices of the year.',
     },
     services: ['babysitting', 'elderly-companionship'],
     discount: '[DISCOUNT]',
