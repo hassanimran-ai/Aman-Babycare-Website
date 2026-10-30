@@ -46,11 +46,32 @@ export const business = {
   // Languages our caregivers speak.
   languages: { ar: 'الإنجليزية والعربية الأساسية', en: 'English and basic Arabic' },
 
-  // The only allowed trust claim.
+  // Service shifts (when care happens), from the client's SEO brief of 30 Oct 2026. Not the booking hours above.
+  shifts: {
+    day: { label: { ar: 'الفترة الصباحية', en: 'Day shift' } as L, time: { ar: '8 صباحاً – 8 مساءً', en: '8am–8pm' } as L },
+    night: { label: { ar: 'الفترة الليلية', en: 'Night shift' } as L, time: { ar: '8 مساءً – 8 صباحاً', en: '8pm–8am' } as L },
+  },
+  // Live-in: the caregiver stays in the family's home. Live-out: comes for the shift and goes home.
+  liveIn: true,
+  liveOut: true,
+  // Families choose a male or a female caregiver.
+  caregiverGenderChoice: true,
+
+  // Trust claims. Background checks are long-standing; "certified" comes from the client's brief of
+  // 30 Oct 2026 and overrides the old ban in CLAUDE.md. Set certified to null to remove it everywhere.
   backgroundChecked: {
     en: 'Background-checked staff',
     ar: 'فريق عمل خضع للتحقق من الخلفية', // REVIEW-AR
   },
+  certified: {
+    en: 'Certified caregivers and nannies',
+    ar: 'مقدّمو رعاية ومربيات معتمدون', // REVIEW-AR
+  } as L | null,
+
+  // Keyword mode (src/data/seo.ts). true = target household-worker searches (عاملة منزلية، عاملات بالساعة).
+  domesticWorkerKeywords: false, // TODO(client): confirm the CR/licence covers supplying hourly/monthly domestic workers
+  // Can families choose the caregiver's nationality? null = unknown: the nationality FAQ stays hidden.
+  caregiverNationalityChoice: null as null | { ar: string; en: string }, // TODO(client): can customers choose the caregiver's nationality?
 
   // business.sa verification badge: shown in the footer only once set.
   businessSaBadge: null as null | { url: string; image: string },

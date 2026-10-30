@@ -28,6 +28,7 @@ export const ui = {
   bookWhatsApp: { ar: 'احجزوا عبر واتساب', en: 'Book on WhatsApp' },
   chatWhatsApp: { ar: 'تواصلوا معنا عبر واتساب', en: 'Chat with us on WhatsApp' },
   askPrice: { ar: 'اسألوا عن السعر', en: 'Ask for a price' },
+  priceConfirmed: { ar: 'السعر يُؤكَّد على واتساب', en: 'Price confirmed on WhatsApp' }, // REVIEW-AR
   viewOffer: { ar: 'تفاصيل العرض', en: 'See the offer' },
   seePackages: { ar: 'تصفّحوا الباقات', en: 'See packages' },
   learnMore: { ar: 'اعرفوا المزيد', en: 'Learn more' },
