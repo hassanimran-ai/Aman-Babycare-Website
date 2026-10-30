@@ -165,6 +165,11 @@
     z-index: 1;
     display: grid;
     grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    /* Desktop: columns stay equal (the glass pill assumes it) but never narrower than the widest label,
+       so the row can't squeeze a label past the pill or push the ribbon over the logo. */
+    @media (width >= 64rem) {
+      grid-template-columns: repeat(var(--n), 1fr);
+    }
   }
   .ribbon-pill {
     position: absolute;
@@ -229,6 +234,8 @@
     flex-direction: column;
     gap: 0.125rem;
     min-height: 3.25rem;
+    /* Phones: slimmer side padding so the longest label ("Packages") fits its column, centred. */
+    padding-inline: 0.25rem;
     font-size: 0.75rem;
     @media (width >= 64rem) {
       flex-direction: row;
