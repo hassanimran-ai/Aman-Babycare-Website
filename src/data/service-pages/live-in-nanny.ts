@@ -11,6 +11,7 @@ const page: ServiceContent = {
   tier: 'more',
   icon: 'home',
   photo: 'babysitting',
+  photoAlt: { ar: 'مربية مقيمة تبني بيتاً من المكعبات الخشبية مع طفل صغير في بيت العائلة بالرياض', en: 'A live-in nanny building a wooden block house with a toddler in a Riyadh family home' },
   name: { ar: 'المربية المقيمة', en: 'Live-in Nanny' },
   card: { ar: 'مربية تعيش مع عائلتكم، ويد ثابتة كل يوم', en: 'A nanny who lives with your family, there every day' },
   tagline: { ar: 'يد ثابتة في بيتكم، من الصباح حتى المساء', en: 'A steady pair of hands at home, morning to evening' },

@@ -31,7 +31,7 @@ const badge = business.businessSaBadge;
   <div class="container-x grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1.2fr_1fr_0.8fr_1.2fr]">
     <div class="max-w-xs">
       <a href={home} class="inline-block rounded-3xl bg-cream-100 p-4" aria-label={business.brand[lang]}>
-        <Image src={logoFull} alt="" width={140} height={191} class="h-auto w-28" />
+        <Image src={logoFull} alt="" aria-hidden="true" width={140} height={191} class="h-auto w-28" />
       </a>
       <p class="mt-6 text-sm leading-relaxed">{ui.serving[lang]}.</p>
     </div>

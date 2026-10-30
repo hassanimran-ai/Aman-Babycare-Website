@@ -28,6 +28,8 @@ export interface ServiceContent {
   icon: IconName;
   /** Photo slot (src/lib/photos.ts); defaults to the slug. */
   photo?: string;
+  /** Alt text for this page when it borrows another page's photo. */
+  photoAlt?: L;
   name: L;
   card: L; // one line for cards
   tagline: L; // the emotional promise, shown as the lead under the keyword H1

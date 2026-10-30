@@ -11,6 +11,7 @@ const page: ServiceContent = {
   tier: 'more',
   icon: 'sleep',
   photo: 'newborn-care',
+  photoAlt: { ar: 'مربية ليلية بالحجاب تحمل مولوداً نائماً في قماطه بجانب أمه المرتاحة', en: 'A night nanny in a hijab holding a sleeping, swaddled newborn beside the resting mother' },
   name: { ar: 'المربية الليلية', en: 'Night Nanny' },
   card: { ar: 'ليلة هادئة للمولود، ونوم متصل لكم', en: 'A settled night for baby, and real sleep for you' },
   tagline: { ar: 'ناموا الليلة، ومولودكم في أيدٍ أمينة', en: 'Sleep tonight; your baby is in safe hands' },

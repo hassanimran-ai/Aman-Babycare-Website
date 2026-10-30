@@ -1,30 +1,35 @@
 # Photos
 
-Drop a photo here and it replaces the matching branded panel automatically. The file name (without extension) is the slot name; `.jpg`, `.jpeg`, `.png` or `.webp` all work. Alt text (both languages) and crop focus for each slot live in `src/lib/photos.ts`.
+Each photo slot maps to a descriptively named file here (the name carries into the built image URL, which helps image search). The slot → file map, alt text (both languages) and crop focus live in `src/lib/photos.ts`. A slot with no file shows a branded panel instead. `.jpg`, `.jpeg`, `.png` or `.webp` all work.
 
-| # | File name | Where it shows |
-| --- | --- | --- |
-| 1 | `hero` | Home page hero |
-| 2 | `babysitting` | Babysitting card + page |
-| 3 | `home-cleaning` | Home cleaning card + page |
-| 4 | `elderly-companionship` | Elderly companionship card + page |
-| 5 | `pet-sitting` | Dog & cat sitting card + page |
-| 6 | `pick-up-drop-off` | Pick-up & drop-off card + page |
-| 7 | `errands` | Errands card + page |
-| 8 | `trust` | Home page "background-checked" section |
-| 9 | `services-hero` | Top of the Services page (shown only when present) |
-| 10 | `packages-hero` | Top of the Packages page (shown only when present) |
-| 11 | `how-it-works` | Home page "How it works" (shown only when present) |
-| 12 | `first-families` | "Be among our first families" card on the home page (shown only when present) |
-| 20 | `newborn-care` | Newborn & mother care card + page |
-| 13–19 | `offer-white-friday`, `offer-ramadan`, `offer-founding-day`, `offer-eid-al-fitr`, `offer-eid-al-adha`, `offer-back-to-school`, `offer-national-day` | Home page offers: banner on the featured offer card, photo on each "Coming up" card (branded panel until present) |
+| # | Slot | File | Where it shows |
+| --- | --- | --- | --- |
+| 1 | `hero` | `caregiver-reading-with-girl-riyadh-home.jpg` | Home page hero |
+| 2 | `babysitting` | `babysitter-riyadh-home-toddler.jpg` | Babysitting card + page; Live-in Nanny page |
+| 3 | `home-cleaning` | `hourly-home-cleaning-riyadh-kitchen.jpg` | Home cleaning card + page |
+| 4 | `elderly-companionship` | `elderly-companionship-riyadh-majlis.jpg` | Elderly companionship card + page |
+| 5 | `pet-sitting` | `cat-sitting-riyadh-home.jpg` | Dog & cat sitting card + page |
+| 6 | `pick-up-drop-off` | `school-pick-up-riyadh.jpg` | Pick-up & drop-off card + page |
+| 7 | `errands` | `errands-groceries-riyadh-villa.jpg` | Errands card + page |
+| 8 | `trust` | `caregiver-welcomed-riyadh-family-home.jpg` | Home page "background-checked" section |
+| 9 | `services-hero` | `home-services-riyadh-living-room.jpg` | Top of the Services page |
+| 10 | `packages-hero` | `mother-coffee-caregiver-plays-son.jpg` | Top of the Packages page |
+| 11 | `how-it-works` | `booking-on-whatsapp-arabic-coffee.jpg` | Home page "How it works" |
+| 12 | `first-families` | `mother-daughter-laughing-sofa.jpg` | "Be among our first families" card on the home page |
+| 13 | `offer-white-friday` | `white-friday-offer-gifts.jpg` | Offers |
+| 14 | `offer-ramadan` | `ramadan-offer-iftar-table.jpg` | Offers |
+| 15 | `offer-founding-day` | `founding-day-offer-najdi-courtyard.jpg` | Offers |
+| 16 | `offer-eid-al-fitr` | `eid-al-fitr-offer-majlis.jpg` | Offers |
+| 17 | `offer-eid-al-adha` | `eid-al-adha-offer-travel-pet-care.jpg` | Offers |
+| 18 | `offer-back-to-school` | `back-to-school-offer-bag.jpg` | Offers |
+| 19 | `offer-national-day` | `national-day-offer-living-room.jpg` | Offers |
+| 20 | `newborn-care` | `newborn-mother-care-riyadh-home.jpg` | Newborn & mother care card + page; Night Nanny page |
 
-The client delivers numbered files in `brand_assets/Website photos/` (`1.png` … `20.png`, numbers as above); they are converted to `<slot>.jpg` here.
+The client delivers numbered files in `brand_assets/Website photos/` (`1.png` … `20.png`, numbers as above); they are converted and saved here under the file name above.
 
 Rules: see `docs/build/imagery.md` (modest, Gulf home settings, bright and warm).
 
 ## Credits
-| File | Source | Author | Licence |
+| Files | Source | Author | Licence |
 | --- | --- | --- | --- |
-| `hero.jpg`, `babysitting.jpg`, `home-cleaning.jpg`, `elderly-companionship.jpg`, `pet-sitting.jpg`, `pick-up-drop-off.jpg`, `errands.jpg`, `trust.jpg`, `services-hero.jpg`, `packages-hero.jpg`, `how-it-works.jpg`, `first-families.jpg`, `offer-white-friday.jpg`, `offer-ramadan.jpg`, `offer-founding-day.jpg`, `offer-eid-al-fitr.jpg`, `offer-eid-al-adha.jpg`, `offer-back-to-school.jpg`, `offer-national-day.jpg`, `newborn-care.jpg` | AI-generated (Google Gemini, "Nano Banana"), supplied by the client, Oct 2026 | Client | Client-owned; illustrative, not real staff or clients |
-
+| All 20 files above | AI-generated (Google Gemini, "Nano Banana"), supplied by the client, Oct 2026 | Client | Client-owned; illustrative, not real staff or clients |

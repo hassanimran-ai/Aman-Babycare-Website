@@ -12,6 +12,7 @@ const page: ServiceContent = {
   tier: 'more',
   icon: 'mother',
   photo: 'newborn-care',
+  photoAlt: { ar: 'باقة الأربعين: مقدّمة رعاية تحمل المولود بينما ترتاح الأم في أيامها الأولى', en: 'The 40-day package: a caregiver holding the baby while mum rests in her first days' },
   name: { ar: 'باقة الأربعين', en: 'The 40-Day Package' },
   card: { ar: 'رعاية الأم والمولود طوال الأربعين', en: 'Mother and newborn care for the first forty days' },
   tagline: { ar: 'أربعون يوماً لراحة الأم، ومولودها بين يدين أمينتين', en: 'Forty days of rest for mum, with baby in safe hands' },
