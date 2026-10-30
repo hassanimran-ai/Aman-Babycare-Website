@@ -246,14 +246,14 @@ const err = 'mt-1 text-sm font-medium text-pink-800';
             <h3 class="text-xl text-cream-50 outline-none" tabindex="-1" data-heading>{t.pickTitle}</h3>
           </legend>
           <p class="mt-1 text-sm text-cream-200/80">{t.pickHint}</p>
-          <div class="mt-4 grid gap-2 sm:grid-cols-2">
+          <div class="mt-4 grid grid-cols-2 gap-2">
             {
               bookingServices.map((s) => (
-                <label class="group flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl px-4 ring-1 ring-cream-50/15 transition-transform duration-200 hover:bg-cream-50/10 active:scale-[0.99] has-[:checked]:bg-cream-50 has-[:checked]:text-green-900 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-gold-300">
+                <label class="group flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl px-4 ring-1 ring-cream-50/15 transition-transform duration-200 hover:bg-cream-50/10 active:scale-[0.99] has-[:checked]:bg-cream-50 has-[:checked]:text-green-900 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-gold-300 max-md:relative max-md:flex-col max-md:justify-start max-md:gap-1 max-md:px-2 max-md:py-3 max-md:text-center max-md:has-[:checked]:bg-pink-50 max-md:has-[:checked]:inset-ring-2 max-md:has-[:checked]:inset-ring-green-700">
                   <input type="checkbox" value={s.id} class="sr-only" data-pick />
-                  <Icon name={s.icon} class="size-5 shrink-0 text-gold-300 group-has-[:checked]:text-gold-700" />
-                  <span class="font-medium">{s.name[lang]}</span>
-                  <span class="ms-auto flex size-6 shrink-0 items-center justify-center rounded-full ring-1 ring-cream-50/40 group-has-[:checked]:bg-green-700 group-has-[:checked]:ring-green-700">
+                  <Icon name={s.icon} class="size-5 shrink-0 text-gold-300 group-has-[:checked]:text-gold-700 max-md:size-7" />
+                  <span class="font-medium max-md:line-clamp-2 max-md:text-sm max-md:leading-snug">{s.name[lang]}</span>
+                  <span class="ms-auto flex size-6 shrink-0 items-center justify-center rounded-full ring-1 ring-cream-50/40 group-has-[:checked]:bg-green-700 group-has-[:checked]:ring-green-700 max-md:absolute max-md:end-2 max-md:top-2 max-md:size-5">
                     <Icon name="check" class="size-4 text-cream-50 opacity-0 group-has-[:checked]:opacity-100" stroke={2.4} />
                   </span>
                 </label>
