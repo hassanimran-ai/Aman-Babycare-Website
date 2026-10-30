@@ -37,6 +37,7 @@ export const business = {
     opens: '08:00',
     closes: '20:00',
     label: { ar: 'ساعات الحجز: 8 صباحاً – 8 مساءً', en: 'Booking hours: 8am–8pm' } as L,
+    time: { ar: '8 صباحاً – 8 مساءً', en: '8am–8pm' } as L,
   },
 
   areaServed: { en: 'Riyadh', ar: 'الرياض' },

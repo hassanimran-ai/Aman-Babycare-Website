@@ -3,6 +3,7 @@
 // https://feelvaleo.com/en-sa/riyadh/babysitting — confirm every price before site.isLive = true.
 import type { L } from '../i18n/ui';
 import { refPrice } from './pricing';
+import { SHOW_PRICES } from '../config/site';
 
 export type PackageGroup = 'on-demand' | 'monthly' | 'elderly';
 
@@ -183,3 +184,9 @@ export const welcomeOffer = {
 
 export const packagesFor = (service: string) => packages.filter((p) => p.service === service);
 export const packagesIn = (group: PackageGroup) => packages.filter((p) => p.group === group);
+
+/** Lowest hourly rate among a service's packages (for price answers); null while prices are hidden. */
+export const fromRate = (service: string): number | null => {
+  const rates = packagesFor(service).map((p) => p.perHour).filter((r): r is number => typeof r === 'number');
+  return SHOW_PRICES && rates.length ? Math.min(...rates) : null;
+};

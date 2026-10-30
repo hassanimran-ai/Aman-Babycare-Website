@@ -4,6 +4,7 @@ import Visual from './Visual.astro';
 import type { Locale } from '../config/site';
 import type { ServiceContent } from '../data/services';
 import { href } from '../i18n/ui';
+import { anchorFor } from '../data/seo';
 
 interface Props {
   lang: Locale;
@@ -14,7 +15,8 @@ interface Props {
   size?: 'large' | 'compact' | 'featured';
 }
 const { lang, service: s, headingLevel: H = 'h3', size = 'large' } = Astro.props;
-const more = lang === 'ar' ? 'تفاصيل الخدمة' : 'About this service';
+// Keyword anchor (seo.ts), never a bare "service details".
+const more = anchorFor(s.slug, lang, s.name[lang]);
 ---
 
 {

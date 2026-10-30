@@ -1,5 +1,9 @@
 ---
-// Service detail page: docs/build/service-pages.md
+// Service detail page: docs/build/service-pages.md. One layout for every service page (and, once enabled,
+// the 40-day package page). Copy lives in src/data/service-pages/<slug>.ts; titles and H1s in src/data/seo.ts.
+// Sections: hero → a) answer-first intro → sub-services → b) who it's for → c) included / not included →
+// CTA → d) shifts → e) how it works → f) why Aman → g) packages → h) all of Riyadh → extra slot (live-in
+// table) → seasonal offer → i) FAQ → j) related services → k) closing CTA.
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../Icon.astro';
 import Visual from '../Visual.astro';
@@ -10,83 +14,135 @@ import FAQ from '../FAQ.astro';
 import PackageCard from '../PackageCard.astro';
 import ServiceCard from '../ServiceCard.astro';
 import { whatsappUrl, type Locale } from '../../config/site';
-import { serviceBySlug } from '../../data/services';
-import { packagesFor } from '../../data/packages';
+import { serviceFaq, serviceBySlug, type ServiceContent, type ShiftId } from '../../data/services';
+import { packages, packagesFor } from '../../data/packages';
 import { offers, featuredOffer } from '../../data/offers';
+import { business, telUrl } from '../../data/business';
 import { href, ui } from '../../i18n/ui';
 import { breadcrumbSchema, faqSchema, serviceSchema } from '../../lib/schema';
-import { pageSeo, tr, type SeoKey } from '../../data/seo';
+import { moded, pageSeo, tr, type SeoKey } from '../../data/seo';
 
 interface Props {
   lang: Locale;
-  slug: string;
+  /** A service (src/data/services.ts) or a page built on the same layout (the 40-day package). */
+  content: ServiceContent;
+  /** Parent section for the URL and breadcrumb: /services/<slug>/ or /packages/<slug>/. */
+  section?: 'services' | 'packages';
 }
-const { lang, slug } = Astro.props;
-const s = serviceBySlug(slug);
+const { lang, content: s, section = 'services' } = Astro.props;
+const slug = s.slug;
 const meta = pageSeo(slug as SeoKey);
-const path = `services/${slug}`;
+const path = `${section}/${slug}`;
 const crumbs = [
   { name: ui.nav.home[lang], url: href(lang, '') },
-  { name: ui.nav.services[lang], url: href(lang, 'services') },
+  { name: ui.nav[section][lang], url: href(lang, section) },
   { name: s.name[lang], url: href(lang, path) },
 ];
-const pkgs = packagesFor(slug);
+const pkgs = s.packages.ids ? s.packages.ids.map((id) => packages.find((p) => p.id === id)!) : packagesFor(slug);
 const related = s.related.map(serviceBySlug);
+const faq = serviceFaq(s);
 // The featured offer if it includes this service, otherwise the next offer that does.
 const offer = featuredOffer.services.includes(slug) ? featuredOffer : offers.find((o) => o.services.includes(slug));
+const bookUrl = `${href(lang, 'packages')}?service=${s.booking}#booking`;
 
 const t = {
   ar: {
-    visit: 'كيف تسير الزيارة',
-    included: 'ما تشمله الخدمة',
-    prepare: 'جهّزوا لنا',
-    pkgs: 'باقات هذه الخدمة',
-    noPkgs: 'السعر حسب احتياجكم',
+    notIncluded: 'ما لا تشمله الخدمة',
+    shiftLabel: {
+      day: business.shifts.day.label.ar,
+      night: business.shifts.night.label.ar,
+      'live-in': 'مقيم/ة في بيتكم',
+      'live-out': 'دوام يومي دون إقامة',
+      hourly: 'بالساعة',
+      monthly: 'بالشهر',
+    },
+    shiftText: {
+      day: business.shifts.day.time.ar,
+      night: business.shifts.night.time.ar,
+      'live-in': 'يقيم مقدّم/ة الرعاية معكم ويعمل 12 ساعة يومياً',
+      'live-out': 'يأتي للفترة المتفق عليها ثم يعود إلى بيته',
+      hourly: 'لساعات محددة حين تحتاجونها',
+      monthly: 'خطة ثابتة مع الشخص نفسه كل أسبوع',
+    },
+    whyPoints: [
+      business.backgroundChecked.ar,
+      business.certified?.ar,
+      business.caregiverGenderChoice && 'مقدّم أو مقدّمة رعاية، حسب اختياركم',
+      `يتحدثون ${business.languages.ar}`,
+      'نلتزم بقواعد بيتكم وخصوصيتكم',
+    ],
     noPkgsText: 'أخبرونا بما تحتاجونه على واتساب، ونرسل لكم السعر خلال المحادثة.',
     allPkgs: 'كل الباقات',
-    pairs: 'تُجمع جيداً مع',
-    pairsText: 'يمكن لشخص واحد من فريق الرعاية أن يجمع هذه الخدمات في زيارة واحدة.',
+    allServices: 'كل الخدمات المنزلية',
     builder: 'احجزوا خدمتكم',
+    pairsText: 'يمكن لشخص واحد من فريق الرعاية أن يجمع أكثر من خدمة في زيارة واحدة.',
     offer: 'عرض موسمي يشمل هذه الخدمة',
-    faq: 'أسئلة عن الخدمة',
     ctaTitle: 'نرتب الزيارة الأولى؟',
     ctaText: 'أرسلوا لنا الموعد المناسب، ونؤكد لكم كل التفاصيل.',
     closeTitle: 'كل شيء جاهز من جهتنا',
-    closeText: 'رسالة واحدة على واتساب، ونبدأ.',
+    closeText: 'رسالة واحدة على واتساب، أو اتصال قصير، ونبدأ.',
     subs: 'كيف نساعدكم',
   },
   en: {
-    visit: 'How a visit goes',
-    included: "What's included",
-    prepare: 'Have these ready',
-    pkgs: 'Packages for this service',
-    noPkgs: 'Priced to your needs',
+    notIncluded: "What's not included",
+    shiftLabel: {
+      day: business.shifts.day.label.en,
+      night: business.shifts.night.label.en,
+      'live-in': 'Live-in',
+      'live-out': 'Live-out',
+      hourly: 'Hourly',
+      monthly: 'Monthly',
+    },
+    shiftText: {
+      day: business.shifts.day.time.en,
+      night: business.shifts.night.time.en,
+      'live-in': 'Stays in your home and works 12 hours a day',
+      'live-out': 'Comes for the agreed shift, then goes home',
+      hourly: 'For the hours you need',
+      monthly: 'A steady plan with the same caregiver every week',
+    },
+    whyPoints: [
+      business.backgroundChecked.en,
+      business.certified?.en,
+      business.caregiverGenderChoice && 'A male or female caregiver, your choice',
+      `They speak ${business.languages.en}`,
+      'Your house rules and privacy, respected',
+    ],
     noPkgsText: "Tell us what you need on WhatsApp, and we'll send you a price in the chat.",
     allPkgs: 'All packages',
-    pairs: 'Pairs well with',
-    pairsText: 'One caregiver can combine these services in a single visit.',
+    allServices: 'All home services',
     builder: 'Book Your Service',
+    pairsText: 'One caregiver can combine several services in a single visit.',
     offer: 'A seasonal offer that includes this service',
-    faq: 'Questions about this service',
     ctaTitle: 'Shall we arrange a first visit?',
     ctaText: "Send us a time that suits you, and we'll confirm every detail.",
     closeTitle: "Everything's ready on our side",
-    closeText: 'One WhatsApp message, and we begin.',
+    closeText: 'One WhatsApp message or a quick call, and we begin.',
     subs: 'How we help',
   },
 }[lang];
+const whyPoints = t.whyPoints.filter(Boolean) as string[];
+const shiftLabel = t.shiftLabel as Record<ShiftId, string>;
+const shiftText = t.shiftText as Record<ShiftId, string>;
 
 const schema = [
-  serviceSchema(lang, s.name[lang], tr(meta.description, lang), new URL(href(lang, path), Astro.site).href),
+  serviceSchema(lang, {
+    name: tr(meta.h1, lang),
+    serviceType: s.name[lang],
+    description: tr(meta.description, lang),
+    url: new URL(href(lang, path), Astro.site).href,
+    site: Astro.site,
+    packages: pkgs,
+  }),
   breadcrumbSchema(crumbs, Astro.site),
-  faqSchema(lang, s.faq),
+  faqSchema(lang, faq),
 ];
 ---
 
 <BaseLayout lang={lang} title={tr(meta.title, lang)} description={tr(meta.description, lang)} path={path} schema={schema} waMessage={s.whatsapp[lang]}>
   <Breadcrumbs lang={lang} items={crumbs} />
 
-  <!-- Hero -->
+  <!-- Hero: keyword H1, with the emotional promise as the lead. -->
   <section class="container-x grid items-center gap-12 pb-16 pt-8 lg:grid-cols-[1.2fr_1fr] lg:gap-16 lg:pb-24">
     <div class="rise">
       <span class="flex size-14 items-center justify-center rounded-full bg-cream-50 text-green-700 shadow-soft">
@@ -94,8 +150,8 @@ const schema = [
       </span>
       <p class="mt-6 font-medium text-gold-700">{s.name[lang]}</p>
       <h1 class="mt-2 max-w-[18ch] text-4xl text-green-800 sm:text-5xl">{tr(meta.h1, lang)}</h1>
-      <p class="lead mt-4 max-w-xl text-xl font-medium text-green-700">{s.h1[lang]}</p>
-      <p class="mt-4 max-w-xl text-lg text-ink-600">{s.intro[lang]}</p>
+      <p class="lead mt-4 max-w-xl text-xl font-medium text-green-700">{s.tagline[lang]}</p>
+      <p class="mt-4 max-w-xl text-lg text-ink-600">{moded(s.intro.text[0])[lang]}</p>
       <div class="mt-8 flex flex-wrap gap-3">
         <a href={whatsappUrl(s.whatsapp[lang])} rel="noopener" class="btn btn-primary min-h-14 px-8 text-base">
           <Icon name="whatsapp" class="size-6 text-gold-200" />
@@ -106,7 +162,15 @@ const schema = [
     </div>
     <div class="relative mx-auto w-full max-w-[15rem] rise [animation-delay:150ms] sm:max-w-sm">
       <HeartLine class="absolute -top-6 end-0 z-10 hidden w-40 text-gold-500 sm:block" />
-      <Visual lang={lang} photo={slug} alt={s.name[lang]} icon={s.icon} eager class="shadow-card" sizes="(min-width: 1024px) 384px, 90vw" />
+      <Visual lang={lang} photo={s.photo ?? slug} alt={s.name[lang]} icon={s.icon} eager class="shadow-card" sizes="(min-width: 1024px) 384px, 90vw" />
+    </div>
+  </section>
+
+  <!-- a) What it is, for whom, in Riyadh (the first paragraph sits in the hero, the rest here) -->
+  <section class="container-x pb-16 md:pb-24">
+    <div class="max-w-3xl">
+      <h2 class="reveal text-3xl text-green-800 md:text-4xl">{s.intro.title[lang]}</h2>
+      {s.intro.text.slice(1).map((p) => <p class="mt-4 text-lg text-ink-600">{moded(p)[lang]}</p>)}
     </div>
   </section>
 
@@ -132,33 +196,32 @@ const schema = [
     )
   }
 
-  <!-- A visit with Aman -->
-  <section class="bg-green-800 py-16 text-cream-100 md:py-24">
+  <!-- b) Who it's for -->
+  <section class="bg-cream-200/60 py-16 md:py-24">
     <div class="container-x">
-      <h2 class="reveal text-3xl text-cream-50 md:text-4xl">{t.visit}</h2>
-      <ol class="reveal-group mt-12 grid gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+      <h2 class="reveal max-w-3xl text-3xl text-green-800 md:text-4xl">{s.who.title[lang]}</h2>
+      <ul class="reveal-group mt-10 grid gap-4 sm:grid-cols-2">
         {
-          s.visit.map((step, i) => (
-            <li class="relative border-t border-gold-300/30 pt-6">
-              <span class="absolute -top-3 start-0 bg-green-800 pe-3 text-sm font-semibold text-gold-300">{i + 1}</span>
-              <h3 class="text-xl text-cream-50">{step.title[lang]}</h3>
-              <p class="mt-2 text-cream-200">{step.text[lang]}</p>
+          s.who.items.map((w) => (
+            <li class="rounded-3xl bg-cream-50 p-6 shadow-soft ring-1 ring-green-700/5">
+              <h3 class="text-lg text-green-800">{w.title[lang]}</h3>
+              <p class="mt-2 text-ink-600">{w.text[lang]}</p>
             </li>
           ))
         }
-      </ol>
+      </ul>
     </div>
   </section>
 
-  <!-- Included / prepare -->
+  <!-- c) Included / not included -->
   <section class="container-x grid gap-6 py-16 md:grid-cols-[1.4fr_1fr] md:py-24">
     <div class="rounded-[2rem] bg-cream-50 p-8 shadow-soft ring-1 ring-green-700/5">
-      <h2 class="text-2xl text-green-800">{t.included}</h2>
+      <h2 class="text-2xl text-green-800">{s.included.title[lang]}</h2>
       <ul class="reveal-group mt-6 grid gap-4 sm:grid-cols-2">
         {
-          s.included.map((item) => (
+          s.included.items.map((item) => (
             <li class="flex items-start gap-3 text-ink-700">
-              <Icon name="check" class="mt-1 size-5 text-gold-600" stroke={2} />
+              <Icon name="check" class="mt-1 size-5 shrink-0 text-gold-600" stroke={2} />
               {item[lang]}
             </li>
           ))
@@ -166,10 +229,10 @@ const schema = [
       </ul>
     </div>
     <div class="rounded-[2rem] bg-cream-200/70 p-8">
-      <h2 class="text-2xl text-green-800">{t.prepare}</h2>
+      <h2 class="text-2xl text-green-800">{t.notIncluded}</h2>
       <ul class="mt-6 grid gap-4">
         {
-          s.prepare.map((item) => (
+          s.notIncluded.map((item) => (
             <li class="flex items-start gap-3 text-ink-700">
               <span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-gold-500" aria-hidden="true" />
               {item[lang]}
@@ -182,11 +245,73 @@ const schema = [
 
   <CtaBand lang={lang} title={t.ctaTitle} text={t.ctaText} message={s.whatsapp[lang]} />
 
-  <!-- Packages -->
+  <!-- d) Shifts & timing (times from business.ts) -->
+  <section class="mt-12 bg-green-800 py-16 text-cream-100 md:mt-16 md:py-24">
+    <div class="container-x">
+      <div class="reveal max-w-3xl">
+        <h2 class="text-3xl text-cream-50 md:text-4xl">{s.shifts.title[lang]}</h2>
+        <p class="mt-4 text-cream-200">{s.shifts.text[lang]}</p>
+      </div>
+      <ul class="reveal-group mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          s.shifts.options.map((id) => (
+            <li class="rounded-3xl p-6 ring-1 ring-cream-50/15">
+              <h3 class="text-lg text-cream-50">{shiftLabel[id]}</h3>
+              <p class="mt-1 text-cream-200">{shiftText[id]}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- e) How it works -->
+  <section class="py-16 md:py-24">
+    <div class="container-x">
+      <h2 class="reveal text-3xl text-green-800 md:text-4xl">{s.steps.title[lang]}</h2>
+      <ol class="reveal-group mt-10 grid gap-8 md:grid-cols-3">
+        {
+          s.steps.items.map((step, i) => (
+            <li class="relative">
+              <span class="flex size-12 items-center justify-center rounded-full border border-gold-500 font-display text-xl text-gold-700">{i + 1}</span>
+              {i < 2 && <span class="absolute start-16 top-6 hidden h-px w-[calc(100%-4rem)] bg-gold-500/30 md:block" aria-hidden="true" />}
+              <h3 class="mt-5 text-xl text-green-800">{step.title[lang]}</h3>
+              <p class="mt-2 text-ink-600">{step.text[lang]}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- f) Why families choose Aman (points from business.ts) -->
+  <section class="bg-cream-200/60 py-16 md:py-24">
+    <div class="container-x grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
+      <div class="reveal">
+        <h2 class="text-3xl text-green-800 md:text-4xl">{s.why.title[lang]}</h2>
+        <p class="mt-4 text-ink-600">{s.why.text[lang]}</p>
+      </div>
+      <ul class="grid gap-3 rounded-[2rem] bg-cream-50 p-8 shadow-soft ring-1 ring-green-700/5">
+        {
+          whyPoints.map((point) => (
+            <li class="flex items-start gap-3 text-ink-700">
+              <Icon name="check" class="mt-1 size-5 shrink-0 text-gold-600" stroke={2} />
+              {point}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- g) Packages -->
   <section id="packages" class="scroll-mt-28 py-16 md:py-24">
     <div class="container-x">
       <div class="flex flex-wrap items-end justify-between gap-6">
-        <h2 class="reveal text-3xl text-green-800 md:text-4xl">{pkgs.length ? t.pkgs : t.noPkgs}</h2>
+        <div class="reveal max-w-2xl">
+          <h2 class="text-3xl text-green-800 md:text-4xl">{s.packages.title[lang]}</h2>
+          <p class="mt-3 text-ink-600">{s.packages.text[lang]}</p>
+        </div>
         <a href={href(lang, 'packages')} class="btn btn-ghost">
           {t.allPkgs}
           <Icon name="arrow" class="size-4" flip />
@@ -202,7 +327,7 @@ const schema = [
             <p class="max-w-xl text-lg text-ink-600">{t.noPkgsText}</p>
             <a href={whatsappUrl(s.whatsapp[lang])} rel="noopener" class="btn btn-primary shrink-0">
               <Icon name="whatsapp" class="size-5" />
-              {ui.askPrice[lang]}
+              {ui.priceConfirmed[lang]}
             </a>
           </div>
         )
@@ -210,31 +335,27 @@ const schema = [
     </div>
   </section>
 
-  <!-- Pairs well with -->
-  <section class="bg-cream-200/60 py-16 md:py-24">
-    <div class="container-x">
-      <div class="flex flex-wrap items-end justify-between gap-6">
-        <div class="reveal max-w-2xl">
-          <h2 class="text-3xl text-green-800 md:text-4xl">{t.pairs}</h2>
-          <p class="mt-3 text-ink-600">{t.pairsText}</p>
-        </div>
-        <a href={`${href(lang, 'packages')}?service=${slug}#booking`} class="btn btn-primary">
-          <Icon name="calendar" class="size-5" />
-          {t.builder}
-        </a>
+  <!-- h) Serving all of Riyadh (no district lists) -->
+  <section class="container-x pb-16 md:pb-24">
+    <div class="grid gap-6 rounded-[2rem] bg-pink-100 p-8 md:grid-cols-[auto_1fr] md:items-start md:p-10">
+      <span class="flex size-16 items-center justify-center rounded-full bg-cream-50 text-gold-700">
+        <Icon name="home" class="size-8" />
+      </span>
+      <div>
+        <h2 class="text-2xl text-green-800">{s.riyadh.title[lang]}</h2>
+        <p class="mt-3 max-w-3xl text-ink-600">{s.riyadh.text[lang]}</p>
       </div>
-      <ul class="reveal-group mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {related.map((r) => <li><ServiceCard lang={lang} service={r} /></li>)}
-      </ul>
     </div>
   </section>
+
+  <slot name="extra" />
 
   <!-- Seasonal offer -->
   {
     offer && (
-      <section class="container-x py-16 md:py-24">
-        <div class="grid gap-6 rounded-[2rem] bg-pink-100 p-8 md:grid-cols-[auto_1fr_auto] md:items-center md:p-10">
-          <span class="flex size-16 items-center justify-center rounded-full bg-cream-50 text-gold-700">
+      <section class="container-x pb-16 md:pb-24">
+        <div class="grid gap-6 rounded-[2rem] bg-cream-50 p-8 shadow-soft ring-1 ring-green-700/5 md:grid-cols-[auto_1fr_auto] md:items-center md:p-10">
+          <span class="flex size-16 items-center justify-center rounded-full bg-pink-100 text-gold-700">
             <Icon name={offer.icon} class="size-8" />
           </span>
           <div>
@@ -255,14 +376,51 @@ const schema = [
     )
   }
 
-  <!-- FAQ -->
+  <!-- i) FAQ: the same list feeds the FAQPage schema above. -->
   <section class="bg-cream-200/60 py-16 md:py-24">
     <div class="container-x grid gap-10 lg:grid-cols-[1fr_2fr]">
-      <h2 class="reveal text-3xl text-green-800 md:text-4xl">{t.faq}</h2>
-      <FAQ lang={lang} items={s.faq} />
+      <h2 class="reveal text-3xl text-green-800 md:text-4xl">{s.faqTitle[lang]}</h2>
+      <FAQ lang={lang} items={faq} />
     </div>
   </section>
 
-  <CtaBand lang={lang} tone="dark" title={t.closeTitle} text={t.closeText} message={s.whatsapp[lang]} />
+  <!-- j) Related services, linked with keyword anchors -->
+  <section class="py-16 md:py-24">
+    <div class="container-x">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <div class="reveal max-w-2xl">
+          <h2 class="text-3xl text-green-800 md:text-4xl">{s.relatedTitle[lang]}</h2>
+          <p class="mt-3 text-ink-600">{t.pairsText}</p>
+        </div>
+        <a href={bookUrl} class="btn btn-primary">
+          <Icon name="calendar" class="size-5" />
+          {t.builder}
+        </a>
+      </div>
+      <ul class="reveal-group mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {related.map((r) => <li><ServiceCard lang={lang} service={r} /></li>)}
+      </ul>
+      <p class="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
+        <a href={href(lang, 'services')} class="inline-flex min-h-11 items-center gap-2 text-gold-800 hover:underline">
+          {t.allServices}
+          <Icon name="arrow" class="size-4" flip />
+        </a>
+        <a href={href(lang, 'packages')} class="inline-flex min-h-11 items-center gap-2 text-gold-800 hover:underline">
+          {t.allPkgs}
+          <Icon name="arrow" class="size-4" flip />
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- k) Closing CTA: WhatsApp with this page's message, plus a call -->
+  <CtaBand
+    lang={lang}
+    tone="dark"
+    title={t.closeTitle}
+    text={t.closeText}
+    message={s.whatsapp[lang]}
+    secondary={{ label: ui.callUs[lang], url: telUrl() }}
+  />
   <div class="h-24 md:h-28" aria-hidden="true"></div>
 </BaseLayout>

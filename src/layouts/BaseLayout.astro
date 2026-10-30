@@ -20,6 +20,7 @@ import CardTilt from '../components/CardTilt.astro';
 import CookieBanner from '../components/CookieBanner.astro';
 import { site, type Locale } from '../config/site';
 import { business, telUrl } from '../data/business';
+import { businessId as businessIdFor } from '../lib/schema';
 
 interface Props {
   lang: Locale;
@@ -47,7 +48,7 @@ const ogImageUrl = new URL(ogImage.src, Astro.site).href;
 const logo = await getImage({ src: logoSource, width: 512, format: 'png' });
 const logoUrl = new URL(logo.src, Astro.site).href;
 // One stable id per entity, shared by both languages, so search engines see one business and one site.
-const businessId = new URL('/#business', Astro.site).href;
+const businessId = businessIdFor(Astro.site);
 const websiteId = new URL('/#website', Astro.site).href;
 
 const localBusiness = {
