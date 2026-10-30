@@ -1,4 +1,5 @@
 // Home page FAQ (general questions; service-specific ones live in services.ts).
+// The home page shows the first HOME_FAQ_COUNT questions; order them by importance.
 // REVIEW-AR: Arabic is a first draft.
 import type { L } from '../i18n/ui';
 import { business } from './business';
@@ -26,17 +27,17 @@ export const homeFaq: { q: L; a: L }[] = [
     },
   },
   {
-    q: { ar: 'هل فريقكم موثوق؟', en: 'Can I trust your team?' },
-    a: {
-      ar: 'كل فرد في الفريق يخضع للتحقق من الخلفية قبل العمل مع أي عائلة.',
-      en: 'Everyone on the team is background-checked before working with any family.',
-    },
-  },
-  {
     q: { ar: 'ما اللغات التي يتحدثها مقدّمو الرعاية؟', en: 'What languages do your caregivers speak?' },
     a: {
       ar: `مقدّمو الرعاية يتحدثون ${business.languages.ar}.`,
       en: `Caregivers speak ${business.languages.en}.`,
+    },
+  },
+  {
+    q: { ar: 'هل فريقكم موثوق؟', en: 'Can I trust your team?' },
+    a: {
+      ar: 'كل فرد في الفريق يخضع للتحقق من الخلفية قبل العمل مع أي عائلة.',
+      en: 'Everyone on the team is background-checked before working with any family.',
     },
   },
   {
@@ -47,3 +48,6 @@ export const homeFaq: { q: L; a: L }[] = [
     },
   },
 ];
+
+export const HOME_FAQ_COUNT = 4;
+export const homeFaqShown = homeFaq.slice(0, HOME_FAQ_COUNT);

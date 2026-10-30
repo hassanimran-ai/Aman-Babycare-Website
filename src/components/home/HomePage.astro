@@ -1,5 +1,7 @@
 ---
 // Home page body, shared by / and /en/. Copy is per language below.
+// Order: hero → trust strip → services → one visit, many jobs → how it works → packages → trust → FAQ → closing.
+// Seasonal offers live on /offers/ and the booking card on /packages/#booking.
 // REVIEW-AR: Arabic copy is a first draft.
 import Icon from '../Icon.astro';
 import Visual from '../Visual.astro';
@@ -8,16 +10,14 @@ import HeroBackdrop from '../HeroBackdrop.astro';
 import Countdown from '../Countdown.astro';
 import ServiceCard from '../ServiceCard.astro';
 import PackageCard from '../PackageCard.astro';
-import BookingCard from '../BookingCard.astro';
-import CtaBand from '../CtaBand.astro';
 import FAQ from '../FAQ.astro';
 import Reviews from '../Reviews.astro';
 import { whatsappUrl, type Locale } from '../../config/site';
 import { coreServices, featuredServices, moreServices, serviceBySlug } from '../../data/services';
-import { featuredOffer as featured, upcomingOffers } from '../../data/offers';
-import { packages, welcomeOffer } from '../../data/packages';
+import { featuredOffer as featured } from '../../data/offers';
+import { packages } from '../../data/packages';
 import { href, ui } from '../../i18n/ui';
-import { homeFaq } from '../../data/home';
+import { homeFaqShown } from '../../data/home';
 import { business } from '../../data/business';
 import { hasPhoto } from '../../lib/photos';
 
@@ -31,22 +31,18 @@ const c = {
     h1: 'يدٌ أمينة في بيتك، لكل من تحب',
     lead: 'رعاية المواليد والأمهات، رعاية الأطفال، تنظيف المنزل، صحبة الوالدين، ورعاية القطط والكلاب في الرياض. مقدّمة رعاية واحدة يمكنها أن تجمع لكم أكثر من خدمة في زيارة واحدة.',
     trust: ['فريق خضع للتحقق من الخلفية', 'مقدّمة رعاية واحدة لعدة خدمات', 'الحجز مباشرة عبر واتساب'],
+    trustLabel: 'لماذا أمان',
     heroAlt: 'شعار أمان: أم تحتضن طفلها داخل قلب',
-    offersTitle: 'عروض المواسم',
-    offersText: 'لكل مناسبة في السنة باقة تناسبها. هذا عرض الموسم الحالي، وما ينتظركم بعده.',
-    claim: 'احجز العرض عبر واتساب',
-    includes: 'يشمل',
-    welcomeTitle: 'أول زيارة لكم؟',
     servicesTitle: 'خدماتنا',
     servicesText: 'اختاروا خدمة واحدة أو اجمعوا أكثر من خدمة مع مقدّمة رعاية واحدة.',
     moreHelpTitle: 'ومساعدة أكثر في البيت',
     moreTitle: 'والمزيد',
     moreText: 'تحتاجون شيئاً آخر في البيت؟ اسألونا، وغالباً نجد له حلاً.',
     moreCta: 'اسألنا عبر واتساب',
-    cta1Title: 'جاهزون حين تحتاجوننا',
-    cta1Text: 'أرسلوا لنا ما تحتاجونه، ونرتب لكم الموعد ومقدّمة الرعاية المناسبة.',
     comboTitle: 'زيارة واحدة، مهام كثيرة',
     comboText: 'بدلاً من التنسيق مع أكثر من شخص، مقدّمة رعاية واحدة تجمع ما يحتاجه بيتكم.',
+    comboCta: 'احجزي خدمتك',
+    comboHint: 'اختاروا الخدمات والتوقيت، ونجهّز لكم طلب الحجز على واتساب.',
     combos: [
       { a: 'babysitting', b: 'home-cleaning', text: 'الأطفال يلعبون، والبيت يترتب' },
       { a: 'elderly-companionship', b: 'pick-up-drop-off', text: 'صحبة في البيت، ومرافقة إلى المواعيد' },
@@ -61,8 +57,6 @@ const c = {
       { t: 'نرشح مقدّمة الرعاية', d: 'نختار من فريقنا من يناسب عائلتكم، ونؤكد التفاصيل والسعر.' },
       { t: 'تصلكم في الموعد', d: 'تتعرف على بيتكم وروتينكم، وتبدأ الرعاية.' },
     ],
-    cta2Title: 'خذوا يوماً لأنفسكم',
-    cta2Text: 'موعد، عمل، أو مجرد راحة. نحن هنا.',
     trustTitle: 'تطمئنون قبل أن نصل',
     trustText: 'كل فرد في فريقنا يخضع للتحقق من الخلفية قبل أن يدخل أي بيت. ونسأل عن قواعد بيتكم قبل أول زيارة، ونلتزم بها.',
     trustAlt: 'مقدّمة رعاية في بيت عائلة سعودية',
@@ -78,22 +72,18 @@ const c = {
     h1: 'A trusted pair of hands at home, for everyone you love',
     lead: 'Newborn and mother care, babysitting, home cleaning, company for your parents, and cat and dog sitting in Riyadh. One caregiver can combine several services in a single visit.',
     trust: ['Background-checked staff', 'One caregiver, several services', 'Book directly on WhatsApp'],
+    trustLabel: 'Why Aman',
     heroAlt: 'Aman logo: a mother holding her baby inside a heart',
-    offersTitle: 'Seasonal offers',
-    offersText: "Every occasion of the year has a bundle to match. Here's this season's offer, and what's coming next.",
-    claim: 'Book this offer on WhatsApp',
-    includes: 'Includes',
-    welcomeTitle: 'Your first visit?',
     servicesTitle: 'Our services',
     servicesText: 'Choose one service, or combine several with a single caregiver.',
     moreHelpTitle: 'More help at home',
     moreTitle: 'And more',
     moreText: "Need something else done at home? Ask us; we'll usually find a way.",
     moreCta: 'Ask us on WhatsApp',
-    cta1Title: "Ready when you need us",
-    cta1Text: "Tell us what you need, and we'll arrange the time and the right caregiver.",
     comboTitle: 'One visit, many jobs done',
     comboText: 'Instead of coordinating several people, one caregiver brings together what your home needs.',
+    comboCta: 'Book Your Service',
+    comboHint: "Pick the services and timing, and we'll prepare your booking request on WhatsApp.",
     combos: [
       { a: 'babysitting', b: 'home-cleaning', text: 'The children play, the house gets tidy' },
       { a: 'elderly-companionship', b: 'pick-up-drop-off', text: 'Company at home, and a ride to appointments' },
@@ -108,8 +98,6 @@ const c = {
       { t: 'We match a caregiver', d: 'We choose the right person from our team and confirm the details and price.' },
       { t: 'They arrive on time', d: 'They learn your home and routine, and care begins.' },
     ],
-    cta2Title: 'Take a day for yourself',
-    cta2Text: "An appointment, work, or simply rest. We're here.",
     trustTitle: 'Peace of mind before we arrive',
     trustText: 'Everyone on our team is background-checked before they enter any home. We ask about your house rules before the first visit, and we keep them.',
     trustAlt: 'A caregiver in a Saudi family home',
@@ -123,49 +111,59 @@ const c = {
   },
 }[lang];
 
-const offerMessage = (event: string) =>
-  lang === 'ar' ? `السلام عليكم، أرغب بالاستفادة من عرض ${event}.` : `Hello, I'd like to book the ${event} offer.`;
 const teaser = ['hourly-babysitting', 'monthly-6', 'stay-in'].map((id) => packages.find((p) => p.id === id)!);
-const welcomeMsg = lang === 'ar' ? `السلام عليكم، أرغب بـ${welcomeOffer.name.ar}.` : `Hello, I'd like the ${welcomeOffer.name.en}.`;
 ---
 
-<!-- Hero -->
+<!-- Hero. Phones: headline, trust points, buttons, then the photo. Desktop: text and buttons beside the
+     photo, with the trust points as a strip underneath. -->
 <section class="relative isolate overflow-hidden">
   <HeroBackdrop />
-  <div class="container-x grid items-center gap-12 pb-16 pt-10 md:pt-16 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:pb-24">
-    <div class="rise">
+  <div class="container-x grid gap-8 pb-16 pt-10 md:pt-16 lg:grid-cols-[1.1fr_1fr] lg:gap-x-16 lg:gap-y-8 lg:pb-20">
+    <div class="rise lg:col-start-1 lg:row-start-1 lg:self-end">
       <h1 class="max-w-[16ch] text-4xl text-green-800 sm:text-5xl lg:text-6xl">{c.h1}</h1>
       <p class="mt-6 max-w-xl text-lg text-ink-600">{c.lead}</p>
-      <div class="mt-8 grid gap-3 sm:flex sm:flex-wrap">
-        <a href={whatsappUrl(lang === 'ar' ? 'السلام عليكم، أرغب بحجز خدمة من أمان.' : "Hello, I'd like to book a service with Aman.")} rel="noopener" class="btn btn-primary min-h-14 px-8 text-base">
-          <Icon name="whatsapp" class="size-6 text-gold-200" />
-          {ui.bookWhatsApp[lang]}
-        </a>
-        <a href={href(lang, 'packages')} class="btn btn-ghost min-h-14 px-8 text-base">{ui.seePackages[lang]}</a>
-      </div>
-      <ul class="mt-10 grid gap-4 border-t border-gold-500/25 pt-8 sm:grid-cols-3">
-        {
-          c.trust.map((t, i) => (
-            <li class="flex items-center gap-3 text-sm font-medium text-ink-700 sm:flex-col sm:items-start">
-              <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-cream-50 text-green-700 shadow-soft">
-                <Icon name={(['shield', 'hands', 'whatsapp'] as const)[i]} class="size-5" />
-              </span>
-              {t}
-            </li>
-          ))
-        }
-      </ul>
     </div>
 
-    <div class="relative mx-auto w-full max-w-[17rem] rise [animation-delay:150ms] sm:max-w-sm lg:max-w-md">
+    <ul class="rise grid gap-3 sm:grid-cols-3 lg:col-span-2 lg:row-start-3 lg:gap-6 lg:border-t lg:border-gold-500/25 lg:pt-8" aria-label={c.trustLabel}>
+      {
+        c.trust.map((t, i) => (
+          <li class="flex items-center gap-3 text-sm font-medium text-ink-700">
+            <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-cream-50 text-green-700 shadow-soft">
+              <Icon name={(['shield', 'hands', 'whatsapp'] as const)[i]} class="size-5" />
+            </span>
+            {t}
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="rise grid gap-3 sm:flex sm:flex-wrap lg:col-start-1 lg:row-start-2 lg:self-start">
+      <a href={whatsappUrl(lang === 'ar' ? 'السلام عليكم، أرغب بحجز خدمة من أمان.' : "Hello, I'd like to book a service with Aman.")} rel="noopener" class="btn btn-primary min-h-14 px-8 text-base" data-hero-cta>
+        <Icon name="whatsapp" class="size-6 text-gold-200" />
+        {ui.bookWhatsApp[lang]}
+      </a>
+      <a href={href(lang, 'packages')} class="btn btn-ghost min-h-14 px-8 text-base">{ui.seePackages[lang]}</a>
+    </div>
+
+    <div class="relative mx-auto w-full max-w-[18.75rem] rise [animation-delay:150ms] sm:max-w-sm lg:col-start-2 lg:row-span-2 lg:row-start-1">
       <HeartLine class="absolute -top-6 end-0 z-10 hidden w-48 text-gold-500 sm:block" />
       <div class="parallax">
-        <Visual lang={lang} photo="hero" alt={c.heroAlt} art="logo" tone="cream" eager sizes="(min-width: 1024px) 448px, (min-width: 640px) 384px, 272px" class="shadow-card" />
+        <Visual
+          lang={lang}
+          photo="hero"
+          alt={c.heroAlt}
+          art="logo"
+          tone="cream"
+          eager
+          widths={[300, 600, 800]}
+          sizes="(min-width: 640px) 384px, 300px"
+          class="shadow-card"
+        />
       </div>
-      <!-- Featured offer, floating -->
+      <!-- This season's offer, floating -->
       <a
-        href="#offers"
-        class="absolute -bottom-6 -start-6 w-60 rounded-3xl sm:w-64 bg-cream-50 p-5 shadow-float ring-1 ring-gold-500/20 transition-transform duration-300 hover:-translate-y-1 sm:-start-8"
+        href={href(lang, 'offers')}
+        class="absolute -bottom-6 -start-4 w-60 rounded-3xl bg-cream-50 p-5 shadow-float ring-1 ring-gold-500/20 transition-transform duration-300 hover:-translate-y-1 active:scale-[0.98] sm:-start-8 sm:w-64"
       >
         <span class="flex items-center gap-2 text-xs font-semibold text-gold-700">
           <Icon name={featured.icon} class="size-4" />
@@ -182,101 +180,12 @@ const welcomeMsg = lang === 'ar' ? `السلام عليكم، أرغب بـ${wel
   </div>
 </section>
 
-<!-- Seasonal offers -->
-<section id="offers" class="scroll-mt-28 bg-cream-200/60 py-16 md:py-24">
+<!-- Services -->
+<section id="services" class="scroll-mt-28 py-16 md:py-24">
   <div class="container-x">
     <div class="reveal max-w-2xl">
-      <h2 class="text-3xl text-green-800 md:text-4xl">{c.offersTitle}</h2>
-      <p class="mt-3 text-ink-600">{c.offersText}</p>
-    </div>
-
-    <!-- Live offer: a notification-style bar with every detail, about half the old card's height. -->
-    <article class="reveal mt-8 grid grid-cols-[5rem_1fr] gap-x-4 gap-y-3 rounded-3xl bg-green-800 p-4 text-cream-100 shadow-card lg:grid-cols-[9rem_1fr_auto] lg:items-center lg:gap-x-6 lg:gap-y-2 lg:p-5">
-      <Visual photo={`offer-${featured.id}`} alt="" icon={featured.icon} tone="green" shape="square" sizes="(min-width: 1024px) 144px, 80px" class="self-start lg:row-span-3 lg:self-center" />
-      <div class="min-w-0 lg:self-end">
-        <p class="flex flex-wrap items-center gap-x-2 text-xs font-semibold text-gold-300">
-          <Icon name={featured.icon} class="size-4" />
-          {featured.event[lang]}
-          <span class="font-normal text-cream-200/80">{featured.when[lang]}</span>
-        </p>
-        <h3 class="mt-1 text-lg leading-snug text-cream-50 lg:text-xl">{featured.title[lang]}</h3>
-      </div>
-      <p class="col-span-2 line-clamp-2 text-sm text-cream-200 lg:col-span-1 lg:col-start-2">{featured.text[lang]}</p>
-      <div class="col-span-2 flex flex-wrap items-center gap-2 text-xs text-cream-200 lg:col-span-1 lg:col-start-2 lg:self-start">
-        <span>{c.includes}:</span>
-        {featured.services.map((s) => (
-          <a href={href(lang, `services/${s}`)} class="inline-flex min-h-8 items-center rounded-full px-3 ring-1 ring-cream-50/20 hover:bg-cream-50/10 active:scale-[0.98]">
-            {serviceBySlug(s).name[lang]}
-          </a>
-        ))}
-        {featured.endsAt && (
-          <span class="ms-auto inline-flex items-center gap-1 rounded-full bg-cream-50/10 px-3 py-1 text-cream-50 has-[[hidden]]:hidden lg:ms-2">
-            <Icon name="clock" class="size-4 text-gold-300" />
-            <Countdown lang={lang} endsAt={featured.endsAt} />
-          </span>
-        )}
-      </div>
-      <a href={whatsappUrl(offerMessage(featured.event[lang]))} rel="noopener" class="btn btn-light col-span-2 min-h-11 text-sm lg:col-span-1 lg:col-start-3 lg:row-span-3 lg:row-start-1">
-        <Icon name="whatsapp" class="size-5" />
-        {c.claim}
-      </a>
-    </article>
-
-    <!-- Welcome offer: a slim bar. -->
-    <article class="reveal mt-3 flex items-center gap-3 rounded-3xl bg-pink-100 p-3 md:gap-4 md:px-5 md:py-4">
-      <span class="hidden size-11 shrink-0 items-center justify-center rounded-full bg-cream-50 text-gold-700 sm:flex">
-        <Icon name="gift" class="size-5" />
-      </span>
-      <div class="min-w-0 flex-1 ps-1 sm:ps-0">
-        <h3 class="text-sm text-green-800 md:text-base">{c.welcomeTitle} <span class="font-semibold text-ink-700">{welcomeOffer.name[lang]}</span></h3>
-        <p class="line-clamp-1 text-xs text-ink-600 md:text-sm">{welcomeOffer.detail[lang]}</p>
-      </div>
-      <a href={whatsappUrl(welcomeMsg)} rel="noopener" class="btn btn-primary min-h-11 shrink-0 px-3 text-sm md:px-6" aria-label={`${ui.bookWhatsApp[lang]}: ${welcomeOffer.name[lang]}`}>
-        <Icon name="whatsapp" class="size-5" />
-        <span class="hidden md:inline">{ui.bookWhatsApp[lang]}</span>
-      </a>
-    </article>
-
-    <!-- Coming soon: smaller bars that scroll sideways. -->
-    <h3 class="mt-10 text-lg text-green-800">{ui.comingNext[lang]}</h3>
-    <div
-      class="-mx-4 mt-3 snap-x snap-mandatory overflow-x-auto scroll-px-4 px-4 pb-3 focus-visible:outline-offset-[-2px] md:mx-0 md:scroll-px-0 md:px-0"
-      tabindex="0"
-      role="region"
-      aria-label={ui.comingNext[lang]}
-    >
-    <ul class="flex gap-3">
-      {
-        upcomingOffers.map((o) => (
-          <li class="flex w-72 shrink-0 snap-start items-center gap-3 rounded-2xl bg-cream-50 p-2.5 shadow-soft ring-1 ring-green-700/5">
-            <Visual photo={`offer-${o.id}`} alt="" icon={o.icon} shape="square" sizes="64px" class="w-16 shrink-0" />
-            <div class="min-w-0">
-              <p class="flex items-center gap-1.5 text-sm font-semibold text-green-800">
-                <Icon name={o.icon} class="size-4 shrink-0 text-gold-600" />
-                <span class="truncate">{o.event[lang]}</span>
-              </p>
-              <p class="text-xs text-ink-500">
-                {o.when[lang]}
-                {o.hijri && ` (${ui.expected[lang]})`}
-              </p>
-              <p class="mt-0.5 line-clamp-2 text-xs text-ink-600">{o.title[lang]}</p>
-            </div>
-          </li>
-        ))
-      }
-    </ul>
-    </div>
-  </div>
-</section>
-
-<!-- Services -->
-<section id="services" class="py-16 md:py-24">
-  <div class="container-x">
-    <div class="flex flex-wrap items-end justify-between gap-6">
-      <div class="reveal max-w-2xl">
-        <h2 class="text-3xl text-green-800 md:text-4xl">{c.servicesTitle}</h2>
-        <p class="mt-3 text-ink-600">{c.servicesText}</p>
-      </div>
+      <h2 class="text-3xl text-green-800 md:text-4xl">{c.servicesTitle}</h2>
+      <p class="mt-3 text-ink-600">{c.servicesText}</p>
     </div>
     <ul class="reveal-group mt-10 grid gap-6">
       {featuredServices.map((s) => <li><ServiceCard lang={lang} service={s} size="featured" /></li>)}
@@ -307,75 +216,40 @@ const welcomeMsg = lang === 'ar' ? `السلام عليكم، أرغب بـ${wel
   </div>
 </section>
 
-<!-- FAQ -->
-<section id="faq" class="scroll-mt-28 bg-cream-200/60 py-16 md:py-24">
-  <div class="container-x grid gap-10 lg:grid-cols-[1fr_2fr]">
-    <h2 class="reveal text-3xl text-green-800 md:text-4xl">{c.faqTitle}</h2>
-    <FAQ lang={lang} items={homeFaq} />
-  </div>
-</section>
-
-<CtaBand
-  lang={lang}
-  title={c.cta1Title}
-  text={c.cta1Text}
-  message={lang === 'ar' ? 'السلام عليكم، أحتاج مساعدة في البيت.' : 'Hello, I need some help at home.'}
-  secondary={{ label: ui.seePackages[lang], url: href(lang, 'packages') }}
-/>
-
-<!-- One caregiver, many hands -->
-<section class="py-16 md:py-24">
-  <div class="container-x">
-    <div class="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:items-end">
-      <div>
-        <h2 class="reveal text-3xl text-green-800 md:text-4xl">{c.comboTitle}</h2>
-        <p class="mt-3 max-w-md text-ink-600">{c.comboText}</p>
-      </div>
-      <ul class="grid gap-3">
-        {
-          c.combos.map((combo) => (
-            <li class="flex items-center gap-4 rounded-2xl bg-cream-50 p-4 ring-1 ring-green-700/5">
-              <span class="flex -space-x-2 rtl:space-x-reverse">
-                <span class="flex size-10 items-center justify-center rounded-full bg-green-700 text-cream-50 ring-2 ring-cream-50">
-                  <Icon name={serviceBySlug(combo.a).icon} class="size-5" />
-                </span>
-                <span class="flex size-10 items-center justify-center rounded-full bg-gold-500 text-green-950 ring-2 ring-cream-50">
-                  <Icon name={serviceBySlug(combo.b).icon} class="size-5" />
-                </span>
-              </span>
-              <span>
-                <span class="block text-sm text-ink-500">
-                  {serviceBySlug(combo.a).name[lang]} + {serviceBySlug(combo.b).name[lang]}
-                </span>
-                <span class="block font-medium text-green-800">{combo.text}</span>
-              </span>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-    <div class="mt-12">
-      <BookingCard lang={lang} />
-    </div>
-  </div>
-</section>
-
-<!-- Packages teaser -->
-<section id="packages" class="scroll-mt-28 bg-cream-200/60 py-16 md:py-24">
-  <div class="container-x">
-    <div class="flex flex-wrap items-end justify-between gap-6">
-      <div class="reveal max-w-2xl">
-        <h2 class="text-3xl text-green-800 md:text-4xl">{c.pkgTitle}</h2>
-        <p class="mt-3 text-ink-600">{c.pkgText}</p>
-      </div>
-      <a href={href(lang, 'packages')} class="btn btn-ghost">
-        {c.pkgAll}
-        <Icon name="arrow" class="size-4" flip />
+<!-- One caregiver, many jobs -->
+<section class="bg-cream-200/60 py-16 md:py-24">
+  <div class="container-x grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:items-center">
+    <div>
+      <h2 class="reveal text-3xl text-green-800 md:text-4xl">{c.comboTitle}</h2>
+      <p class="mt-3 max-w-md text-ink-600">{c.comboText}</p>
+      <a href={`${href(lang, 'packages')}#booking`} class="btn btn-primary mt-8">
+        <Icon name="calendar" class="size-5" />
+        {c.comboCta}
       </a>
+      <p class="mt-3 max-w-md text-sm text-ink-500">{c.comboHint}</p>
     </div>
-    <div class="reveal-group mt-10 grid gap-6 md:grid-cols-3">
-      {teaser.map((p) => <PackageCard lang={lang} pkg={p} />)}
-    </div>
+    <ul class="grid gap-3">
+      {
+        c.combos.map((combo) => (
+          <li class="flex items-center gap-4 rounded-2xl bg-cream-50 p-4 ring-1 ring-green-700/5">
+            <span class="flex -space-x-2 rtl:space-x-reverse">
+              <span class="flex size-10 items-center justify-center rounded-full bg-green-700 text-cream-50 ring-2 ring-cream-50">
+                <Icon name={serviceBySlug(combo.a).icon} class="size-5" />
+              </span>
+              <span class="flex size-10 items-center justify-center rounded-full bg-gold-500 text-green-950 ring-2 ring-cream-50">
+                <Icon name={serviceBySlug(combo.b).icon} class="size-5" />
+              </span>
+            </span>
+            <span>
+              <span class="block text-sm text-ink-500">
+                {serviceBySlug(combo.a).name[lang]} + {serviceBySlug(combo.b).name[lang]}
+              </span>
+              <span class="block font-medium text-green-800">{combo.text}</span>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
   </div>
 </section>
 
@@ -405,13 +279,24 @@ const welcomeMsg = lang === 'ar' ? `السلام عليكم، أرغب بـ${wel
   </div>
 </section>
 
-<CtaBand
-  lang={lang}
-  tone="dark"
-  title={c.cta2Title}
-  text={c.cta2Text}
-  message={lang === 'ar' ? 'السلام عليكم، أرغب بحجز زيارة.' : "Hello, I'd like to book a visit."}
-/>
+<!-- Packages teaser -->
+<section id="packages" class="scroll-mt-28 bg-cream-200/60 py-16 md:py-24">
+  <div class="container-x">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <div class="reveal max-w-2xl">
+        <h2 class="text-3xl text-green-800 md:text-4xl">{c.pkgTitle}</h2>
+        <p class="mt-3 text-ink-600">{c.pkgText}</p>
+      </div>
+      <a href={href(lang, 'packages')} class="btn btn-ghost">
+        {c.pkgAll}
+        <Icon name="arrow" class="size-4" flip />
+      </a>
+    </div>
+    <div class="reveal-group mt-10 grid gap-6 md:grid-cols-3">
+      {teaser.map((p) => <PackageCard lang={lang} pkg={p} />)}
+    </div>
+  </div>
+</section>
 
 <!-- Trust + first families -->
 <section class="py-16 md:py-24">
@@ -453,7 +338,15 @@ const welcomeMsg = lang === 'ar' ? `السلام عليكم، أرغب بـ${wel
 <!-- Reviews: renders nothing until 3+ consented reviews exist in src/data/reviews.ts -->
 <Reviews lang={lang} />
 
-<!-- Closing -->
+<!-- FAQ: the first HOME_FAQ_COUNT questions from src/data/home.ts (the FAQPage schema matches). -->
+<section id="faq" class="scroll-mt-28 bg-cream-200/60 py-16 md:py-24">
+  <div class="container-x grid gap-10 lg:grid-cols-[1fr_2fr]">
+    <h2 class="reveal text-3xl text-green-800 md:text-4xl">{c.faqTitle}</h2>
+    <FAQ lang={lang} items={homeFaqShown} />
+  </div>
+</section>
+
+<!-- Closing. The extra bottom padding keeps the sticky WhatsApp button clear of this CTA on phones. -->
 <section class="pb-32 pt-20 text-center md:pb-40">
   <div class="container-x">
     <HeartLine class="mx-auto w-40 text-gold-500" />

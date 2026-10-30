@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import HomePage from '../../components/home/HomePage.astro';
 import { faqSchema } from '../../lib/schema';
-import { homeFaq } from '../../data/home';
+import { homeFaqShown } from '../../data/home';
 ---
 
 <BaseLayout
@@ -10,7 +10,7 @@ import { homeFaq } from '../../data/home';
   title="Aman | Babysitting & Home Services in Riyadh"
   description="Babysitting, home cleaning, elderly companionship and pet sitting in Riyadh. One caregiver for several services. Book on WhatsApp."
   path=""
-  schema={[faqSchema('en', homeFaq)]}
+  schema={[faqSchema('en', homeFaqShown)]}
 >
   <HomePage lang="en" />
 </BaseLayout>

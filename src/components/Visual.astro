@@ -22,6 +22,8 @@ interface Props {
   shape?: 'arch' | 'rounded' | 'square' | 'banner' | 'card';
   eager?: boolean;
   sizes?: string;
+  /** Image widths to generate; the default suits cards and banners. */
+  widths?: number[];
   class?: string;
 }
 
@@ -35,6 +37,7 @@ const {
   shape = 'arch',
   eager = false,
   sizes = '(min-width: 1024px) 480px, 90vw',
+  widths = [400, 640, 960, 1280],
   class: cls = '',
 } = Astro.props;
 
@@ -63,7 +66,7 @@ const shapeCls = {
         src={image}
         alt={photoAlt}
         formats={['avif', 'webp']}
-        widths={[400, 640, 960, 1280]}
+        widths={widths}
         sizes={sizes}
         loading={eager ? 'eager' : 'lazy'}
         fetchpriority={eager ? 'high' : 'auto'}

@@ -1,5 +1,7 @@
 ---
 // Floating WhatsApp button for mobile and tablet; desktop uses the header CTA.
+// While a page's own hero WhatsApp button ([data-hero-cta]) is on screen, this one steps aside so it
+// never sits on top of the hero buttons.
 import Icon from './Icon.astro';
 import { whatsappUrl, type Locale } from '../config/site';
 import { ui } from '../i18n/ui';
@@ -14,8 +16,26 @@ const { lang, message } = Astro.props;
 <a
   href={whatsappUrl(message)}
   rel="noopener"
-  class="wa-pulse btn btn-primary fixed bottom-4 end-4 z-30 min-h-14 ps-5 pe-6 shadow-float lg:hidden"
+  class="wa-pulse btn btn-primary fixed bottom-4 end-4 z-30 min-h-14 ps-5 pe-6 shadow-float transition-[opacity,transform] duration-300 ease-out data-[away]:pointer-events-none data-[away]:translate-y-4 data-[away]:opacity-0 lg:hidden"
+  data-sticky-wa
 >
   <Icon name="whatsapp" class="size-6 text-gold-200" />
   {ui.bookWhatsApp[lang]}
 </a>
+
+<script>
+  const sticky = document.querySelector<HTMLElement>('[data-sticky-wa]');
+  const hero = document.querySelector('[data-hero-cta]');
+  if (sticky && hero && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      sticky.toggleAttribute('data-away', entry.isIntersecting);
+      if (entry.isIntersecting) {
+        sticky.setAttribute('aria-hidden', 'true');
+        sticky.setAttribute('tabindex', '-1');
+      } else {
+        sticky.removeAttribute('aria-hidden');
+        sticky.removeAttribute('tabindex');
+      }
+    }).observe(hero);
+  }
+</script>

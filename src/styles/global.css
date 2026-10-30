@@ -7,6 +7,11 @@
     color: --theme(--color-ink-900);
     scroll-behavior: smooth;
     scroll-padding-top: 6rem;
+    /* Phones/tablets: focused or linked-to content stops above the sticky WhatsApp button. */
+    scroll-padding-bottom: 6rem;
+    @variant lg {
+      scroll-padding-bottom: 0;
+    }
   }
 
   html[lang="ar"] body {
