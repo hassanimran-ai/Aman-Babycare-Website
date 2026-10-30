@@ -174,7 +174,7 @@ const page: ServiceContent = {
     },
   ],
   relatedTitle: { ar: 'خدمات تُجمع مع رعاية الأطفال', en: 'Services families add to babysitting' },
-  related: ['pick-up-drop-off', 'home-cleaning', 'newborn-care'],
+  related: ['live-in-nanny', 'pick-up-drop-off', 'newborn-care'],
   whatsapp: { ar: 'السلام عليكم، أرغب بحجز جليسة أطفال في المنزل.', en: 'Hello, I would like to book a babysitter at home.' },
   booking: 'babysitting',
   hub: {

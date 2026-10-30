@@ -177,7 +177,7 @@ const page: ServiceContent = {
     },
   ],
   relatedTitle: { ar: 'خدمات تكمّل رعاية المولود', en: 'Services that go well with newborn care' },
-  related: ['babysitting', 'home-cleaning', 'errands'],
+  related: ['night-nanny', 'babysitting', 'home-cleaning'],
   whatsapp: { ar: 'السلام عليكم، أرغب بحجز رعاية المولود والأم في المنزل.', en: 'Hello, I would like to book newborn and mother care at home.' },
   booking: 'newborn-care',
   hub: {

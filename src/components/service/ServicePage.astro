@@ -2,8 +2,8 @@
 // Service detail page: docs/build/service-pages.md. One layout for every service page (and, once enabled,
 // the 40-day package page). Copy lives in src/data/service-pages/<slug>.ts; titles and H1s in src/data/seo.ts.
 // Sections: hero → a) answer-first intro → sub-services → b) who it's for → c) included / not included →
-// CTA → d) shifts → e) how it works → f) why Aman → g) packages → h) all of Riyadh → extra slot (live-in
-// table) → seasonal offer → i) FAQ → j) related services → k) closing CTA.
+// CTA → d) shifts → e) how it works → f) why Aman → g) packages → h) all of Riyadh → live-in comparison and
+// prepare list (when set) → seasonal offer → i) FAQ → j) related services → k) closing CTA.
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../Icon.astro';
 import Visual from '../Visual.astro';
@@ -348,7 +348,53 @@ const schema = [
     </div>
   </section>
 
-  <slot name="extra" />
+  <!-- Live-in vs live-out (live-in nanny): a real table that scrolls sideways on phones. -->
+  {
+    s.comparison && (
+      <section class="container-x pb-16 md:pb-24">
+        <h2 class="reveal text-3xl text-green-800 md:text-4xl">{s.comparison.title[lang]}</h2>
+        <p class="mt-3 max-w-3xl text-ink-600">{s.comparison.text[lang]}</p>
+        <div class="-mx-4 mt-8 overflow-x-auto px-4 pb-2 md:mx-0 md:px-0" tabindex="0" role="region" aria-label={s.comparison.title[lang]}>
+          <table class="w-full min-w-[36rem] overflow-hidden rounded-[2rem] bg-cream-50 text-start shadow-soft ring-1 ring-green-700/5">
+            <thead class="bg-green-800 text-cream-50">
+              <tr>
+                {s.comparison.head.map((h) => (
+                  <th scope="col" class="px-6 py-4 text-start font-semibold">{h[lang]}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-green-700/10">
+              {s.comparison.rows.map(([label, a, b]) => (
+                <tr>
+                  <th scope="row" class="px-6 py-4 text-start font-semibold text-green-800">{label[lang]}</th>
+                  <td class="px-6 py-4 text-ink-700">{a[lang]}</td>
+                  <td class="px-6 py-4 text-ink-700">{b[lang]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    s.prepare && (
+      <section class="container-x pb-16 md:pb-24">
+        <div class="rounded-[2rem] bg-cream-200/70 p-8">
+          <h2 class="text-2xl text-green-800">{s.prepare.title[lang]}</h2>
+          <ul class="mt-6 grid gap-4 sm:grid-cols-2">
+            {s.prepare.items.map((item) => (
+              <li class="flex items-start gap-3 text-ink-700">
+                <Icon name="check" class="mt-1 size-5 shrink-0 text-gold-600" stroke={2} />
+                {item[lang]}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
 
   <!-- Seasonal offer -->
   {

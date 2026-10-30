@@ -13,6 +13,9 @@ import homeCleaning from './service-pages/home-cleaning';
 import errands from './service-pages/errands';
 import pickUpDropOff from './service-pages/pick-up-drop-off';
 import petSitting from './service-pages/pet-sitting';
+import nightNanny from './service-pages/night-nanny';
+import liveInNanny from './service-pages/live-in-nanny';
+import fortyDays from './service-pages/40-days';
 
 export type ShiftId = 'day' | 'night' | 'live-in' | 'live-out' | 'hourly' | 'monthly';
 type Block = { title: L; text: L };
@@ -47,6 +50,12 @@ export interface ServiceContent {
   packages: Block & { ids?: string[] };
   /** h) Serving all of Riyadh: one paragraph, no district lists. */
   riyadh: Block;
+  /** Live-in vs live-out table (live-in nanny). Scrolls sideways on phones. */
+  comparison?: { title: L; text: L; head: [L, L, L]; rows: [L, L, L][] };
+  /** "What to prepare" checklist, for pages where it needs its own section. */
+  prepare?: { title: L; items: L[] };
+  /** false: the page is not built, not in the sitemap and not linked (the 40-day package). */
+  enabled?: boolean;
   faqTitle: L;
   /** i) 6–8 questions (pet sitting: 4). The nationality question is added by serviceFaq().
    *  TODO(client): cancellation policy. Add a cancellation question to each page once it is known. */
@@ -61,7 +70,20 @@ export interface ServiceContent {
 }
 
 // Client-approved order: Newborn & Mother Care first, then the core services, then "more help at home".
-export const services: ServiceContent[] = [newbornCare, babysitting, elderlyCompanionship, homeCleaning, errands, pickUpDropOff, petSitting];
+export const services: ServiceContent[] = [
+  newbornCare,
+  babysitting,
+  elderlyCompanionship,
+  homeCleaning,
+  nightNanny,
+  liveInNanny,
+  errands,
+  pickUpDropOff,
+  petSitting,
+];
+
+// Pages under /packages/ built on the service layout. Only enabled ones are built, listed or linked.
+export const packagePages: ServiceContent[] = [fortyDays].filter((p) => p.enabled !== false);
 
 export const serviceBySlug = (slug: string) => services.find((s) => s.slug === slug)!;
 export const featuredServices = services.filter((s) => s.tier === 'featured');
