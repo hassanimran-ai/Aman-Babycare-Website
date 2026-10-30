@@ -22,7 +22,7 @@ import { href, ui } from '../../i18n/ui';
 import { homeFaqShown } from '../../data/home';
 import { business } from '../../data/business';
 import { hasPhoto } from '../../lib/photos';
-import { seo, tr } from '../../data/seo';
+import { homeKeywordLine, moded, seo, tr } from '../../data/seo';
 
 interface Props {
   lang: Locale;
@@ -75,6 +75,12 @@ const c = {
     faqTitle: 'أسئلة شائعة',
     closeTitle: 'راحتكم أولويتنا',
     closeText: 'رسالة واحدة على واتساب، والباقي علينا.',
+    aboutTitle: 'عن أمان في الرياض',
+    aboutText: moded({
+      care: `أمان لرعاية المواليد والخدمات المنزلية تخدم العائلات في الرياض كلها، من رعاية المولود والأم وجليسة الأطفال إلى مرافقة كبار السن وتنظيف المنزل والمقاضي ورعاية القطط والكلاب. نعمل في ${business.shifts.day.label.ar} ${business.shifts.day.time.ar} و${business.shifts.night.label.ar} ${business.shifts.night.time.ar}، بالساعة أو بالشهر، بإقامة في بيتكم أو بدوام يومي. كل فرد في فريقنا خضع للتحقق من الخلفية، ويتحدث ${business.languages.ar}، وتختارون مقدّماً أو مقدّمة للرعاية حسب ما يريحكم. ويمكن لشخص واحد من فريق الرعاية أن يجمع أكثر من خدمة في زيارة واحدة. وتجدون في هذا الموقع صفحة لكل خدمة، وباقات واضحة بالساعة والأسبوع والشهر، وعروضاً في رمضان والأعياد والمناسبات الوطنية. الحجز مباشرة عبر واتساب، ونرد على رسائلكم من ${business.hours.time.ar}، ونؤكد السعر والتفاصيل قبل أي التزام.`,
+      worker: `أمان لرعاية المواليد والخدمات المنزلية توفر للعائلات في الرياض كلها عاملات بالساعة وبالشهر، وجليسات أطفال، ورعاية المولود والأم، ومرافقة كبار السن، والمقاضي، ورعاية القطط والكلاب. نعمل في ${business.shifts.day.label.ar} ${business.shifts.day.time.ar} و${business.shifts.night.label.ar} ${business.shifts.night.time.ar}، بإقامة في بيتكم أو بدوام يومي. كل فرد في فريقنا خضع للتحقق من الخلفية، ويتحدث ${business.languages.ar}، وتختارون عاملاً أو عاملة حسب ما يريحكم. ويمكن لشخص واحد من فريقنا أن يجمع أكثر من خدمة في زيارة واحدة. وتجدون في هذا الموقع صفحة لكل خدمة، وباقات واضحة بالساعة والأسبوع والشهر، وعروضاً في رمضان والأعياد والمناسبات الوطنية. الحجز مباشرة عبر واتساب، ونرد على رسائلكم من ${business.hours.time.ar}، ونؤكد السعر والتفاصيل قبل أي التزام.`,
+    }),
+    aboutLink: 'تعرّفوا على أمان',
   },
   en: {
     lead: 'Newborn and mother care, babysitting, home cleaning, company for your parents, and cat and dog sitting in Riyadh. One caregiver can combine several services in a single visit.',
@@ -99,7 +105,7 @@ const c = {
     comboHint: "Pick the services and timing, and we'll prepare your booking request on WhatsApp.",
     combos: [
       { a: 'babysitting', b: 'home-cleaning', text: 'The children play, the house gets tidy' },
-      { a: 'elderly-companionship', b: 'pick-up-drop-off', text: 'Company at home, and a ride to appointments' },
+      { a: 'elderly-companionship', b: 'pick-up-drop-off', text: 'Company at home, and someone by their side at appointments' },
       { a: 'pet-sitting', b: 'errands', text: 'Travelling? Pets and shopping, handled' },
     ],
     pkgTitle: 'Clear packages',
@@ -121,6 +127,9 @@ const c = {
     faqTitle: 'Common questions',
     closeTitle: 'Your comfort, our priority',
     closeText: 'One WhatsApp message, and we take it from there.',
+    aboutTitle: 'About Aman in Riyadh',
+    aboutText: `Aman Babycare & Home Services helps families all over Riyadh, with newborn and mother care, babysitters and nannies, elderly companionship, an hourly maid for home cleaning, errands, school pick-ups, and cat and dog sitting. We work a day shift (${business.shifts.day.time.en}) and a night shift (${business.shifts.night.time.en}), by the hour or by the month, live-in or live-out. Everyone on our team is background-checked and speaks ${business.languages.en}, and you choose a male or female caregiver. One caregiver can combine several services in a single visit. On this site you will find a page for every service, clear hourly, weekly and monthly packages, and offers for Ramadan, Eid and national occasions. You book directly on WhatsApp; we reply ${business.hours.time.en} and confirm the price and every detail before you commit.`,
+    aboutLink: 'Get to know Aman',
   },
 }[lang];
 
@@ -137,7 +146,8 @@ const teaser = ['hourly-babysitting', 'monthly-6', 'stay-in'].map((id) => packag
   <div class="container-x grid gap-8 pb-16 pt-10 md:pt-16 lg:grid-cols-[1.1fr_1fr] lg:gap-x-16 lg:gap-y-8 lg:pb-20">
     <div class="rise lg:col-start-1 lg:row-start-1 lg:self-end">
       <h1 class="max-w-[16ch] text-4xl text-green-800 sm:text-5xl lg:text-6xl">{tr(seo.home.h1, lang)}</h1>
-      <p class="mt-6 max-w-xl text-lg text-ink-600">{c.lead}</p>
+      <p class="mt-4 max-w-xl text-xl font-medium text-green-700">{tr(homeKeywordLine, lang)}</p>
+      <p class="mt-4 max-w-xl text-lg text-ink-600">{c.lead}</p>
     </div>
 
     <ul class="rise grid gap-3 sm:grid-cols-3 lg:col-span-2 lg:row-start-3 lg:gap-6 lg:border-t lg:border-gold-500/25 lg:pt-8" aria-label={c.trustLabel}>
@@ -460,8 +470,8 @@ const teaser = ['hourly-babysitting', 'monthly-6', 'stay-in'].map((id) => packag
   </div>
 </section>
 
-<!-- Closing. The extra bottom padding keeps the sticky WhatsApp button clear of this CTA on phones. -->
-<section class="pb-32 pt-20 text-center md:pb-40">
+<!-- Closing CTA. -->
+<section class="pb-16 pt-20 text-center md:pb-24">
   <div class="container-x">
     <HeartLine class="mx-auto w-40 text-gold-500" />
     <h2 class="mt-6 text-4xl text-green-800 md:text-5xl">{c.closeTitle}</h2>
@@ -469,6 +479,19 @@ const teaser = ['hourly-babysitting', 'monthly-6', 'stay-in'].map((id) => packag
     <a href={whatsappUrl(lang === 'ar' ? 'السلام عليكم، أرغب بالتواصل مع أمان.' : "Hello, I'd like to talk to Aman.")} rel="noopener" class="btn btn-primary mt-8 min-h-14 px-8 text-base">
       <Icon name="whatsapp" class="size-6 text-gold-200" />
       {ui.bookWhatsApp[lang]}
+    </a>
+  </div>
+</section>
+
+<!-- About Aman in Riyadh, just above the footer. The extra bottom padding keeps the sticky WhatsApp
+     button clear of it on phones. -->
+<section class="bg-cream-200/60 pb-32 pt-16 md:pb-40 md:pt-24">
+  <div class="container-x max-w-3xl">
+    <h2 class="text-2xl text-green-800 md:text-3xl">{c.aboutTitle}</h2>
+    <p class="mt-4 text-ink-600">{c.aboutText}</p>
+    <a href={href(lang, 'about')} class="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-gold-800 hover:underline">
+      {c.aboutLink}
+      <Icon name="arrow" class="size-4" flip />
     </a>
   </div>
 </section>

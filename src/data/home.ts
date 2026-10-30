@@ -20,6 +20,13 @@ export const homeFaq: { q: L; a: L }[] = [
     },
   },
   {
+    q: { ar: 'هل الأفضل الحجز بالساعة أم بالشهر؟', en: 'Is it better to book hourly or monthly?' },
+    a: {
+      ar: 'الحجز بالساعة يناسب حاجة عابرة: مناسبة، أو مشوار، أو يوم تنظيف قبل الضيوف. والخطة الشهرية تناسب من يحتاج رعاية أو مساعدة ثابتة كل أسبوع، مع الشخص نفسه وبسعر أقل للساعة.',
+      en: 'Hourly suits a one-off: an occasion, an errand, or a clean before guests. A monthly plan suits regular care or help every week, with the same person and a lower hourly rate.',
+    },
+  },
+  {
     q: { ar: 'هل يمكن لشخص واحد من فريق الرعاية تقديم أكثر من خدمة؟', en: 'Can one caregiver do more than one service?' },
     a: {
       ar: 'نعم، هذا ما يميز أمان. يمكن جمع رعاية الأطفال مع ترتيب البيت مثلاً، حسب حجم العمل. اختاروا خدماتكم في «احجزوا خدمتكم» لتروا ذلك.',
@@ -49,5 +56,10 @@ export const homeFaq: { q: L; a: L }[] = [
   },
 ];
 
-export const HOME_FAQ_COUNT = 4;
-export const homeFaqShown = homeFaq.slice(0, HOME_FAQ_COUNT);
+export const HOME_FAQ_COUNT = 5;
+// The nationality question appears only once business.ts answers it (TODO(client)).
+const nationality = business.caregiverNationalityChoice;
+export const homeFaqShown = [
+  ...homeFaq.slice(0, HOME_FAQ_COUNT),
+  ...(nationality ? [{ q: { ar: 'هل يمكن اختيار جنسية مقدّم/ة الرعاية؟', en: "Can we choose the caregiver's nationality?" }, a: nationality }] : []),
+];
