@@ -1,15 +1,20 @@
 ---
+// Services hub (/services/): intro → service cards → comparison table → one caregiver, several services →
+// FAQ (+ FAQPage schema) → CTA. Titles and H1 from src/data/seo.ts. REVIEW-AR
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../Breadcrumbs.astro';
 import ServiceCard from '../ServiceCard.astro';
 import Visual from '../Visual.astro';
+import Icon from '../Icon.astro';
+import FAQ from '../FAQ.astro';
 import { hasPhoto } from '../../lib/photos';
 import CtaBand from '../CtaBand.astro';
 import type { Locale } from '../../config/site';
-import { coreServices, featuredServices, moreServices } from '../../data/services';
+import { coreServices, featuredServices, moreServices, serviceBySlug, services } from '../../data/services';
+import { business } from '../../data/business';
 import { href, ui } from '../../i18n/ui';
-import { breadcrumbSchema } from '../../lib/schema';
-import { seo, tr } from '../../data/seo';
+import { breadcrumbSchema, faqSchema } from '../../lib/schema';
+import { anchorFor, moded, seo, tr } from '../../data/seo';
 
 interface Props {
   lang: Locale;
@@ -19,47 +24,176 @@ const crumbs = [
   { name: ui.nav.home[lang], url: href(lang, '') },
   { name: ui.nav.services[lang], url: href(lang, 'services') },
 ];
-// REVIEW-AR
+const { day, night } = business.shifts;
+const names = (lang: Locale) => services.map((s) => s.name[lang]).join(lang === 'ar' ? '، ' : ', ');
+
 const t = {
   ar: {
     tagline: 'كل ما يحتاجه بيتكم، مع فريق واحد',
-    lead: 'سبع خدمات منزلية يمكن حجزها منفردة أو جمعها في زيارة واحدة مع شخص واحد من فريق الرعاية.',
+    intro: moded({
+      care: 'أمان تقدم خدمات منزلية في الرياض للعائلات التي تريد يداً أمينة في البيت: رعاية المولود والأم، وجليسة أطفال بالساعة، ومربية ليلية أو مقيمة، ومرافقة كبار السن، وتنظيف المنزل، والمقاضي، ومرافقة الأطفال إلى المدرسة، ورعاية القطط والكلاب.',
+      worker: 'خدمات منزلية في الرياض وعاملات بالساعة وبالشهر: رعاية المولود والأم، وجليسة أطفال، ومربية ليلية أو مقيمة، ومرافقة كبار السن، وعاملة منزلية للتنظيف، والمقاضي، ومرافقة الأطفال إلى المدرسة، ورعاية القطط والكلاب.',
+    }),
+    facts: `احجزوا خدمة واحدة أو اجمعوا أكثر من خدمة. ${day.label.ar} ${day.time.ar} و${night.label.ar} ${night.time.ar}، بالساعة أو بالشهر، بإقامة أو دون إقامة، في كل أنحاء الرياض.`,
+    cardsTitle: 'اختاروا الخدمة التي تحتاجونها',
     moreHelp: 'ومساعدة أكثر في البيت',
+    tableTitle: 'قارنوا خدماتنا المنزلية',
+    tableText: 'لمحة سريعة عن كل خدمة: لمن تناسب، وفتراتها، وما يُجمع معها عادةً.',
+    head: ['الخدمة', 'الأنسب لـ', 'الفترات', 'تُجمع مع'],
+    comboTitle: 'شخص واحد من فريق الرعاية، أكثر من خدمة',
+    comboText:
+      'بدلاً من أن تنسقوا مع جليسة وعاملة تنظيف ومن يتسوق عنكم، يمكن لشخص واحد من فريقنا أن يجمع ما يحتاجه بيتكم في الزيارة نفسها: يرعى الأطفال ويرتب البيت، أو يرافق والديكم ويشتري مقاضيهم. نتفق معكم على ما يمكن جمعه حسب حجم العمل، حتى لا تقل جودة أي خدمة.',
+    comboCta: 'احجزوا خدمتكم',
+    faqTitle: 'أسئلة عن خدماتنا المنزلية',
+    faq: [
+      {
+        q: 'ما الخدمات المنزلية التي تقدمها أمان في الرياض؟',
+        a: `${names('ar')}. وكلها مساعدة منزلية غير طبية.`,
+      },
+      {
+        q: 'هل يمكن جمع أكثر من خدمة في زيارة واحدة؟',
+        a: 'نعم. يمكن لشخص واحد من فريق الرعاية أن يجمع خدمتين أو أكثر، كرعاية الأطفال مع ترتيب البيت، حسب حجم العمل.',
+      },
+      {
+        q: 'هل نحجز بالساعة أم بخطة شهرية؟',
+        a: 'الحجز بالساعة لحاجة عابرة أو مناسبة. والخطة الشهرية لأيام ثابتة كل أسبوع مع الشخص نفسه، وبسعر أقل للساعة.',
+      },
+      {
+        q: 'هل خدماتكم رعاية صحية؟',
+        a: 'لا. نقدم رعاية ومساعدة يومية في البيت. ما يخص الصحة يبقى مع الأطباء والمختصين.',
+      },
+      {
+        q: 'كيف يتم الحجز ومتى تردون؟',
+        a: `أرسلوا لنا الخدمة والموعد على واتساب، ونرد من ${business.hours.time.ar}، ونؤكد معكم الشخص المناسب والسعر.`,
+      },
+    ],
     ctaTitle: 'لم تجدوا ما تبحثون عنه؟',
     ctaText: 'اسألونا على واتساب؛ كثير من الطلبات المنزلية يمكننا ترتيبها.',
   },
   en: {
     tagline: 'Everything your home needs, from one team',
-    lead: 'Seven home services you can book on their own, or combine in a single visit with one caregiver.',
+    intro:
+      'Aman offers home services in Riyadh for families who want a trusted pair of hands at home: newborn and mother care, an hourly babysitter, a night or live-in nanny, elderly companionship, an hourly maid for cleaning, errands, school pick-ups and pet sitting.',
+    facts: `Book one service, or combine several. Day shift ${day.time.en} and night shift ${night.time.en}, hourly or monthly, live-in or live-out, anywhere in Riyadh.`,
+    cardsTitle: 'Choose the service you need',
     moreHelp: 'More help at home',
+    tableTitle: 'Compare our home services',
+    tableText: 'Each service at a glance: who it suits, its shifts, and what it usually pairs with.',
+    head: ['Service', 'Best for', 'Shifts', 'Combine with'],
+    comboTitle: 'One caregiver, several services',
+    comboText:
+      "Instead of arranging a babysitter, a cleaner and someone to do the shopping, one person from our team can bring together what your home needs in the same visit: looking after the children while tidying up, or keeping your parents company and picking up their groceries. We agree with you what can be combined for the workload, so no service suffers.",
+    comboCta: 'Book Your Service',
+    faqTitle: 'Questions about our home services',
+    faq: [
+      { q: 'Which home services does Aman offer in Riyadh?', a: `${names('en')}. All of them are non-medical help at home.` },
+      { q: 'Can several services be combined in one visit?', a: 'Yes. One caregiver can combine two or more services, such as babysitting with light tidying, depending on the workload.' },
+      { q: 'Should we book by the hour or on a monthly plan?', a: 'Hourly suits a one-off need or an occasion. A monthly plan gives you set days every week with the same person, at a lower hourly rate.' },
+      { q: 'Are your services health care?', a: 'No. We provide everyday care and help at home. Anything about health stays with doctors and specialists.' },
+      { q: 'How does booking work, and when do you reply?', a: `Send us the service and time on WhatsApp. We reply ${business.hours.time.en} and confirm the right person and price with you.` },
+    ],
     ctaTitle: "Can't find what you need?",
     ctaText: 'Ask us on WhatsApp; we can arrange many other jobs around the home.',
   },
 }[lang];
+const faq = t.faq.map((f) => ({ q: { ar: f.q, en: f.q }, a: { ar: f.a, en: f.a } }));
 ---
 
-<BaseLayout lang={lang} title={tr(seo.services.title, lang)} description={tr(seo.services.description, lang)} path="services" schema={[breadcrumbSchema(crumbs, Astro.site)]}>
+<BaseLayout
+  lang={lang}
+  title={tr(seo.services.title, lang)}
+  description={tr(seo.services.description, lang)}
+  path="services"
+  schema={[breadcrumbSchema(crumbs, Astro.site), faqSchema(lang, faq)]}
+>
   <Breadcrumbs lang={lang} items={crumbs} />
   <section class="container-x pb-16 pt-8 md:pb-24">
     <div class="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
       <div>
         <h1 class="max-w-[20ch] text-4xl text-green-800 sm:text-5xl">{tr(seo.services.h1, lang)}</h1>
         <p class="lead mt-6 max-w-xl text-xl font-medium text-green-700">{t.tagline}</p>
-        <p class="mt-4 max-w-xl text-lg text-ink-600">{t.lead}</p>
+        <p class="mt-4 max-w-xl text-lg text-ink-600">{t.intro}</p>
+        <p class="mt-4 max-w-xl text-ink-600">{t.facts}</p>
       </div>
       {hasPhoto('services-hero') && <Visual lang={lang} photo="services-hero" alt="" shape="rounded" eager sizes="(min-width: 1024px) 560px, 90vw" class="shadow-card" />}
     </div>
-    <ul class="reveal-group mt-12 grid gap-6">
-      {featuredServices.map((s) => <li><ServiceCard lang={lang} service={s} size="featured" headingLevel="h2" /></li>)}
+
+    <h2 class="reveal mt-16 text-3xl text-green-800 md:text-4xl">{t.cardsTitle}</h2>
+    <ul class="reveal-group mt-8 grid gap-6">
+      {featuredServices.map((s) => <li><ServiceCard lang={lang} service={s} size="featured" /></li>)}
     </ul>
     <ul class="reveal-group mt-6 grid gap-6 md:grid-cols-3">
-      {coreServices.map((s) => <li><ServiceCard lang={lang} service={s} headingLevel="h2" /></li>)}
+      {coreServices.map((s) => <li><ServiceCard lang={lang} service={s} /></li>)}
     </ul>
-    <h2 class="reveal mt-16 text-2xl text-green-800">{t.moreHelp}</h2>
+    <h3 class="reveal mt-16 text-2xl text-green-800">{t.moreHelp}</h3>
     <ul class="reveal-group mt-6 grid gap-4 lg:grid-cols-3">
-      {moreServices.map((s) => <li><ServiceCard lang={lang} service={s} size="compact" /></li>)}
+      {moreServices.map((s) => <li><ServiceCard lang={lang} service={s} size="compact" headingLevel="h4" /></li>)}
     </ul>
   </section>
+
+  <!-- Comparison table: scrolls sideways on phones. -->
+  <section class="bg-cream-200/60 py-16 md:py-24">
+    <div class="container-x">
+      <h2 class="reveal text-3xl text-green-800 md:text-4xl">{t.tableTitle}</h2>
+      <p class="mt-3 max-w-2xl text-ink-600">{t.tableText}</p>
+      <div class="-mx-4 mt-8 overflow-x-auto px-4 pb-2 md:mx-0 md:px-0" tabindex="0" role="region" aria-label={t.tableTitle}>
+        <table class="w-full min-w-[44rem] overflow-hidden rounded-[2rem] bg-cream-50 text-start shadow-soft ring-1 ring-green-700/5">
+          <thead class="bg-green-800 text-cream-50">
+            <tr>{t.head.map((h) => <th scope="col" class="px-6 py-4 text-start font-semibold">{h}</th>)}</tr>
+          </thead>
+          <tbody class="divide-y divide-green-700/10">
+            {
+              services.map((s) => (
+                <tr>
+                  <th scope="row" class="px-6 py-4 text-start">
+                    <a href={href(lang, `services/${s.slug}`)} class="inline-flex min-h-11 items-center gap-2 font-semibold text-green-800 hover:underline">
+                      <Icon name={s.icon} class="size-5 shrink-0 text-gold-700" />
+                      {s.name[lang]}
+                    </a>
+                  </th>
+                  <td class="px-6 py-4 text-ink-700">{s.hub.bestFor[lang]}</td>
+                  <td class="px-6 py-4 text-ink-700">{s.hub.shifts[lang]}</td>
+                  <td class="px-6 py-4 text-ink-700">
+                    {s.hub.combine.map((c, i) => (
+                      <>
+                        {i > 0 && (lang === 'ar' ? '، ' : ', ')}
+                        <a href={href(lang, `services/${c}`)} class="text-gold-800 underline-offset-2 hover:underline">{anchorFor(c, lang, serviceBySlug(c).name[lang])}</a>
+                      </>
+                    ))}
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- One caregiver, several services -->
+  <section class="container-x py-16 md:py-24">
+    <div class="grid gap-6 rounded-[2rem] bg-pink-100 p-8 md:grid-cols-[auto_1fr_auto] md:items-center md:p-10">
+      <span class="flex size-16 items-center justify-center rounded-full bg-cream-50 text-gold-700">
+        <Icon name="hands" class="size-8" />
+      </span>
+      <div>
+        <h2 class="text-2xl text-green-800">{t.comboTitle}</h2>
+        <p class="mt-3 max-w-3xl text-ink-600">{t.comboText}</p>
+      </div>
+      <a href={`${href(lang, 'packages')}#booking`} class="btn btn-primary shrink-0">
+        <Icon name="calendar" class="size-5" />
+        {t.comboCta}
+      </a>
+    </div>
+  </section>
+
+  <section class="bg-cream-200/60 py-16 md:py-24">
+    <div class="container-x grid gap-10 lg:grid-cols-[1fr_2fr]">
+      <h2 class="reveal text-3xl text-green-800 md:text-4xl">{t.faqTitle}</h2>
+      <FAQ lang={lang} items={faq} />
+    </div>
+  </section>
+
   <CtaBand
     lang={lang}
     tone="dark"
