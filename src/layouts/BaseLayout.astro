@@ -48,10 +48,15 @@ const localBusiness = {
   '@type': 'LocalBusiness',
   name: business.brand[lang],
   alternateName: business.brand[lang === 'ar' ? 'en' : 'ar'],
+  legalName: business.legalName[lang],
+  identifier: { '@type': 'PropertyValue', propertyID: 'CR', value: business.crNumber },
   slogan: business.tagline[lang],
   url: urlFor(lang),
   image: ogImageUrl,
   areaServed: { '@type': 'City', name: business.areaServed[lang] },
+  // Booking hours, assumed daily (schema needs days). No Review or AggregateRating, ever.
+  openingHours: `Mo-Su ${business.hours.opens}-${business.hours.closes}`,
+  knowsLanguage: ['en', 'ar'],
   address: {
     '@type': 'PostalAddress',
     addressLocality: business.areaServed.en,
