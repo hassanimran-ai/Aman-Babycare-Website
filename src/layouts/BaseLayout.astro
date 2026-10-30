@@ -16,6 +16,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import StickyWhatsApp from '../components/StickyWhatsApp.astro';
 import CardTilt from '../components/CardTilt.astro';
+import CookieBanner from '../components/CookieBanner.astro';
 import { site, type Locale } from '../config/site';
 import { business } from '../data/business';
 
@@ -122,6 +123,7 @@ const localBusiness = {
     </main>
     <Footer lang={lang} waMessage={waMessage} />
     <StickyWhatsApp lang={lang} message={waMessage} />
+    <CookieBanner lang={lang} />
     <CardTilt />
   </body>
 </html>

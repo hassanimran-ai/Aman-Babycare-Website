@@ -1,0 +1,148 @@
+---
+// PDPL-style consent banner. Essential storage only until the visitor accepts; GA4 / Meta / Snapchat
+// load only after Accept, and only for the IDs set in site.analytics. The choice lives in localStorage
+// (wrapped in try/catch: private windows can block it, and then the banner simply asks again).
+// Fixed position, so showing it never shifts the layout. On phones it sits above the sticky WhatsApp button.
+// REVIEW-AR
+import { site, type Locale } from '../config/site';
+import { href } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const t = {
+  ar: {
+    label: 'ملفات تعريف الارتباط',
+    text: 'نستخدم ما يلزم فقط لتشغيل الموقع. وبموافقتكم نستخدم أدوات قياس تساعدنا على تحسينه.',
+    privacy: 'سياسة الخصوصية',
+    accept: 'قبول',
+    reject: 'رفض غير الضروري',
+  },
+  en: {
+    label: 'Cookies',
+    text: "We use only what's needed to run this site. With your permission, we'd also use analytics to help us improve it.",
+    privacy: 'Privacy Policy',
+    accept: 'Accept',
+    reject: 'Reject non-essential',
+  },
+}[lang];
+---
+
+<section
+  class="fixed inset-x-4 bottom-[5.5rem] z-40 mx-auto max-w-xl rounded-3xl bg-cream-50 p-5 text-ink-700 shadow-float ring-1 ring-gold-500/20 lg:bottom-4"
+  role="region"
+  aria-label={t.label}
+  hidden
+  data-consent
+  data-ga4={site.analytics.ga4}
+  data-meta={site.analytics.meta}
+  data-snap={site.analytics.snapchat}
+>
+  <p class="text-sm">
+    {t.text}{' '}
+    <a href={href(lang, 'privacy')} class="font-semibold text-green-700 underline hover:text-green-800">{t.privacy}</a>
+  </p>
+  <div class="mt-4 flex flex-wrap gap-2">
+    <button type="button" class="btn btn-primary min-h-11 px-6 text-sm" data-consent-choice="accepted">{t.accept}</button>
+    <button type="button" class="btn btn-ghost min-h-11 px-6 text-sm" data-consent-choice="rejected">{t.reject}</button>
+  </div>
+</section>
+
+<script>
+  const KEY = 'aman-consent';
+  type W = Window & {
+    amanConsent?: boolean;
+    dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
+    fbq?: ((...args: unknown[]) => void) & { queue?: unknown[]; callMethod?: (...a: unknown[]) => void; loaded?: boolean; version?: string; push?: unknown };
+    _fbq?: unknown;
+    snaptr?: ((...args: unknown[]) => void) & { queue?: unknown[]; handleRequest?: (...a: unknown[]) => void };
+  };
+  const w = window as W;
+
+  const read = () => {
+    try {
+      return localStorage.getItem(KEY);
+    } catch {
+      return null;
+    }
+  };
+  const save = (v: string) => {
+    try {
+      localStorage.setItem(KEY, v);
+    } catch {
+      /* storage blocked: the choice lasts for this page only */
+    }
+  };
+  const addScript = (src: string) => {
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = src;
+    document.head.append(s);
+  };
+
+  // Loads each tag whose ID is set. Runs only after Accept.
+  const loadTags = (el: HTMLElement) => {
+    if (w.amanConsent) return;
+    w.amanConsent = true;
+    const { ga4, meta, snap } = el.dataset;
+    if (ga4) {
+      w.dataLayer = w.dataLayer || [];
+      w.gtag = function () {
+        // eslint-disable-next-line prefer-rest-params
+        w.dataLayer!.push(arguments);
+      };
+      w.gtag('js', new Date());
+      w.gtag('config', ga4);
+      addScript(`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(ga4)}`);
+    }
+    if (meta && !w.fbq) {
+      const fbq: W['fbq'] = function (...args: unknown[]) {
+        fbq!.callMethod ? fbq!.callMethod(...args) : fbq!.queue!.push(args);
+      };
+      fbq.queue = [];
+      fbq.loaded = true;
+      fbq.version = '2.0';
+      fbq.push = fbq;
+      w.fbq = w._fbq = fbq;
+      addScript('https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', meta);
+      fbq('track', 'PageView');
+    }
+    if (snap && !w.snaptr) {
+      const snaptr: W['snaptr'] = function (...args: unknown[]) {
+        snaptr!.handleRequest ? snaptr!.handleRequest(...args) : snaptr!.queue!.push(args);
+      };
+      snaptr.queue = [];
+      w.snaptr = snaptr;
+      addScript('https://sc-static.net/scevent.min.js');
+      snaptr('init', snap);
+      snaptr('track', 'PAGE_VIEW');
+    }
+  };
+
+  const banner = document.querySelector<HTMLElement>('[data-consent]');
+  if (banner) {
+    const choice = read();
+    if (choice === 'accepted') loadTags(banner);
+    else if (choice !== 'rejected') banner.hidden = false;
+
+    banner.querySelectorAll<HTMLButtonElement>('[data-consent-choice]').forEach((b) =>
+      b.addEventListener('click', () => {
+        const v = b.dataset.consentChoice!;
+        save(v);
+        banner.hidden = true;
+        if (v === 'accepted') loadTags(banner);
+      }),
+    );
+
+    // "Cookie settings" in the footer reopens the banner so a choice can be changed.
+    document.querySelectorAll('[data-cookie-settings]').forEach((b) =>
+      b.addEventListener('click', () => {
+        banner.hidden = false;
+        banner.querySelector<HTMLButtonElement>('[data-consent-choice]')?.focus();
+      }),
+    );
+  }
+</script>

@@ -91,6 +91,9 @@ const badge = business.businessSaBadge;
       </div>
       <p class="flex flex-wrap items-center gap-x-4">
         <a href={href(lang, 'privacy')} class="inline-flex min-h-11 items-center hover:text-cream-50 hover:underline">{ui.nav.privacy[lang]}</a>
+        <button type="button" class="inline-flex min-h-11 items-center hover:text-cream-50 hover:underline active:scale-[0.98]" data-cookie-settings>
+          {lang === 'ar' ? 'إعدادات ملفات الارتباط' : 'Cookie settings'}
+        </button>
         <span>{business.tagline[lang]}</span>
       </p>
     </div>
