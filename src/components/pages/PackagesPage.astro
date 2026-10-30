@@ -92,7 +92,7 @@ const planMsg = lang === 'ar' ? 'السلام عليكم، أرغب بخطة ر�
         <div class="container-x">
           <h2 class="text-3xl text-green-800">{g.name[lang]}</h2>
           <p class="mt-2 text-ink-600">{g.intro[lang]}</p>
-          <div class="reveal-group mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="reveal-group card-row mt-6 md:mt-8 md:grid md:grid-cols-2 md:gap-6 lg:grid-cols-4">
             {packagesIn(g.id).map((p) => <PackageCard lang={lang} pkg={p} />)}
           </div>
         </div>

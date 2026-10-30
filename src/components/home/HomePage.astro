@@ -339,7 +339,7 @@ const teaser = ['hourly-babysitting', 'monthly-6', 'stay-in'].map((id) => packag
         <Icon name="arrow" class="size-4" flip />
       </a>
     </div>
-    <div class="reveal-group mt-10 grid gap-6 md:grid-cols-3">
+    <div class="reveal-group card-row mt-8 md:mt-10 md:grid md:grid-cols-3 md:gap-6">
       {teaser.map((p) => <PackageCard lang={lang} pkg={p} />)}
     </div>
   </div>

@@ -69,6 +69,25 @@
   }
 }
 
+/* Below md: cards sit in one sideways-scrolling row, two in view with the next one peeking.
+   Bleeds to the screen edges inside container-x; md and up keep the grid classes set beside it. */
+@utility card-row {
+  @media (width < 48rem) {
+    display: flex;
+    gap: 0.75rem;
+    margin-inline: -1rem;
+    padding: 0.5rem 1rem 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1rem;
+    overscroll-behavior-x: contain;
+    & > * {
+      flex: 0 0 46%;
+      scroll-snap-align: start;
+    }
+  }
+}
+
 /* Tall arch-topped frame (Gulf window shape). Use with an aspect-[4/5] box. */
 @utility arch {
   border-radius: 50% 50% 1.5rem 1.5rem / 40% 40% 1.5rem 1.5rem;
