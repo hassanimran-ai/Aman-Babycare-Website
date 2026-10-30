@@ -22,7 +22,7 @@ Deadline: Saturday Oct 31, 2026, 6 PM. MVP first; mark later work with `// PHASE
 ## Business Facts (never invent)
 - Every fact comes from `src/data/business.ts`. Unknown values stay as placeholders like `[PHONE]`, `[ADDRESS]`, `[PRICE]` in the data, but are never rendered raw: hide the line or show words such as "Price on WhatsApp".
 - Do NOT write: licensed, certified, nurse, nursing, medical, hospital-grade, MOH, 24/7, "500+ families", or any number/credential not in `business.ts`.
-- Prices and offers come only from `src/data/packages.ts` and `src/data/offers.ts`. Current prices are client-approved DRAFTS (from a reference site); they must be confirmed before `isLive` is set to true.
+- Prices and pricing rules come only from `src/data/pricing.ts` (engine: `src/lib/pricing.ts`, `npm test`); offers from `src/data/offers.ts`. Current prices are client-approved DRAFTS (from a reference site); they must be confirmed before `isLive` is set to true. Missing numbers stay `null` + `TODO(client)` and show "Price on WhatsApp".
 - Allowed trust claim: staff are background-checked.
 - Never invent reviews, testimonials, ratings, or star icons. Only real, consented reviews go in `src/data/reviews.ts`; the Reviews section shows once 3+ have `consent: true`. Until then the honest "Be among our first families" block carries the page.
 - No Review or AggregateRating schema.
